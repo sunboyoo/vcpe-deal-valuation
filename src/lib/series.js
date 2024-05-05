@@ -57,3 +57,19 @@ function assignConversionOrder(seriesArray){
     })
 }
 
+/*
+* When the firm value grows, the conversions of Convertible Preferred Shares will be triggered.
+* Each CP holder has different conversion condition. I call the firm value at conversion a conversion point.
+* When there are three CP holders, there will be three conversion points.
+* Then there will be four shareholder table snapshots.
+* The first one is before anyone converts.
+* The second one is after the first CP converts.
+* The third one is after the second CP converts.
+* The fourth one is after the third CP converts.
+* */
+function getShareholderTablesAtAllConversionStages(seriesArray){
+
+
+
+}
+
