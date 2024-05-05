@@ -1,4 +1,5 @@
 import {lazy} from "react";
+import Home from "../pages/Home";
 
 // 懒加载, 延时测试效果
 // const EuropeanCallPutOption = lazy(() =>
@@ -17,7 +18,6 @@ const SeriesACp = lazy(() => import("../components/SeriesACp"))
 const SeriesAPcp = lazy(() => import("../components/SeriesAPcp"))
 const GenericPayoff = lazy(() => import("../components/GenericPayoff"))
 
-
 // 该router下路由路径的base url. 应该有一个前置斜杠，但不能有后置斜杠
 // basename: string
 // The base URL for all locations. If your app is served from a sub-directory on your server, you’ll want to set this to
@@ -33,34 +33,37 @@ export const basename = "/vcpe-deal-valuation"
 // useRoutes生成路由表
 const routes = [
     {
-        path: '/europeanCallPutOption',
-        element: <EuropeanCallPutOption/>
-    },{
-        path: '/binaryOption',
-        element: <BinaryOption/>,
-    },{
-        path: '/warrant',
-        element: <Warrant/>
-    },
-    {
-        path: '/seriesACs',
-        element: <SeriesACs/>
-    },{
-        path: '/seriesARpCs',
-        element: <SeriesARpCs/>,
-    },{
-        path: '/seriesACp',
-        element: <SeriesACp/>
-    },{
-        path: '/seriesAPcp',
-        element: <SeriesAPcp/>,
-    },{
-        path: '/genericPayoff',
-        element: <GenericPayoff/>
-    },{
         path: '/',
-        element: <></>
-    }
+        element: <Home/>,
+        children: [
+            {
+                path: '/european-call-put-option',
+                element: <EuropeanCallPutOption/>,
+            },{
+                path: '/binary-option',
+                element: <BinaryOption/>,
+            },{
+                path: '/warrant',
+                element: <Warrant/>
+            },
+            {
+                path: '/series-a-cs',
+                element: <SeriesACs/>
+            },{
+                path: '/series-a-rp-cs',
+                element: <SeriesARpCs/>,
+            },{
+                path: '/series-a-cp',
+                element: <SeriesACp/>
+            },{
+                path: '/series-a-pcp',
+                element: <SeriesAPcp/>,
+            },{
+                path: '/generic-payoff',
+                element: <GenericPayoff/>
+            },
+        ],
+    },
 ]
 
 export default routes

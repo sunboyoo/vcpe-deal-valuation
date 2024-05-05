@@ -15,11 +15,11 @@ const items = [
                 children: [
                     {
                         label: 'European Call/Put Option',
-                        key: 'europeanCallPutOption',
+                        key: 'european-call-put-option',
                     },
                     {
                         label: 'Binary Option',
-                        key: 'binaryOption',
+                        key: 'binary-option',
                     },
                     {
                         label: 'Warrant',
@@ -33,23 +33,23 @@ const items = [
                 children: [
                     {
                         label: 'Series A Common Stock',
-                        key: 'seriesACs',
+                        key: 'series-a-cs',
                     },
                     {
                         label: 'Series A Redeemable Preferred and Common Stock',
-                        key: 'seriesARpCs',
+                        key: 'series-a-rp-cs',
                     },
                     {
                         label: 'Series A Convertible Preferred Stock',
-                        key: 'seriesACp',
+                        key: 'series-a-cp',
                     },
                     {
                         label: 'Series A Participating Convertible Preferred Stock',
-                        key: 'seriesAPcp',
+                        key: 'series-a-pcp',
                     },
                     {
                         label: 'Generic Payoff',
-                        key: 'genericPayoff',
+                        key: 'generic-payoff',
                     },
                 ],
             },
