@@ -1,5 +1,4 @@
 import {SegmentedLine} from "./line/segmented-line";
-import {readUsedSize} from "chart.js/helpers";
 
 const example = [
     {
@@ -24,11 +23,11 @@ const example = [
 * RedeemedValue - actual value if the shareholder redeems depending on the firm value
 * */
 
-function addSeries(seriesArray, seriesId, seriesName, cs, cpConvertibleCs, cpOptionalValue, rpRv){
+export function addSeries(seriesArray, seriesId, seriesName, cs, cpConvertibleCs, cpOptionalValue, rpRv){
     seriesArray.push({seriesId, seriesName, cs, cpConvertibleCs, cpOptionalValue, rpRv, rvps: null, cpConversionOrder: null})
 }
 
-function seriesHasCP(series){
+export function seriesHasCP(series){
     return series.cpOptionalValue > 0 && series.cpConvertibleCs > 0;
 }
 
@@ -202,7 +201,7 @@ function setCpConversionFirmValues(conversionScenarios){
  * (1) values for RP, CP redemptions
  * (2) CP conversions
  */
-function getKeyFirmValues(seriesArray){
+function getKeyFirmValues(seriesArray, tailScale=1.1){
     const firmValues = [0]
 
     // (1) Before CP conversions, find RP and CP values
@@ -237,14 +236,16 @@ function getKeyFirmValues(seriesArray){
         firmValues.push(value);
     })
 
+    firmValues.push(firmValues[firmValues.length - 1]*tailScale);
+
     return firmValues;
 }
 
-function getScenarioAtKeyFirmValue(firmValue, seriesArray, conversionScenarios){
+function getSnapshotAtFirmValue(firmValue, seriesArray){
 
-    const scenario = []
+    const snapshot = []
     seriesArray.forEach((series) => {
-        scenario.push({
+        snapshot.push({
             firmValue,
             value: 0, // important
 
@@ -274,18 +275,18 @@ function getScenarioAtKeyFirmValue(firmValue, seriesArray, conversionScenarios){
             cpRv = 0;
         }
 
-        scenario[i].cs = series.cs;
-        scenario[i].cpCs = cpCs;
-        scenario[i].rpRv = series.rpRv;
-        scenario[i].cpRv = cpRv;
+        snapshot[i].cs = series.cs;
+        snapshot[i].cpCs = cpCs;
+        snapshot[i].rpRv = series.rpRv;
+        snapshot[i].cpRv = cpRv;
     }
 
     // add CS Percentage
-    const csSum = getCsTotal(scenario);
+    const csSum = getCsTotal(snapshot);
     for (let i = seriesArray.length - 1; i >= 0; i--) {
-        scenario[i].csPercentage = scenario[i].cs / csSum;
-        scenario[i].cpCsPercentage = scenario[i].cpCs / csSum;
-        scenario[i].csPercentageTotal = (scenario[i].cs + scenario[i].cpCs) / csSum;
+        snapshot[i].csPercentage = snapshot[i].cs / csSum;
+        snapshot[i].cpCsPercentage = snapshot[i].cpCs / csSum;
+        snapshot[i].csPercentageTotal = (snapshot[i].cs + snapshot[i].cpCs) / csSum;
     }
 
     let firmResidualValue = firmValue;
@@ -295,18 +296,18 @@ function getScenarioAtKeyFirmValue(firmValue, seriesArray, conversionScenarios){
     for (let i = seriesArray.length - 1; i >= 0 && firmResidualValue > 0; i--) {
 
         // RP
-        if (scenario[i].rpRv > 0){
-            scenario[i].rpRedeemedValue = Math.max(Math.min(scenario[i].rpRv, firmResidualValue), 0);
-            firmResidualValue -= scenario[i].rpRedeemedValue;
+        if (snapshot[i].rpRv > 0){
+            snapshot[i].rpRedeemedValue = Math.max(Math.min(snapshot[i].rpRv, firmResidualValue), 0);
+            firmResidualValue -= snapshot[i].rpRedeemedValue;
             if (firmResidualValue <= 0){
                 break;
             }
         }
 
         // CP
-        if (scenario[i].cpRv > 0){
-            scenario[i].cpRedeemedValue = Math.max(Math.min(scenario[i].cpRv, firmResidualValue), 0);
-            firmResidualValue -= scenario[i].cpRedeemedValue;
+        if (snapshot[i].cpRv > 0){
+            snapshot[i].cpRedeemedValue = Math.max(Math.min(snapshot[i].cpRv, firmResidualValue), 0);
+            firmResidualValue -= snapshot[i].cpRedeemedValue;
             if (firmResidualValue <= 0){
                 break;
             }
@@ -315,34 +316,95 @@ function getScenarioAtKeyFirmValue(firmValue, seriesArray, conversionScenarios){
 
     // (2) CP, CS
     // add csValue
-    scenario.forEach((item) => {
+    snapshot.forEach((item) => {
         item.csValue = firmResidualValue <= 0 ? 0 : item.csPercentageTotal * firmResidualValue;
         item.value = item.csValue + item.rpRedeemedValue + item.cpRedeemedValue;
     })
 
-    return scenario;
+    return snapshot;
 }
 
-function getScenariosAtKeyFirmValues(firmValues, seriesArray, conversionScenarios) {
-    const scenarios = [];
+function getSnapshotsAtFirmValues(firmValues, seriesArray) {
+    const snapshots = [];
     firmValues.forEach((firmValue) => {
-        scenarios.push(getScenarioAtKeyFirmValue(firmValue, seriesArray, conversionScenarios))
+        snapshots.push(getSnapshotAtFirmValue(firmValue, seriesArray))
     })
 
-    return scenarios;
+    return snapshots;
 }
 
-function getScenariosBySeries(scenarios, seriesArray){
+function organizeSnapshotsBySeries(snapshotsAtFirmValues, seriesArray){
     const ss = []
     seriesArray.forEach((series, i) => {
         ss.push([]);
-        scenarios.forEach((scenario) => {
+        snapshotsAtFirmValues.forEach((scenario) => {
             ss[i].push(scenario[i])
         })
     })
     return ss;
 }
 
+function snapshotsToSegmentedLines(snapshotsBySeries){
+    const x = []
+    const ys = []
+    const ks= []
+    const lines = []
+
+    // find the common x - the firm values
+    if (snapshotsBySeries.length > 0){
+        snapshotsBySeries[0].forEach((snapshot) => {
+            x.push(snapshot.firmValue)
+        })
+    }
+
+    // find the y, and k - the payoffs and slopes
+    snapshotsBySeries.forEach((snapshots, seriesId) => {
+        const y = []
+        const k = []
+        snapshots.forEach((snapshot, i) => {
+            y.push(snapshot.value)
+            if (i > 0){
+                k.push((y[i] - y[i-1]) / (x[i] - x[i-1]))
+            }
+        })
+        ys.push(y)
+        ks.push(k)
+    })
+
+    // The last x and y is a tail
+    // The purpose of tail is to compute the slope, so it can be converted to a segmented line
+    x.pop()
+    ys.forEach((y) => {
+        y.pop()
+    })
+
+    ys.forEach((y, i) => {
+        lines.push(SegmentedLine.of(x, y, ks[i]))
+    })
+
+    return lines;
+}
+
+export function getSegmentedLinesFromSeriesArray(seriesArray){
+    setRvps(seriesArray);
+    assignCpConversionOrder(seriesArray);
+    const conversionScenarios = getConversionScenarios(seriesArray);
+    setCpConversionFirmValues(conversionScenarios)
+    const firmValues = getKeyFirmValues(seriesArray)
+    const scenariosAtKeyFirmValues = getSnapshotsAtFirmValues(firmValues, seriesArray)
+    const scenariosBySeries = organizeSnapshotsBySeries(scenariosAtKeyFirmValues, seriesArray);
+    const lines = snapshotsToSegmentedLines(scenariosBySeries)
+
+    return {lines, seriesArray}
+}
+
+export function getConversionConditions(seriesArray){
+    setRvps(seriesArray);
+    assignCpConversionOrder(seriesArray);
+    const conversionScenarios = getConversionScenarios(seriesArray);
+    setCpConversionFirmValues(conversionScenarios)
+    return seriesArray;
+}
 
 export function test(){
     const seriesArray = []
@@ -365,46 +427,13 @@ export function test(){
     const firmValues = getKeyFirmValues(seriesArray)
     console.log("FirmValues", firmValues)
 
-    const scenariosAtKeyFirmValues = getScenariosAtKeyFirmValues(firmValues, seriesArray, conversionScenarios)
+    const scenariosAtKeyFirmValues = getSnapshotsAtFirmValues(firmValues, seriesArray)
     console.log("scenariosAtKeyFirmValues", scenariosAtKeyFirmValues)
 
-    const scenariosBySeries = getScenariosBySeries(scenariosAtKeyFirmValues, seriesArray);
+    const scenariosBySeries = organizeSnapshotsBySeries(scenariosAtKeyFirmValues, seriesArray);
     console.log("scenariosBySeries", scenariosBySeries);
 
-    const e = scenariosBySeries[5];
-    const x = []
-    const y0 = []
-    const y1 = []
-    const y2 = []
-    const y3 = []
-    const y4 = []
-    const y5 = []
-    const k = []
-    scenariosBySeries[0].forEach((item) =>{
-        x.push(item.firmValue)
-        y0.push(item.value)
-        k.push(item.csPercentageTotal)
-    })
+    const lines = snapshotsToSegmentedLines(scenariosBySeries)
 
-    scenariosBySeries[1].forEach((item) =>{
-        y1.push(item.value)
-    })
-
-    scenariosBySeries[2].forEach((item) =>{
-        y2.push(item.value)
-    })
-    scenariosBySeries[3].forEach((item) =>{
-        y3.push(item.value)
-    })
-    scenariosBySeries[4].forEach((item) =>{
-        y4.push(item.value)
-    })
-    scenariosBySeries[5].forEach((item) =>{
-        y5.push(item.value)
-    })
-
-    console.log(x,y5,k)
-
-    return {x, y: {y0, y1, y2, y3, y4, y5}}
-    // return SegmentedLine.of(x, y, k)
+    return {lines}
 }

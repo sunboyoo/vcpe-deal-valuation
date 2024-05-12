@@ -64,5 +64,5 @@ export function callOptionsText(callOptions){
 }
 
 export function trimNumber(n) {
-    return parseFloat(n).toFixed(2).replace(/\.?0*$/, '');
+    return parseFloat(n).toFixed(4).replace(/\.?0*$/, '');
 }

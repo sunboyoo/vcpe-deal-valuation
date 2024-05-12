@@ -8,10 +8,21 @@ export function ExpirationPayoffDiagramPvGpvLpv({pvGpvLpv, result}){
     const [xPv, yPv, sPv] = pv.plotPointsWithLPCAndTail(lpc)
     const [xGpv, yGpv, sGpv] = gpv.plotPointsWithTail()
     const [xLpv, yLpv, sLpv] = lpv.plotPointsWithTail()
-    const subtitleTextPv  =  "Partial Valuation = " + callOptionsText(segmentedLineToOption(pv)) + " = " + result.PV.toFixed(2)
-    const subtitleTextGpv = "GP Carry Valuation = " + callOptionsText(segmentedLineToOption(gpv)) + " = " + result.GPCV.toFixed(2)
-    const subtitleTextLpv = "LP Valuation = " +  callOptionsText(segmentedLineToOption(lpv)) + " = " + result.LPV.toFixed(2)
+
+    let subtitleTextPv
+    let subtitleTextGpv
+    let subtitleTextLpv
     const subtitleTextLpc = "LP Cost = " + lpc
+
+    if (result){
+        subtitleTextPv  =  "Partial Valuation = " + callOptionsText(segmentedLineToOption(pv)) + " = " + result.PV.toFixed(4)
+        subtitleTextGpv = "GP Carry Valuation = " + callOptionsText(segmentedLineToOption(gpv)) + " = " + result.GPCV.toFixed(4)
+        subtitleTextLpv = "LP Valuation = " +  callOptionsText(segmentedLineToOption(lpv)) + " = " + result.LPV.toFixed(4)
+    } else {
+        subtitleTextPv  =  "Partial Valuation = " + callOptionsText(segmentedLineToOption(pv))
+        subtitleTextGpv = "GP Carry Valuation = " + callOptionsText(segmentedLineToOption(gpv))
+        subtitleTextLpv = "LP Valuation = " +  callOptionsText(segmentedLineToOption(lpv))
+    }
 
     const datasetPv = {
         label: 'Partial Valuation',
