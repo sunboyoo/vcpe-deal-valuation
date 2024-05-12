@@ -1,16 +1,19 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Card, Steps} from 'antd';
+import {Button, Card, Flex, Steps} from 'antd';
+import CapitalStack from "../../chartjs/CapitalStack";
 
 const description = 'This is a description.';
-const App = () => {
+const App = ({onChange}) => {
     const [current, setCurrent] = useState(0);
     const [intervalId, setIntervalId] = useState(null);
     const [showAutoProgress, setShowAutoProgress] = useState(true);  // State to toggle button visibility
 
 
-    const onChange = (value) => {
-        console.log('onChange:', value);
+    const onChangeHandler = (value) => {
         setCurrent(value);
+        if (onChange){
+            onChange(value);
+        }
     };
 
     const steps = [
@@ -57,6 +60,11 @@ const App = () => {
     })
 
     useEffect(() => {
+        // This is to ensure the parent gets the initial `current` value or any updates
+        if (onChange) {
+            onChange(current);
+        }
+
         if (current === steps.length - 1 && intervalId) {
             clearInterval(intervalId);
             setIntervalId(null);
@@ -118,13 +126,6 @@ const App = () => {
                     disabled={current >= steps.length - 1 || intervalId !== null}>
                     Next
                 </Button>
-                {/*<Button*/}
-                {/*    type="primary"*/}
-                {/*    style={{margin: '8px'}}*/}
-                {/*    onClick={startAutoProgress}*/}
-                {/*    disabled={intervalId !== null}>*/}
-                {/*    Auto Progress*/}
-                {/*</Button>*/}
                 {showAutoProgress && (
                     <Button
                         type="primary"
@@ -148,12 +149,24 @@ const App = () => {
                 size="default"
                 labelPlacement="vertical"
                 current={current}
-                onChange={onChange}
+                onChange={onChangeHandler}
                 items={items}
             />
-            <Card>
+            {/*<Card>*/}
                 {steps[current].content}
-            </Card>
+            {/*</Card>*/}
+            <div style={{width: '100%', display: 'flex', justifyContent: 'space-between'}}>
+                {[0,1,2,3,4].map((item,index) => (
+                    <div style={{
+                        flex: 1,
+                        padding: '20px',
+                        backgroundColor: current === index ? '#bae7ff': 'transparent',
+                    }}>
+                        <CapitalStack/>
+                    </div>
+                ))
+                }
+            </div>
         </>
     )
 };

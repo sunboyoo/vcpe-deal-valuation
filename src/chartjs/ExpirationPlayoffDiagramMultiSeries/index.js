@@ -1,13 +1,17 @@
-import {Card, Space} from "antd";
+import {Card, Flex, Space} from "antd";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
-import {getSegmentedLinesFromSeriesArray, addSeries, getConversionConditions, seriesHasCP} from "../../lib/series";
+import {getSegmentedLinesFromSeriesArray, addSeries} from "../../lib/series";
 import {LimitedPartnership, PvGpvLpv} from "../../lib/line/pv-gpv-lpv";
 import {ExpirationPayoffDiagramPvGpvLpv} from "../ExpirationPayoffDiagramPvGpvLpv";
 import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
 import {callOptionsText, segmentedLineToOption} from "../../lib/line/line-option-converter";
 import Milestone from "../../antd/Milestone";
+import CapitalStack from "../CapitalStack";
+import {useState} from "react";
 
 export default function ExpirationPlayoffDiagramMultiSeries() {
+    const [milestone, setMilestone] = useState(0);
+
     const seriesArray = []
 
     addSeries(seriesArray, 0,"Founders", 5, 0,0,0 );
@@ -48,18 +52,17 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
     const [x5, y5, k5] = lines[1].plotPoints()
     const pvGpvLpv5 = new PvGpvLpv(new LimitedPartnership(undefined, 20/100., 25/100.), 5, x5, y5, k5)
 
-    // seriesList.forEach((series, i) => {
-    //     if (seriesHasCP(series)){
-    //         subtitleTexts.push(series.seriesName + ': CP Converts to CS when the firm value is more than ' + series.cpConversionFirmValue)
-    //     } else {
-    //         subtitleTexts.push(series.seriesName + ": don't have CP shares.")
-    //     }
-    // })
-
+    const milestoneOnChange = (value) => {
+        console.log("Milestone onChange: ", value)
+        setMilestone(value)
+    }
 
     return (
         <>
-            <Milestone/>
+
+            {/*<Flex vertical style={{margin: 10}}>*/}
+                <Milestone onChange={milestoneOnChange}/>
+            {/*<CapitalStack value={milestone}/>*/}
             <Card>
                 <ExpirationPayoffDiagram3
                     datasets={datasets}
@@ -72,7 +75,7 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                     pvGpvLpv={pvGpvLpv5}
                 />
             </Card>
-
+            {/*</Flex>*/}
         </>
     )
 }
