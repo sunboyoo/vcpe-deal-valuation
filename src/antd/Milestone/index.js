@@ -2,7 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {Button, Card, Flex, Steps} from 'antd';
 import CapitalStack from "../../chartjs/CapitalStack";
 
-const description = 'This is a description.';
+const description = 'description.';
+
 const App = ({onChange}) => {
     const [current, setCurrent] = useState(0);
     const [intervalId, setIntervalId] = useState(null);
@@ -18,33 +19,23 @@ const App = ({onChange}) => {
 
     const steps = [
         {
-            title: 'No conversions',
-            subTitle: 'Firm Value = 0',
-            description,
+            title: 'Firm Value = 0',
+            subTitle: '',
             content: 'content',
         },
         {
-            title: 'Series B Converts',
-            subTitle: 'Firm Value = 100',
-            description,
+            title: 'Firm Value = 100',
+            subTitle: 'Series A CP converts to CS',
             content: 'content',
         },
         {
-            title: 'Series C Converts',
-            subTitle: 'Firm Value = 200',
-            description,
+            title: 'Firm Value = 160',
+            subTitle: 'Series B CP Converts to CS',
             content: 'content',
         },
         {
-            title: 'Series D Converts',
-            subTitle: 'Firm Value = 300',
-            description,
-            content: 'content',
-        },
-        {
-            title: 'Series E Converts',
-            subTitle: 'Firm Value = 400',
-            description,
+            title: 'Firm Value = 210',
+            subTitle: 'Series D CP Converts to CS',
             content: 'content',
         },
     ]
@@ -52,7 +43,8 @@ const App = ({onChange}) => {
     const items = []
     steps.forEach((step, i) => {
         items.push({
-            title: i > current ? "do not convert" : i === current ? "converts" : "converted",
+            title: step.title,
+            // title: i > current ? "do not convert" : i === current ? "converts" : "converted",
             subTitle: step.subTitle,
             description: step.description,
             content: "this is content",
@@ -111,7 +103,7 @@ const App = ({onChange}) => {
 
     return (
         <>
-            <div style={{margin: 24}}>
+            <div style={{margin: 24, textAlign: 'center'}}>
                 <Button
                     type="default"
                     style={{margin: '8px'}}
@@ -146,23 +138,21 @@ const App = ({onChange}) => {
             </div>
             <Steps
                 direction="horizontal"
-                size="default"
+                size="small"
                 labelPlacement="vertical"
                 current={current}
                 onChange={onChangeHandler}
                 items={items}
             />
-            {/*<Card>*/}
-                {steps[current].content}
-            {/*</Card>*/}
+
             <div style={{width: '100%', display: 'flex', justifyContent: 'space-between'}}>
-                {[0,1,2,3,4].map((item,index) => (
-                    <div style={{
+                {[0,1,2,3].map((item,index) => (
+                    <div key={index} style={{
                         flex: 1,
                         padding: '20px',
                         backgroundColor: current === index ? '#bae7ff': 'transparent',
                     }}>
-                        <CapitalStack/>
+                        <CapitalStack value={current}/>
                     </div>
                 ))
                 }

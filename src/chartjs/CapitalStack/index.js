@@ -11,47 +11,78 @@ const baseStyle = {
     color: 'white',
 }
 
-const colors = {
-    CS: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.3),
-    CPCS: ChartJSUtils.transparentize(ChartJSUtils.namedColor(1), 0.3),
-    RP: ChartJSUtils.transparentize(ChartJSUtils.namedColor(2), 0.3),
-    CPR: ChartJSUtils.transparentize(ChartJSUtils.namedColor(3), 0.3),
+
+const types = {
+    CS: {
+        code: 'CS',
+        text: 'CS',
+        color: ChartJSUtils.transparentize(ChartJSUtils.namedColor(4), 0.4),
+    },
+    CPCS: {
+        code: 'CPCS',
+        text: 'CP->CS',
+        color: ChartJSUtils.transparentize(ChartJSUtils.namedColor(4), 0.6),
+    },
+    RP: {
+        code: 'RP',
+        text: 'RP',
+        color: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.5),
+    },
+    CPR: {
+        code: 'CPR',
+        text: 'CP->Redeem',
+        color: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.7),
+    },
 }
 
-
-const data = [
+// (1) RP and CPR, sorted by Series Index
+// (2) CS and CPCS, sorted by Series Index
+const demoData = [
     {
-        type: 'CS',
-        value: 5,
+        type: types.RP.code,
+        seriesName: 'Series E',
+        value: '15',
+    },{
+        type: types.CPR.code,
+        seriesName: 'Series D',
+        value: '30',
+    },    {
+        type: types.RP.code,
+        seriesName: 'Series C',
+        value: '15',
+    },        {
+        type: types.CPR.code,
+        seriesName: 'Series B',
+        value: '20',
     },
     {
-        type: 'CPCS',
-        value: 15,
-    },
-    {
-        type: 'RP',
-        value: 10,
-    },
-    {
-        type: 'CPR',
-        value: 20,
+        type: types.CS.code,
+        seriesName: 'Series E',
+        value: '5',
+    },{
+        type: types.CS.code,
+        seriesName: 'Series C',
+        value: '5',
+    },{
+        type: types.CS.code,
+        seriesName: 'Founders',
+        value: '5',
     },
 ]
 
-const styles = []
 
-data.forEach((item) => {
+
+const App = ({data=demoData}) => {
+    const styles = []
+
+    data.forEach((item) => {
         styles.push({
             ...baseStyle,
-            height: 60,
-            backgroundColor: colors[item.type],
+            height: 40,
+            backgroundColor: types[item.type].color,
         })}
     )
-console.log(styles)
 
-
-const App = ({value}) => {
-    console.log("Capital Stack value:", value)
     return (
         <Flex
             vertical
@@ -62,7 +93,7 @@ const App = ({value}) => {
                     <div
                         key={index}
                         style={styles[index]}
-                    >{item.type}</div>
+                    >{`${types[item.type].text}, ${item.seriesName}, ${item.value}`}</div>
                 ))
             }
         </Flex>
