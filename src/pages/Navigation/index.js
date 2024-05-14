@@ -50,6 +50,9 @@ const items = [
                     {
                         label: 'Generic Payoff',
                         key: 'generic-payoff',
+                    },                    {
+                        label: 'Multiple Series',
+                        key: 'multi-series',
                     },
                 ],
             },

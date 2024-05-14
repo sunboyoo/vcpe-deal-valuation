@@ -1,4 +1,5 @@
 import {SegmentedLine} from "./line/segmented-line";
+import {SECURITY_TYPES} from "./constants";
 
 const example = [
     {
@@ -11,9 +12,6 @@ const example = [
         rvps: null, // Redeemable Value Per Share
         cpConversionOrder: null, // Conversion Order starting from 1
         cpConversionFirmValue: null,
-        xyk: [
-            {},
-        ]
     }
 ]
 
@@ -194,6 +192,14 @@ function setCpConversionFirmValues(conversionScenarios){
             shareholder.series.cpConversionFirmValue = shareholder.series.cpOptionalValue / shareholder.cpCsPercentage + getRvTotal(scenario)
         }
     })
+}
+
+
+function setRvpsAndConversions(seriesArray){
+    setRvps(seriesArray);
+    assignCpConversionOrder(seriesArray);
+    const conversionScenarios = getConversionScenarios(seriesArray);
+    setCpConversionFirmValues(conversionScenarios)
 }
 
 /**
@@ -385,11 +391,9 @@ function snapshotsToSegmentedLines(snapshotsBySeries){
     return lines;
 }
 
+
 export function getSegmentedLinesFromSeriesArray(seriesArray){
-    setRvps(seriesArray);
-    assignCpConversionOrder(seriesArray);
-    const conversionScenarios = getConversionScenarios(seriesArray);
-    setCpConversionFirmValues(conversionScenarios)
+    setRvpsAndConversions(seriesArray);
     const firmValues = getKeyFirmValues(seriesArray)
     const scenariosAtKeyFirmValues = getSnapshotsAtFirmValues(firmValues, seriesArray)
     const scenariosBySeries = organizeSnapshotsBySeries(scenariosAtKeyFirmValues, seriesArray);
@@ -398,42 +402,141 @@ export function getSegmentedLinesFromSeriesArray(seriesArray){
     return {lines, seriesArray}
 }
 
-export function getConversionConditions(seriesArray){
+export function getSeriesArray(seriesArray){
+    setRvpsAndConversions(seriesArray)
+    return seriesArray;
+}
+
+export function getEquityStack(conversionScenario){
+    const equityStack = [];
+
+    // (1) RP and CP_RV, sorted by Series Index
+    for (let i=conversionScenario.length - 1; i >= 0; i--){
+        const shareholder = conversionScenario[i];
+        if (shareholder.rpRv > 0){
+            equityStack.push({
+                type: SECURITY_TYPES.RP.code,
+                value: shareholder.rpRv,
+                seriesName: shareholder.series.seriesName,
+            })
+        }
+
+        if (shareholder.cpRv > 0){
+            equityStack.push({
+                type: SECURITY_TYPES.CP_RV.code,
+                value: shareholder.cpRv,
+                seriesName: shareholder.series.seriesName,
+            })
+        }
+    }
+
+    // (2) CS and CP_CS, sorted by Series Index
+    for (let i=conversionScenario.length - 1; i >= 0; i--){
+        const shareholder = conversionScenario[i];
+        if (shareholder.cpCs > 0){
+            equityStack.push({
+                type: SECURITY_TYPES.CP_CS.code,
+                value: shareholder.cpCs,
+                seriesName: shareholder.series.seriesName,
+            })
+        }
+
+        if (shareholder.cs > 0){
+            equityStack.push({
+                type: SECURITY_TYPES.CS.code,
+                value: shareholder.cs,
+                seriesName: shareholder.series.seriesName,
+            })
+        }
+    }
+
+    return equityStack;
+}
+
+export function getEquityStacks(conversionScenarios){
+    const equityStacks = [];
+    conversionScenarios.forEach((scenario) => {
+        equityStacks.push(getEquityStack(scenario));
+    })
+    return equityStacks
+}
+
+export function getCsStacks(equityStacks){
+    const csStacks = [];
+    equityStacks.forEach((equityStack) => {
+        const csStack = []
+        equityStack.forEach((equity) => {
+            if (equity.type === SECURITY_TYPES.CS.code || equity.type === SECURITY_TYPES.CP_CS.code){
+                csStack.push({...equity})
+            }
+        })
+        csStacks.push(csStack);
+    })
+    return csStacks;
+}
+
+export function getConversionSteps(seriesArray){
+    const steps = []
+    for (let i = 0; i < seriesArray.length; i++) {
+        seriesArray.forEach((series) => {
+            if (series.cpConversionOrder === i+1){
+                steps.push({
+                    firmValue: series.cpConversionFirmValue,
+                    seriesName: series.seriesName,
+                })
+            }
+        })
+    }
+
+    return steps;
+}
+
+export function analyze(seriesArray){
     setRvps(seriesArray);
     assignCpConversionOrder(seriesArray);
     const conversionScenarios = getConversionScenarios(seriesArray);
-    setCpConversionFirmValues(conversionScenarios)
-    return seriesArray;
+    setCpConversionFirmValues(conversionScenarios);
+
+    const firmValues = getKeyFirmValues(seriesArray)
+    const scenariosAtKeyFirmValues = getSnapshotsAtFirmValues(firmValues, seriesArray)
+    const scenariosBySeries = organizeSnapshotsBySeries(scenariosAtKeyFirmValues, seriesArray);
+    const lines = snapshotsToSegmentedLines(scenariosBySeries)
+
+    const equityStacks = getEquityStacks(conversionScenarios)
+    const csStacks = getCsStacks(equityStacks);
+    const conversionSteps = getConversionSteps(seriesArray)
+
+    return {lines, equityStacks, csStacks, conversionSteps, processedSeriesArray: seriesArray}
 }
+
 
 export function test(){
     const seriesArray = []
 
     addSeries(seriesArray, 0,"Founders", 5, 0,0,0 );
-    addSeries(seriesArray, 1,"A", 0, 5,5,0 );
-    addSeries(seriesArray, 2,"B", 0, 5,20,0 );
-    addSeries(seriesArray, 3,"C", 5, 0,0,15 );
-    addSeries(seriesArray, 4,"D", 0, 5,30,0 );
-    addSeries(seriesArray, 5,"E", 5, 0,0,15 );
+    addSeries(seriesArray, 1,"Series A", 0, 5,5,0 );
+    addSeries(seriesArray, 2,"Series B", 0, 5,20,0 );
+    addSeries(seriesArray, 3,"Series C", 5, 0,0,15 );
+    addSeries(seriesArray, 4,"Series D", 0, 5,30,0 );
+    addSeries(seriesArray, 5,"Series E", 5, 0,0,15 );
 
     setRvps(seriesArray);
     assignCpConversionOrder(seriesArray);
     const conversionScenarios = getConversionScenarios(seriesArray);
     setCpConversionFirmValues(conversionScenarios)
 
-    console.log("Series", seriesArray)
-    console.log("Conversion Scenarios", conversionScenarios);
-
     const firmValues = getKeyFirmValues(seriesArray)
-    console.log("FirmValues", firmValues)
 
     const scenariosAtKeyFirmValues = getSnapshotsAtFirmValues(firmValues, seriesArray)
-    console.log("scenariosAtKeyFirmValues", scenariosAtKeyFirmValues)
 
     const scenariosBySeries = organizeSnapshotsBySeries(scenariosAtKeyFirmValues, seriesArray);
-    console.log("scenariosBySeries", scenariosBySeries);
 
     const lines = snapshotsToSegmentedLines(scenariosBySeries)
 
-    return {lines}
+    const equityStacks = getEquityStacks(conversionScenarios)
+    const csStacks = getCsStacks(equityStacks);
+    const conversionSteps = getConversionSteps(seriesArray)
+    console.log(conversionSteps)
+
+    return {equityStacks, csStacks, conversionSteps}
 }

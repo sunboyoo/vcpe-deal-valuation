@@ -1,6 +1,5 @@
 import {useRoutes} from "react-router-dom";
 import routes from "./routes";
-import ExpirationPlayoffDiagramMultiSeries from "./chartjs/ExpirationPlayoffDiagramMultiSeries";
 
 function App() {
     // useRoutes生成路由表
@@ -10,7 +9,6 @@ function App() {
       <>
           {/* 注册路由 */}
           {element}
-          <ExpirationPlayoffDiagramMultiSeries/>
       </>
   );
 }

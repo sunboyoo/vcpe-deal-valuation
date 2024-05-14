@@ -1,5 +1,6 @@
 import {lazy} from "react";
 import Home from "../pages/Home";
+import ExpirationPlayoffDiagramMultiSeries from "../chartjs/ExpirationPlayoffDiagramMultiSeries";
 
 // 懒加载, 延时测试效果
 // const EuropeanCallPutOption = lazy(() =>
@@ -61,7 +62,10 @@ const routes = [
             },{
                 path: '/generic-payoff',
                 element: <GenericPayoff/>
-            },
+            },{
+                path: '/multi-series',
+                element: <ExpirationPlayoffDiagramMultiSeries/>
+            }
         ],
     },
 ]

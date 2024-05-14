@@ -1,6 +1,7 @@
 import React from 'react';
-import { Flex } from 'antd';
-import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
+import {Flex} from "antd";
+import {SECURITY_TYPES} from "../../lib/constants";
+import * as ChartJSUtils from "../ExpirationPayoffDiagram/chartjs-utils";
 
 const baseStyle = {
     display: 'flex',
@@ -9,41 +10,42 @@ const baseStyle = {
     margin: 4,
     width: '100%',
     color: 'white',
+    fontSize: 12,
 }
-
 
 const types = {
-    CS: {
+    [SECURITY_TYPES.CS.code]: {
         code: 'CS',
         text: 'CS',
-        color: ChartJSUtils.transparentize(ChartJSUtils.namedColor(4), 0.4),
+        backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(4), 0.4),
     },
-    CPCS: {
-        code: 'CPCS',
+    [SECURITY_TYPES.CP_CS.code]: {
+        code: 'CP_CS',
         text: 'CP->CS',
-        color: ChartJSUtils.transparentize(ChartJSUtils.namedColor(4), 0.6),
+        backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(4), 0.6),
     },
-    RP: {
+    [SECURITY_TYPES.RP.code]: {
         code: 'RP',
         text: 'RP',
-        color: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.5),
+        backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.5),
     },
-    CPR: {
-        code: 'CPR',
+    [SECURITY_TYPES.CP_RV.code]: {
+        code: 'CP_RV',
         text: 'CP->Redeem',
-        color: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.7),
+        backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.7),
     },
 }
 
-// (1) RP and CPR, sorted by Series Index
-// (2) CS and CPCS, sorted by Series Index
+// (1) RP and CP_RV, sorted by Series Index
+// (2) CS and CP_CS, sorted by Series Index
+/**
 const demoData = [
     {
-        type: types.RP.code,
+        type: SECURITY_TYPES.RP.code,
         seriesName: 'Series E',
         value: '15',
     },{
-        type: types.CPR.code,
+        type: SECURITY_TYPES.CP_RV.code,
         seriesName: 'Series D',
         value: '30',
     },    {
@@ -51,35 +53,38 @@ const demoData = [
         seriesName: 'Series C',
         value: '15',
     },        {
-        type: types.CPR.code,
+        type: SECURITY_TYPES.CP_RV.code,
         seriesName: 'Series B',
         value: '20',
     },
     {
-        type: types.CS.code,
+        type: SECURITY_TYPES.CS.code,
         seriesName: 'Series E',
         value: '5',
     },{
-        type: types.CS.code,
+        type: SECURITY_TYPES.CS.code,
         seriesName: 'Series C',
         value: '5',
     },{
-        type: types.CS.code,
+        type: SECURITY_TYPES.CS.code,
         seriesName: 'Founders',
         value: '5',
     },
 ]
+*/
 
-
-
-const App = ({data=demoData}) => {
+const App = ({data}) => {
     const styles = []
+
+    if (!data){
+        return null
+    }
 
     data.forEach((item) => {
         styles.push({
             ...baseStyle,
             height: 40,
-            backgroundColor: types[item.type].color,
+            backgroundColor: types[item.type].backgroundColor,
         })}
     )
 
@@ -88,15 +93,15 @@ const App = ({data=demoData}) => {
             vertical
             align="center"
         >
-            {
-                data.map((item, index) => (
+            {data.map((item, index) => (
                     <div
                         key={index}
                         style={styles[index]}
-                    >{`${types[item.type].text}, ${item.seriesName}, ${item.value}`}</div>
+                    >{`${types[item.type].text}, ${item.value}, ${item.seriesName}`}</div>
                 ))
             }
         </Flex>
     );
 };
+
 export default App;
