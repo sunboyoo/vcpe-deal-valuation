@@ -3,7 +3,7 @@ import {SECURITY_TYPES} from "./constants";
 
 const example = [
     {
-        seriesId: 0,
+        id: 0,
         seriesName: 'Founders',
         cs: 5, // CS Shares
         cpConvertibleCs: 0, // CP Shares
@@ -21,8 +21,8 @@ const example = [
 * RedeemedValue - actual value if the shareholder redeems depending on the firm value
 * */
 
-export function addSeries(seriesArray, seriesId, seriesName, cs, cpConvertibleCs, cpOptionalValue, rpRv){
-    seriesArray.push({seriesId, seriesName, cs, cpConvertibleCs, cpOptionalValue, rpRv, rvps: null, cpConversionOrder: null})
+export function addSeries(seriesArray,  id, seriesName, cs, cpConvertibleCs, cpOptionalValue, rpRv){
+    seriesArray.push({ seriesName, id, cs, cpConvertibleCs, cpOptionalValue, rpRv, rvps: null, cpConversionOrder: null})
 }
 
 export function seriesHasCP(series){

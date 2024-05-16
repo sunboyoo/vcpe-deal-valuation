@@ -1,5 +1,7 @@
 import {useRoutes} from "react-router-dom";
 import routes from "./routes";
+import { ConfigProvider } from 'antd';
+import enUS from 'antd/lib/locale/en_US'; // 引入英文语言包
 
 function App() {
     // useRoutes生成路由表
@@ -7,8 +9,10 @@ function App() {
 
   return (
       <>
-          {/* 注册路由 */}
-          {element}
+          <ConfigProvider locale={enUS}>
+              {/* 注册路由 */}
+              {element}
+          </ConfigProvider>
       </>
   );
 }
