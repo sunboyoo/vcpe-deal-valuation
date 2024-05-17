@@ -46,31 +46,58 @@ function setRvps(seriesArray){
     })
 }
 
+function getRvpsArray(seriesArray){
+    let rvpsArr = seriesArray.map((series) => series.rvps)
+    // Remove null and NaN values
+    rvpsArr = rvpsArr.filter((item) => (Number.isFinite(item)))
+    // Remove duplicates
+    rvpsArr = rvpsArr.filter((item, index) => rvpsArr.indexOf(item) === index)
+    // Sort
+    rvpsArr.sort((a, b) => a - b)
+    return rvpsArr;
+}
 /*
 * Assign Conversion Order based on RVPS
 * Adds a 'cpConversionOrder' property to each series.
 */
 function assignCpConversionOrder(seriesArray){
-    // Create a temporary array for sorting and determining order
-    const sortable = seriesArray
-        .map((series, index) => ({index, rvps: series.rvps}))
-        .filter(item => item.rvps > 0)
+    const rvpsArr = getRvpsArray(seriesArray)
 
-    // Sort by RVPS
-    sortable.sort((a, b) => a.rvps - b.rvps)
-
-
-    // Assign conversion order starting from 1
-    sortable.forEach((item, order) => {
-        seriesArray[item.index].cpConversionOrder = order + 1;
-    })
-
-    // Assign null conversion order to series with no CP to indicate they don't convert
     seriesArray.forEach((series) => {
-        if (!seriesHasCP(series)){
+        if (Number.isFinite(series.rvps)){
+            // Assign conversion order starting from 1
+            series.cpConversionOrder = 1 + rvpsArr.indexOf(series.rvps);
+        } else {
+            // Assign null conversion order to series with no CP to indicate they don't convert
             series.cpConversionOrder = null;
         }
     })
+    //
+    // // Create a temporary array for sorting and determining order
+    // const sortable = seriesArray
+    //     .map((series, index) => ({index, rvps: series.rvps}))
+    //     .filter(item => item.rvps > 0)
+    //
+    // // Sort by RVPS, and then by index in descending order if RVPS are equal
+    // sortable.sort((a, b) => {
+    //     // If Series A and Series B have the same RVPS, Series B converts earlier than Series A
+    //     if (a.rvps === b.rvps) {
+    //         return b.index - a.index; // Secondary sort by index in descending order
+    //     }
+    //     return a.rvps - b.rvps; // Primary sort by RVPS in ascending order
+    // });
+    //
+    // // Assign conversion order starting from 1
+    // sortable.forEach((item, order) => {
+    //     seriesArray[item.index].cpConversionOrder = order + 1;
+    // })
+    //
+    // // Assign null conversion order to series with no CP to indicate they don't convert
+    // seriesArray.forEach((series) => {
+    //     if (!seriesHasCP(series)){
+    //         series.cpConversionOrder = null;
+    //     }
+    // })
 }
 
 /**
@@ -125,10 +152,11 @@ function getRvTotal(shareholders){
 * */
 function getConversionScenarios(seriesArray){
 
-    const cpCount = getCPCount(seriesArray);
+    // const cpCount = getCPCount(seriesArray);
+    const rvpsCount = getRvpsArray(seriesArray).length;
     const scenarios = []
 
-    for (let i = 0; i <= cpCount; i++){
+    for (let i = 0; i <= rvpsCount; i++){
         const scenario = []
         seriesArray.forEach(series => {
             // when CP doesn't convert
@@ -188,8 +216,10 @@ function setCpConversionFirmValues(conversionScenarios){
     conversionScenarios.forEach((scenario, index) => {
         if (index > 0){
             // Use the find() method to locate the first series with the specified conversion order.
-            const shareholder = scenario.find(shareholder => shareholder.series.cpConversionOrder === index);
-            shareholder.series.cpConversionFirmValue = shareholder.series.cpOptionalValue / shareholder.cpCsPercentage + getRvTotal(scenario)
+            const shareholders = scenario.filter(shareholder => shareholder.series.cpConversionOrder === index);
+            shareholders.forEach((shareholder) => {
+                shareholder.series.cpConversionFirmValue = shareholder.series.cpOptionalValue / shareholder.cpCsPercentage + getRvTotal(scenario)
+            })
         }
     })
 }
@@ -207,7 +237,7 @@ function setRvpsAndConversions(seriesArray){
  * (1) values for RP, CP redemptions
  * (2) CP conversions
  */
-function getKeyFirmValues(seriesArray, tailScale=1.1){
+function getKeyFirmValues(seriesArray, tailScale=0.1){
     const firmValues = [0]
 
     // (1) Before CP conversions, find RP and CP values
@@ -234,7 +264,10 @@ function getKeyFirmValues(seriesArray, tailScale=1.1){
     const conversionFirmValues = []
     seriesArray.forEach((series) => {
         if (series.cpConvertibleCs > 0 && series.cpConversionFirmValue > 0){
-            conversionFirmValues.push(series.cpConversionFirmValue)
+            // multiple CPs may have the same ConversionFirmValue, do not duplicate
+            if (conversionFirmValues.indexOf(series.cpConversionFirmValue) === -1){
+                conversionFirmValues.push(series.cpConversionFirmValue)
+            }
         }
     })
     conversionFirmValues.sort((a,b) => (a-b))
@@ -242,7 +275,13 @@ function getKeyFirmValues(seriesArray, tailScale=1.1){
         firmValues.push(value);
     })
 
-    firmValues.push(firmValues[firmValues.length - 1]*tailScale);
+    let deltaX;
+    if (firmValues[firmValues.length - 1] - firmValues[0] === 0){
+        deltaX = 1;
+    } else {
+        deltaX = (firmValues[firmValues.length - 1] - firmValues[0]) * tailScale
+    }
+    firmValues.push(firmValues[firmValues.length - 1] + deltaX);
 
     return firmValues;
 }
@@ -383,7 +422,6 @@ function snapshotsToSegmentedLines(snapshotsBySeries){
     ys.forEach((y) => {
         y.pop()
     })
-
     ys.forEach((y, i) => {
         lines.push(SegmentedLine.of(x, y, ks[i]))
     })
@@ -391,21 +429,6 @@ function snapshotsToSegmentedLines(snapshotsBySeries){
     return lines;
 }
 
-
-export function getSegmentedLinesFromSeriesArray(seriesArray){
-    setRvpsAndConversions(seriesArray);
-    const firmValues = getKeyFirmValues(seriesArray)
-    const scenariosAtKeyFirmValues = getSnapshotsAtFirmValues(firmValues, seriesArray)
-    const scenariosBySeries = organizeSnapshotsBySeries(scenariosAtKeyFirmValues, seriesArray);
-    const lines = snapshotsToSegmentedLines(scenariosBySeries)
-
-    return {lines, seriesArray}
-}
-
-export function getSeriesArray(seriesArray){
-    setRvpsAndConversions(seriesArray)
-    return seriesArray;
-}
 
 export function getEquityStack(conversionScenario){
     const equityStack = [];
@@ -477,15 +500,16 @@ export function getCsStacks(equityStacks){
 
 export function getConversionSteps(seriesArray){
     const steps = []
-    for (let i = 0; i < seriesArray.length; i++) {
+    for (let conversionStep = 1; conversionStep <= getRvpsArray(seriesArray).length; conversionStep++) {
+        let firmValue
+        let seriesList = []
         seriesArray.forEach((series) => {
-            if (series.cpConversionOrder === i+1){
-                steps.push({
-                    firmValue: series.cpConversionFirmValue,
-                    seriesName: series.seriesName,
-                })
+            if (series.cpConversionOrder === conversionStep){
+                firmValue = series.cpConversionFirmValue
+                seriesList.push(series.seriesName)
             }
         })
+        steps.push({firmValue, seriesList})
     }
 
     return steps;
@@ -495,8 +519,9 @@ export function analyze(seriesArray){
     setRvps(seriesArray);
     assignCpConversionOrder(seriesArray);
     const conversionScenarios = getConversionScenarios(seriesArray);
+    console.log('conversionScenarios', conversionScenarios)
     setCpConversionFirmValues(conversionScenarios);
-
+    console.log("setCpConversionFirmValues", seriesArray)
     const firmValues = getKeyFirmValues(seriesArray)
     const scenariosAtKeyFirmValues = getSnapshotsAtFirmValues(firmValues, seriesArray)
     const scenariosBySeries = organizeSnapshotsBySeries(scenariosAtKeyFirmValues, seriesArray);
@@ -506,6 +531,7 @@ export function analyze(seriesArray){
     const csStacks = getCsStacks(equityStacks);
     const conversionSteps = getConversionSteps(seriesArray)
 
+    console.log("lines", lines)
     return {lines, equityStacks, csStacks, conversionSteps, processedSeriesArray: seriesArray}
 }
 

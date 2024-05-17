@@ -31,7 +31,7 @@ export default function ({csStack}){
     })
 
     const options = {
-        responsive: true,
+        responsive: false,
         plugins: {
             legend: {
                 position: 'bottom',

@@ -3,6 +3,20 @@ import {Button, Steps} from 'antd';
 import CommonStockDoughnut from "../../chartjs/CommonStockDoughnut";
 import EquityStack from "../../chartjs/EquityStack";
 
+function arrayToString(arr) {
+    if (arr.length === 0) {
+        return "";
+    } else if (arr.length === 1) {
+        return arr[0];
+    } else if (arr.length === 2) {
+        return arr.join(" and ");
+    } else {
+        // Access the last element without modifying the original array
+        let lastElement = arr[arr.length - 1];
+        let initialElements = arr.slice(0, arr.length - 1);
+        return initialElements.join(", ") + ", and " + lastElement;
+    }
+}
 
 const App = ({conversionSteps, equityStacks, csStacks, onChange}) => {
     const [current, setCurrent] = useState(0);
@@ -22,7 +36,7 @@ const App = ({conversionSteps, equityStacks, csStacks, onChange}) => {
     conversionSteps.forEach((step) => {
         items.push({
             title: `Firm Value = ${step.firmValue}`,
-            subTitle: `${step.seriesName} CP converted into CS`,
+            subTitle: `${arrayToString(step.seriesList)} CP converted into CS`,
         })
     })
 
@@ -128,8 +142,8 @@ const App = ({conversionSteps, equityStacks, csStacks, onChange}) => {
                         padding: '10px',
                         boxShadow: current === index ? '0px 0px 10px rgba(0, 0, 0, 0.5)' : 'none',
                     }}>
-                        <EquityStack data={equityStack}/>
-                        <CommonStockDoughnut csStack={csStacks[index]}/>
+                        <EquityStack data={[...equityStack]}/>
+                        <CommonStockDoughnut csStack={[...csStacks[index]]}/>
                     </div>
                 ))
                 }

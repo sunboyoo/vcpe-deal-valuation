@@ -26,7 +26,6 @@ export default function ({initialValue, onChange}) {
     const [seriesInput, setSeriesInput] = useState(initialValue || []);
 
     const list = seriesInput || [];
-    console.log("seriesInput", seriesInput);
     const createNewItem = {};
 
 
@@ -191,7 +190,7 @@ export default function ({initialValue, onChange}) {
                             };
                             try {
                                 // await create(item);***********************************************
-                                console.log(item)
+                                // console.log(item)
                                 return true;
                             } catch (error) {
                                 messageApi.error(' Failed. Please try again', 5);
@@ -312,7 +311,7 @@ export default function ({initialValue, onChange}) {
                         onFinish={async (values) => {
                             try {
                                 // await updateNonNullProperties(updatedItem);***********************
-                                console.log('values', values)
+                                // console.log('values', values)
                                 return true;
                             } catch (error) {
                                 messageApi.error(' The update failed. Please try again ');
@@ -469,7 +468,7 @@ export default function ({initialValue, onChange}) {
                                             <PlusOutlined /> Create A New Item
                                         </a>,
                                     ]}
-
+                                    style={{ minWidth: '300px' }}
                                 >
                                     <Card.Meta
                                         title={false}

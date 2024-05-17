@@ -216,8 +216,16 @@ export class SegmentedLine {
     }
 
     // to add the tail. this is after adding the carried interest cutoff points
-    addTail(x, y, slopes, scale=1.1){
-        x.push(x[x.length-1] * scale)
+    addTail(x, y, slopes, scale=0.1){
+        let deltaX;
+        // if there is only one point on the line.
+        if (x[x.length - 1] - x[0] === 0){
+            deltaX = 1;
+        } else{
+            deltaX = (x[x.length - 1] - x[0]) * scale;
+        }
+
+        x.push(x[x.length-1] + deltaX)
         y.push(this.y(x[x.length-1]))
         slopes.push(slopes[slopes.length-1])
     }
@@ -228,7 +236,7 @@ export class SegmentedLine {
         return [x, y, slopes]
     }
 
-    plotPointsWithLPC(LPC, scale=1.1){
+    plotPointsWithLPC(LPC){
         const [x, y, slopes] = this.plotPoints()
         const xCutoffs = this.x(LPC)
         const yCutoffs = Array.from({length: xCutoffs.length}, () => LPC)
@@ -236,7 +244,7 @@ export class SegmentedLine {
         return [x, y, slopes]
     }
 
-    plotPointsWithLPCAndTail(LPC, scale=1.1){
+    plotPointsWithLPCAndTail(LPC, scale=0.1){
         const [x, y, slopes] = this.plotPointsWithLPC(LPC)
         this.addTail(x, y, slopes, scale)
         return [x, y, slopes]

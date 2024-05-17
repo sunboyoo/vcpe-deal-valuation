@@ -8,7 +8,7 @@ const baseStyle = {
     alignItems: 'center', /* Aligns items vertically in the center */
     justifyContent: 'center', /* Aligns items horizontally in the center */
     margin: 4,
-    width: '100%',
+    width: '90%',
     color: 'white',
     fontSize: 12,
 }

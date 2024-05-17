@@ -18,9 +18,10 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
     const [conversionSteps, setConversionSteps] = useState([]);
     const [equityStacks, setEquityStacks] = useState([]);
     const [csStacks, setCsStacks] = useState([]);
+    const [pvGpvLpv, setPvGpvLpv] = useState()
 
     useEffect(() => {
-        if (seriesValue.length >= 2) {
+        if (seriesValue.length > 0) {
             const seriesArray = [];
             seriesValue.forEach((item) => {
                 const { id, seriesName, cs, cpConvertibleCs, cpOptionalValue, rpRv } = item;
@@ -60,6 +61,12 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
             setConversionSteps(conversionSteps);
             setEquityStacks(equityStacks);
             setCsStacks(csStacks);
+
+
+            if (lines.length > 0){
+                const [x5, y5, k5] = lines[lines.length-1].plotPoints()
+                setPvGpvLpv(new PvGpvLpv(new LimitedPartnership(undefined, 20/100., 25/100.), 5, x5, y5, k5))
+            }
         }
     }, [seriesValue]);
 
@@ -117,8 +124,7 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
     // const x = xs[0]
     // const yMax = Math.max(...(ys.flat()))
 
-    // const [x5, y5, k5] = lines[1].plotPoints()
-    // const pvGpvLpv5 = new PvGpvLpv(new LimitedPartnership(undefined, 20/100., 25/100.), 5, x5, y5, k5)
+
 
     return (
         <>
@@ -150,11 +156,11 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                         />
                     </Card>
                 )}
-                {/* {seriesValue && seriesValue.length > 0 && (
+                {pvGpvLpv && (
                     <ExpirationPayoffDiagramPvGpvLpv
-                        pvGpvLpv={pvGpvLpv5}
+                        pvGpvLpv={pvGpvLpv}
                     />
-                )} */}
+                )}
             </Space>
         </>
     )
