@@ -8,9 +8,56 @@ import {callOptionsText, segmentedLineToOption} from "../../lib/line/line-option
 import Milestone from "../../antd/Milestone";
 import {useState, useEffect} from "react";
 import CardList from "../../antd/CardList";
+import {SECURITY_TYPE_TAGS} from "../../lib/constants";
+
+const initialSeriesValue = [{
+    id: 0,
+    seriesName: 'Founders',
+    cs: 5,
+    cpConvertibleCs: 0,
+    cpOptionalValue: 0,
+    rpRv: 0,
+},{
+    id: 1,
+    seriesName: 'Series A',
+    cs: 0,
+    cpConvertibleCs: 5,
+    cpOptionalValue: 5,
+    rpRv: 0,
+},{
+    id: 2,
+    seriesName: 'Series B',
+    cs: 0,
+    cpConvertibleCs: 5,
+    cpOptionalValue: 20,
+    rpRv: 0,
+},{
+    id: 3,
+    seriesName: 'Series C',
+    cs: 5,
+    cpConvertibleCs: 0,
+    cpOptionalValue: 0,
+    rpRv: 15,
+},{
+    id: 4,
+    seriesName: 'Series D',
+    cs: 0,
+    cpConvertibleCs: 5,
+    cpOptionalValue: 30,
+    rpRv: 0,
+},{
+    id: 5,
+    seriesName: 'Series E',
+    cs: 5,
+    cpConvertibleCs: 0,
+    cpOptionalValue: 0,
+    rpRv: 15,
+},
+
+]
 
 export default function ExpirationPlayoffDiagramMultiSeries() {
-    const [seriesValue, setSeriesValue] = useState([]);
+    const [seriesValue, setSeriesValue] = useState(initialSeriesValue);
     const [datasets, setDatasets] = useState([]);
     const [subtitleTexts, setSubtitleTexts] = useState([]);
     const [labels, setLabels] = useState([]);
@@ -70,65 +117,20 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
         }
     }, [seriesValue]);
 
-    // const seriesArray = []
-
-    // if (seriesValue.length <2) {
-    //     return (
-    //         <CardList
-    //             initialValue={seriesValue}
-    //             onChange={(newValue) => {
-    //             console.log('onChange', newValue); setSeriesValue([...newValue])}}>
-    //
-    //         </CardList>
-    //     )
-    // }
-    //
-    //
-    // seriesValue.forEach((item) => {
-    //     const {id, seriesName, cs, cpConvertibleCs, cpOptionalValue, rpRv} = item;
-    //     addSeries(seriesArray, id, seriesName, cs, cpConvertibleCs, cpOptionalValue, rpRv)
-    // })
-
-    // addSeries(seriesArray, "Founders", 5, 0,0,0 );
-    // addSeries(seriesArray, "Series A", 0, 5,5,0 );
-    // addSeries(seriesArray, "Series B", 0, 5,20,0 );
-    // addSeries(seriesArray, "Series C", 5, 0,0,15 );
-    // addSeries(seriesArray, "Series D", 0, 5,30,0 );
-    // addSeries(seriesArray, "Series E", 5, 0,0,15 );
-
-    // const {lines, equityStacks, csStacks, conversionSteps, processedSeriesArray} = analyze(seriesArray);
-    //
-    // const xs = []
-    // const ys = []
-    // const datasets = []
-    // const subtitleTexts = []
-    // lines.forEach((line, i) => {
-    //     const [x, y] = line.plotPointsWithTail();
-    //     xs.push(x)
-    //     ys.push(y)
-    //     datasets.push(
-    //         {
-    //             label: i,
-    //             data: y,
-    //             borderColor: ChartJSUtils.namedColor(i),
-    //             backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(i), 0.9),
-    //             borderWidth: 1,
-    //             fill: 'origin',
-    //             tension: 0,
-    //             yAxisID: "y",
-    //         }
-    //     )
-    //     subtitleTexts.push(processedSeriesArray[i].seriesName + ": Partial Valuation = " + callOptionsText(segmentedLineToOption(line)))
-    // })
-    //
-    // const x = xs[0]
-    // const yMax = Math.max(...(ys.flat()))
-
-
 
     return (
         <>
             <Space direction="vertical">
+                <Card>
+                    <h1>The Equity Securities held by Founders and Series Investors</h1>
+                    <p>{ SECURITY_TYPE_TAGS.CS} Common Stock</p>
+                    <p>{SECURITY_TYPE_TAGS.RP} Redeemable Preferred</p>
+                    <p>{SECURITY_TYPE_TAGS.CP} Convertible Preferred</p>
+                    <p>{SECURITY_TYPE_TAGS.CP_CS} Common Stock that Convertible Preferred can be converted into</p>
+                    <p>{SECURITY_TYPE_TAGS.CP_RV} Redeemable Value of Convertible Preferred</p>
+                    <p>In the event of a company exit or liquidation, the order in which investors are paid back is determined by the investment agreement. This order can prioritize different series of investors based on the terms agreed upon. A common structure prioritizes later series investors first.</p>
+                    <p>For example, in the event of an exit or liquidation, usually the Series E investors are redeemed first, followed by Series D, then Series C, then Series B, and finally Series A, as specified in the investment agreement.</p>
+                </Card>
                 <CardList
                     initialValue={seriesValue}
                     onChange={(newValue) => {

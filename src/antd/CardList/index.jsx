@@ -14,6 +14,7 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { ProFormText, ProFormDigit, StepsForm } from '@ant-design/pro-components';
 
 import { useState } from 'react';
+import {SECURITY_TYPE_COLORS, SECURITY_TYPE_TAGS} from "../../lib/constants";
 
 export default function ({initialValue, onChange}) {
     const [messageApi] = message.useMessage();
@@ -100,20 +101,30 @@ export default function ({initialValue, onChange}) {
                         />
 
                         <Card size={'small'}>
-                            <Descriptions title={item.seriesName} size={'small'}>
-                                <Descriptions.Item label="CS" span={3}>
-                                    {item.cs}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="RP" span={3}>
-                                    {'$ ' + item.rpRv}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="CP->CS" span={3}>
-                                    {item.cpConvertibleCs}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="CP->Redeem" span={3}>
-                                    {'$ ' + item.cpOptionalValue}
-                                </Descriptions.Item>
-                            </Descriptions>
+                            <Card.Meta
+                                avatar={<Tag bordered={false} color="success">{"Investment Sequence "+ item.id}</Tag>}
+                                description={
+                                    <>
+                                        <Descriptions size={'small'}>
+                                            <Descriptions.Item span={3}>
+                                                <h1>{item.seriesName}</h1>
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label={SECURITY_TYPE_TAGS.CS} span={3}>
+                                                {item.cs}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label={SECURITY_TYPE_TAGS.RP} span={3}>
+                                                {'$ ' + item.rpRv}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label={SECURITY_TYPE_TAGS.CP_CS} span={3}>
+                                                {item.cpConvertibleCs}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label={SECURITY_TYPE_TAGS.CP_RV} span={3}>
+                                                {'$ ' + item.cpOptionalValue}
+                                            </Descriptions.Item>
+                                        </Descriptions>
+                                    </>
+                                }
+                            />
                         </Card>
                         <div style={{ textAlign: 'center' }}>
                             <br />
@@ -200,8 +211,8 @@ export default function ({initialValue, onChange}) {
                     >
                         <ProFormText
                             name="id"
-                            label="Series ID"
-                            tooltip="ID can not be changed."
+                            label={<Tag bordered={false} color="success">Investment Sequence</Tag>}
+                            tooltip="Investment Sequence can not be changed."
                             placeholder={undefined}
                             disabled
                             initialValue={seriesInput.length}
@@ -218,7 +229,7 @@ export default function ({initialValue, onChange}) {
                         />
                         <ProFormDigit
                             name="cs"
-                            label="The shares of Common Stocks (CS)"
+                            label={<span>{ SECURITY_TYPE_TAGS.CS} The shares of Common</span>}
                             width="sm"
                             placeholder="0"
                             min={0}
@@ -226,7 +237,7 @@ export default function ({initialValue, onChange}) {
                         />
                         <ProFormDigit
                             name="rpRv"
-                            label="The redeemable value of Redeemable Preferred shares (RP)"
+                            label={<span>{SECURITY_TYPE_TAGS.RP} The redeemable value of Redeemable Preferred</span>}
                             fieldProps={{prefix: '$'}}
                             width="sm"
                             placeholder="0"
@@ -235,7 +246,7 @@ export default function ({initialValue, onChange}) {
                         />
                         <ProFormDigit
                             name="cpConvertibleCs"
-                            label="The shares of Common Stocks that Convertible Preferred can be converted into (CP -> CS)"
+                            label={<span>{SECURITY_TYPE_TAGS.CP_CS} The shares of Common that Convertible Preferred can be converted into</span>}
                             width="sm"
                             placeholder="0"
                             min={0}
@@ -243,7 +254,7 @@ export default function ({initialValue, onChange}) {
                         />
                         <ProFormDigit
                             name="cpOptionalValue"
-                            label="The redeemable value of Convertible Preferred shares (CP -> Redeemable Value)"
+                            label={<span>{SECURITY_TYPE_TAGS.CP_RV} The redeemable value of Convertible Preferred. Determined by multiplying the Face Value (equal to the initial investment amount) by the liquidation preference</span>}
                             fieldProps={{prefix: '$'}}
                             width="sm"
                             placeholder="0"
@@ -321,8 +332,8 @@ export default function ({initialValue, onChange}) {
                     >
                         <ProFormText
                             name="id"
-                            label="Metric ID"
-                            tooltip="ID can not be changed."
+                            label={<Tag bordered={false} color="success">Investment Sequence</Tag>}
+                            tooltip="Investment Sequence ID can not be changed."
                             placeholder={undefined}
                             disabled
                             initialValue={item.id}
@@ -340,7 +351,7 @@ export default function ({initialValue, onChange}) {
                         />
                         <ProFormDigit
                             name="cs"
-                            label="The shares of Common Stocks (CS)"
+                            label={<span>{ SECURITY_TYPE_TAGS.CS} The shares of Common</span>}
                             width="sm"
                             placeholder="0"
                             initialValue={item.cs}
@@ -349,7 +360,7 @@ export default function ({initialValue, onChange}) {
                         />
                         <ProFormDigit
                             name="rpRv"
-                            label="The redeemable value of Redeemable Preferred shares (RP)"
+                            label={<span>{SECURITY_TYPE_TAGS.RP} The redeemable value of Redeemable Preferred</span>}
                             width="sm"
                             placeholder="0"
                             fieldProps={{prefix: '$'}}
@@ -359,7 +370,7 @@ export default function ({initialValue, onChange}) {
                         />
                         <ProFormDigit
                             name="cpConvertibleCs"
-                            label="The shares of Common Stocks that Convertible Preferred can be converted into (CP -> CS)"
+                            label={<span>{SECURITY_TYPE_TAGS.CP_CS} The shares of Common that Convertible Preferred can be converted into</span>}
                             width="sm"
                             placeholder="0"
                             initialValue={item.cpConvertibleCs}
@@ -368,7 +379,7 @@ export default function ({initialValue, onChange}) {
                         />
                         <ProFormDigit
                             name="cpOptionalValue"
-                            label="The redeemable value of Convertible Preferred shares (CP -> Redeemable Value)"
+                            label={<span>{SECURITY_TYPE_TAGS.CP_RV} The redeemable value of Convertible Preferred. Determined by multiplying the Face Value (equal to the initial investment amount) by the liquidation preference</span>}
                             width="sm"
                             placeholder="0"
                             fieldProps={{prefix: '$'}}
@@ -433,26 +444,32 @@ export default function ({initialValue, onChange}) {
                                     ]}
                                 >
                                     <Card.Meta
-                                        avatar={<Tag>{item.id}</Tag>}
-                                        description={
-                                            <>
-                                                <Descriptions title={item.seriesName} size={'small'}>
-                                                    <Descriptions.Item label="CS" span={3}>
-                                                        {item.cs}
-                                                    </Descriptions.Item>
-                                                    <Descriptions.Item label="RP" span={3}>
-                                                        {'$ ' + item.rpRv}
-                                                    </Descriptions.Item>
-                                                    <Descriptions.Item label="CP->CS" span={3}>
-                                                        {item.cpConvertibleCs}
-                                                    </Descriptions.Item>
-                                                    <Descriptions.Item label="CP->Redeem" span={3}>
-                                                        {'$ ' + item.cpOptionalValue}
-                                                    </Descriptions.Item>
-                                                </Descriptions>
-                                            </>
-                                        }
-                                    />
+                                    // avatar={<Tag bordered={false} color="success">{"Investment Sequence "+ item.id}</Tag>}
+                                    description={
+                                        <>
+                                            <Descriptions size={'small'}>
+                                                <Descriptions.Item span={3}>
+                                                    <Tag bordered={false} color="success">{"Investment Sequence "+ item.id}</Tag>
+                                                </Descriptions.Item>
+                                                <Descriptions.Item span={3}>
+                                                    <h1>{item.seriesName}</h1>
+                                                </Descriptions.Item>
+                                                <Descriptions.Item label={SECURITY_TYPE_TAGS.CS} span={3}>
+                                                    {item.cs}
+                                                </Descriptions.Item>
+                                                <Descriptions.Item label={SECURITY_TYPE_TAGS.RP} span={3}>
+                                                    {'$ ' + item.rpRv}
+                                                </Descriptions.Item>
+                                                <Descriptions.Item label={SECURITY_TYPE_TAGS.CP_CS} span={3}>
+                                                    {item.cpConvertibleCs}
+                                                </Descriptions.Item>
+                                                <Descriptions.Item label={SECURITY_TYPE_TAGS.CP_RV} span={3}>
+                                                    {'$ ' + item.cpOptionalValue}
+                                                </Descriptions.Item>
+                                            </Descriptions>
+                                        </>
+                                    }
+                                />
                                 </Card>
                             </List.Item>
                         );
@@ -465,7 +482,7 @@ export default function ({initialValue, onChange}) {
                                     hoverable
                                     actions={[
                                         <a key={'create'}>
-                                            <PlusOutlined /> Create A New Item
+                                            <PlusOutlined /> Add a new investment series
                                         </a>,
                                     ]}
                                     style={{ minWidth: '300px' }}
