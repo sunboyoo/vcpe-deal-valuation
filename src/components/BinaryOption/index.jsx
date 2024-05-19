@@ -1,6 +1,6 @@
 import {Button, Card, Form, InputNumber, Space, Statistic} from "antd";
 import {Call_Bin_Eur, Call_Bin_Eur_RE} from "../../lib/option";
-import {useState} from "react";
+import React, {useState} from "react";
 
 const initialValues = {
     S: 40.00,

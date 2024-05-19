@@ -1,26 +1,64 @@
-import {Button, Card, Form, InputNumber, Space, Statistic} from "antd";
-import {Warrant as warrant} from "../../lib/warrant";
-import {useState} from "react";
+import {Button, Card, Divider, Form, InputNumber, Space, Table, Tag} from "antd";
+import React, {useState} from "react";
+import {DashOutlined} from "@ant-design/icons";
+import { postTransactionValuation, SecurityType} from "../../lib/generic-payoff";
 
+// so = pre-money shares outstanding		11
+// sp = new common shares purchased		5
+// inv = investment in this round		$4.00
+// tv = total valuation		$18.00
+// sd = volatility	σ=	90.00%
+// r = interest rate	r=	5.00%
+// H = expected holding period	H=	6
+// ci = carried interest		20%
+// lfp = lifetime fee percentage
+// debt = debt		$0.00
 const initialValues = {
-    S: 100.00,
-    r: 5.00,
-    sigma:	90.00,
-    X: 100,
-    T: 6,
-    n: 1,
-    m: 0.1,
-    y: 1
+    inv: 12,
+    tv: 50,
+    vol: 90,
+    r: 5,
+    H: 4,
+    lfp: 25
 }
-export default function Warrant(){
-    const [variables, setVariables] = useState({...initialValues})
 
+const options = [
+    {
+        securityType: SecurityType.CallOption,
+        strike: 0,
+        fraction: 1
+    }, {
+        securityType: SecurityType.CallOption,
+        strike: 10,
+        fraction: -1
+    }, {
+        securityType: SecurityType.CallOption,
+        strike: 16,
+        fraction: 1/4
+    }, {
+        securityType: SecurityType.CallOption,
+        strike: 36,
+        fraction: -1/20
+    }, {
+        securityType: SecurityType.BinaryCallOption,
+        strike: 130,
+        fraction: 1.2
+    }
+]
+
+export default function GenericPayoff(){
+    const [variables, setVariables] = useState({...initialValues})
+    const [result, setResult] = useState(undefined)
     const [visible, setVisible] = useState(false)
 
     const onFinish = (values) => {
+        const {tv, H, r, vol, lfp, inv} = values
+        const lpOptions = options
         setVariables({...values})
+        setResult( postTransactionValuation(lpOptions, tv, H, r/100., vol/100., lfp/100., inv))
         setVisible(true)
         console.log('Form.onFinish():', values);
+        console.log(postTransactionValuation(lpOptions, tv, H, r/100., vol/100., lfp/100., inv))
     };
     const onFinishFailed = (errorInfo) => {
         setVisible(false)
@@ -37,20 +75,81 @@ export default function Warrant(){
 
     const thisIsARequiredField = "This is a required field."
 
+
+    const columns = [
+        {
+            title: '',
+            dataIndex: 'name',
+            render: (_, value) => {
+                return (
+                    <span>
+                    {value.child? <><DashOutlined/><DashOutlined/></> : <></>}
+                        {
+                            value.tags &&
+                            value.tags.map((tag) =>
+                                <Tag color="blue" key={tag}>
+                                    {tag.toUpperCase()}
+                                </Tag>)
+                        }
+                        <span>{value.name}</span>
+                </span>)}
+        },
+        {
+            title: '',
+            dataIndex: 'value',
+            align: "right"
+        }
+    ];
+
+    const data0 = result ? [
+        {
+            key: '1',
+            name: 'LPV',
+            value: result.LPV.toFixed(3),
+            child: false
+        },
+    ] : [];
+
+    const data1 = result ? [
+        {
+            key: '1',
+            name: 'Post-Tx V',
+            value: result.transactionValuation.postTransactionValuation.toFixed(3),
+            tags: ['Post-Transaction Valuation'],
+            child: false
+        }, {
+            key: '2',
+            name: 'LPV',
+            value: result.transactionValuation.postTransactionLPV.toFixed(3),
+            tags: ['Post-Transaction Valuation'],
+            child: true
+        }
+    ] : [];
+
+
+    const data2 = result ? [{
+            key: '5',
+            name: 'LPV',
+            value: result.transactionValuation.postTransactionLPV.toFixed(3),
+            tags: ['Post-Transaction Valuation'],
+            child: true
+        },
+    ] : [];
+
     return  (
         <>
-        <Space direction="vertical">
-            <Card title="Warrant">
+        <Space direction="vertical" >
+            <Card title="Generic Payoff" >
                 <Form
                     name="basic"
                     layout={"horizontal"}
-                    labelAlign={"left"}
                     labelCol={{
                         span: 16,
                     }}
                     wrapperCol={{
                         span: 24,
                     }}
+                    labelAlign={"left"}
                     // style={{
                     //     // maxWidth: 600,
                     // }}
@@ -60,10 +159,11 @@ export default function Warrant(){
                     autoComplete="on"
                     initialValues = {variables}
                     requiredMark={false}
+
                 >
                     <Form.Item
-                        label="Stock Price (S)"
-                        name="S"
+                        label="Investment in This Round"
+                        name="inv"
                         rules={[
                             {
                                 required: true,
@@ -77,8 +177,8 @@ export default function Warrant(){
                         <InputNumber  size={"middle"} style={{width: "100%"}} addonBefore="$"/>
                     </Form.Item>
                     <Form.Item
-                        label="Strike Price (X)"
-                        name="X"
+                        label="Total Valuation"
+                        name="tv"
                         rules={[
                             {
                                 required: true,
@@ -91,10 +191,9 @@ export default function Warrant(){
                     >
                         <InputNumber  size={"middle"} style={{width: "100%"}} addonBefore="$"/>
                     </Form.Item>
-
                     <Form.Item
-                        label="Volatility (sigma)"
-                        name="sigma"
+                        label="Volatility"
+                        name="vol"
                         rules={[
                             {
                                 required: true,
@@ -124,8 +223,8 @@ export default function Warrant(){
                     </Form.Item>
 
                     <Form.Item
-                        label="Time to Expiration (T)"
-                        name="T"
+                        label="Time to Expiration, Expected Holding Period"
+                        name="H"
                         rules={[
                             {
                                 required: true,
@@ -138,54 +237,22 @@ export default function Warrant(){
                     >
                         <InputNumber  size={"middle"} style={{width: "100%"}} addonAfter="Years"/>
                     </Form.Item>
-
                     <Form.Item
-                        label="Outstanding Shares (n)"
-                        name="n"
+                        label="Lifetime Fee Percentage"
+                        name="lfp"
                         rules={[
                             {
                                 required: true,
                                 message: thisIsARequiredField,
                             },{
-                                pattern: regexPositiveNumber,
-                                message: "This is a positive number."
+                                pattern: regexZeroOrPositiveNumber,
+                                message: "This is a zero or positive number.",
                             }
                         ]}
                     >
-                        <InputNumber  size={"middle"} style={{width: "100%"}}/>
+                        <InputNumber  size={"middle"} style={{width: "100%"}} addonAfter="%"/>
                     </Form.Item>
 
-                    <Form.Item
-                        label="Warrants Issued (m)"
-                        name="m"
-                        rules={[
-                            {
-                                required: true,
-                                message: thisIsARequiredField,
-                            },{
-                                pattern: regexPositiveNumber,
-                                message: "This is a positive number."
-                            }
-                        ]}
-                    >
-                        <InputNumber  size={"middle"} style={{width: "100%"}}/>
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Conversion Ratio (y)"
-                        name="y"
-                        rules={[
-                            {
-                                required: true,
-                                message: thisIsARequiredField,
-                            },{
-                                pattern: regexPositiveNumber,
-                                message: "This is a positive number."
-                            }
-                        ]}
-                    >
-                        <InputNumber  size={"middle"} style={{width: "100%"}}/>
-                    </Form.Item>
                     <Form.Item
                         // wrapperCol={{
                         //     offset: 8,
@@ -200,16 +267,15 @@ export default function Warrant(){
             </Card>
 
             {visible &&
-            <Card bordered={false}>
-                <Statistic
-                    title="Warrant Value"
-                    value={warrant(variables.S, variables.X, variables.T, variables.r/100.0, variables.sigma/100.0,
-                    variables.m, variables.n, variables.y)}
-                    precision={3}
-                    prefix="$"
-                />
+            <Card bordered={false} title={"Valuation"}>
+                <Table columns={columns} dataSource={data0} size="small" pagination={false}/>
             </Card>
-            }
+            }            {visible &&
+            <Card bordered={false} title={"Post-Transaction Valuation"}>
+                <Table columns={columns} dataSource={data1} size="small" pagination={false}/>
+                <Divider/>
+                <Table columns={columns} dataSource={data2} size="small" pagination={false}/>
+            </Card>}
             <Space><p/></Space>
         </Space>
     <Space direction="vertical">

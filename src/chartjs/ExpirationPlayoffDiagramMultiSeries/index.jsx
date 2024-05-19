@@ -1,4 +1,5 @@
 import {Card, Space} from "antd";
+import React from "react";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
 import {addSeries, analyze} from "../../lib/series";
 import {LimitedPartnership, PvGpvLpv} from "../../lib/line/pv-gpv-lpv";

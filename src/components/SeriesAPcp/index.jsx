@@ -1,9 +1,10 @@
 import {Button, Card, Divider, Form, InputNumber, Space, Table, Tag} from "antd";
-import {useState} from "react";
+import React, {useState} from "react";
 import {DashOutlined} from "@ant-design/icons";
-import {seriesA_CP} from "../../lib/series-a-cp";
+import {seriesA_PCP} from "../../lib/series-a-pcp";
 import {LimitedPartnership, PvGpvLpv} from "../../lib/line/pv-gpv-lpv";
 import {ExpirationPayoffDiagramPvGpvLpv} from "../../chartjs/ExpirationPayoffDiagramPvGpvLpv";
+
 
 // so = pre-money shares outstanding		11
 // sp = new common shares purchased		5
@@ -16,11 +17,11 @@ import {ExpirationPayoffDiagramPvGpvLpv} from "../../chartjs/ExpirationPayoffDia
 // lfp = lifetime fee percentage
 // debt = debt		$0.00
 const initialValues = {
-    so: 11,
+    so: 10,
     sp: 5,
     cr: 1,
     inv: 6,
-    fvPref: 10,
+    fvPref: 6,
     liqPref: 1,
     simDiv: 0, //%
     comDiv: 0, //%
@@ -30,17 +31,18 @@ const initialValues = {
     H: 5,
     ci: 20,//%
     lfp: 25,//%
-    debt: 0
+    debt: 0,
+    threshold: 90
 }
-export default function SeriesACp(){
+export default function SeriesAPcp(){
     const [variables, setVariables] = useState({...initialValues})
     const [result, setResult] = useState(undefined)
     const [visible, setVisible] = useState(false)
 
     const onFinish = (values) => {
-        const {so, sp, cr, inv, fvPref, liqPref, simDiv, comDiv, tv, vol, r, H, ci, lfp, debt} = values
+        const {so, sp, cr, inv, fvPref, liqPref, simDiv, comDiv, tv, vol, r, H, ci, lfp, debt, threshold} = values
         setVariables({...values})
-        setResult(seriesA_CP(so, sp, cr, inv, fvPref, liqPref, simDiv/100., comDiv/100., tv, vol/100., r/100., H, ci/100., lfp/100., debt))
+        setResult(seriesA_PCP(so, sp, cr, inv, fvPref, liqPref, simDiv/100., comDiv/100., tv, vol/100., r/100., H, ci/100., lfp/100., debt, threshold))
         setVisible(true)
         console.log('Form.onFinish():', values);    };
     const onFinishFailed = (errorInfo) => {
@@ -152,18 +154,21 @@ export default function SeriesACp(){
             child: true
         },
     ] : [];
-
     // compute PV, GPV, and LPV
-    const {so, sp, cr, inv, fvPref, liqPref, simDiv, comDiv, tv, vol, r, H, ci, lfp, debt} = variables
-    const conversionFirmValue = fvPref / (sp*cr) * (so+sp*cr)
-    const xs = [0, fvPref*(1+liqPref), conversionFirmValue]
-    const ys = [0, undefined, undefined]
-    const slopes = [1, 0, (sp*cr)/(so+sp*cr)]
+    const {so, sp, cr, inv, fvPref, liqPref, simDiv, comDiv, tv, vol, r, H, ci, lfp, debt, threshold} = variables
+    const fraction = (sp*cr)/(so+sp*cr)
+    const fvPrefActual = fvPref*(1+liqPref)
+    const drop = fvPrefActual*(1 - fraction)
+    const yThreshold = fvPrefActual + fraction*(threshold - fvPrefActual) - drop
+    const xs = [0, fvPref*(1+liqPref), threshold]
+    const ys = [0, undefined, yThreshold]
+    const slopes = [1, fraction, fraction]
     const pvGpvLpv = new PvGpvLpv(new LimitedPartnership(undefined, ci/100., lfp/100.), inv, xs, ys, slopes)
+
     return  (
         <>
-        <Space direction="vertical"  >
-            <Card title="Series A Convertible Preferred Stock">
+        <Space direction="vertical" >
+            <Card title="Series A Participating Convertible Preferred Stock" >
                 <Form
                     name="basic"
                     layout={"horizontal"}
@@ -412,6 +417,21 @@ export default function SeriesACp(){
                         <InputNumber  size={"middle"} style={{width: "100%"}} addonBefore="$"/>
                     </Form.Item>
                     <Form.Item
+                        label="Threshold"
+                        name="threshold"
+                        rules={[
+                            {
+                                required: true,
+                                message: thisIsARequiredField,
+                            },{
+                                pattern: regexZeroOrPositiveNumber,
+                                message: "This is zero or a positive number."
+                            }
+                        ]}
+                    >
+                        <InputNumber  size={"middle"} style={{width: "100%"}} addonBefore="$"/>
+                    </Form.Item>
+                    <Form.Item
                         // wrapperCol={{
                         //     offset: 8,
                         //     span: 16,
@@ -423,12 +443,12 @@ export default function SeriesACp(){
                     </Form.Item>
                 </Form>
             </Card>
+
             {visible &&
             <Card bordered={false} title={"Valuation"}>
                 <Table columns={columns} dataSource={data0} size="small" pagination={false}/>
             </Card>
-            }
-            {visible &&
+            }            {visible &&
             <Card bordered={false} title={"Post-Transaction Valuation"}>
                 <Table columns={columns} dataSource={data1} size="small" pagination={false}/>
                 <Divider/>
@@ -437,20 +457,20 @@ export default function SeriesACp(){
             <Space><p/></Space>
         </Space>
 
-        <Space direction="vertical">
-            {visible && <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv} result={result}/>}
-            {visible &&
-                <Card bordered={false} title={"Expiration Payoff Diagram"} >
-                    <p>Please note that the following expiration payoff diagrams assume that there are no dividends. If there are dividends, they should be taken into consideration in order to get an accurate representation of the potential payoff at expiration.</p>
-                    <p>The diagrams may occasionally have display issues when viewed vertically on mobile devices. If you experience this problem, please rotate your phone to a horizontal orientation and refresh the webpage.</p>
-                </Card>
-            }
-            {visible &&
-                <Card bordered={false} title={"APPRECIATION"} >
-                    <p>Our appreciation goes to Professor Klaas P. Baks of Emory University's Goizueta Business School, as this tool was developed based on his Deal Valuation worksheet and inspired by his course "Venture Capital and Private Equity." Dr. Baks is an esteemed professor in the Practice of Finance and the Executive Director and Co-Founder of the Emory Center for Alternative Investments, specializing in alternative investments, entrepreneurial finance, and investment management. He is an award-winning educator with numerous publications, recognized for his engaging and dynamic speaking style.</p>
-                </Card>
-            }
-        </Space>
-        </>
+    <Space direction="vertical">
+        {visible && <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv} result={result}/>}
+        {visible &&
+            <Card bordered={false} title={"Expiration Payoff Diagram"} >
+                <p>Please note that the following expiration payoff diagrams assume that there are no dividends. If there are dividends, they should be taken into consideration in order to get an accurate representation of the potential payoff at expiration.</p>
+                <p>The diagrams may occasionally have display issues when viewed vertically on mobile devices. If you experience this problem, please rotate your phone to a horizontal orientation and refresh the webpage.</p>
+            </Card>
+        }
+        {visible &&
+            <Card bordered={false} title={"APPRECIATION"} >
+                <p>Our appreciation goes to Professor Klaas P. Baks of Emory University's Goizueta Business School, as this tool was developed based on his Deal Valuation worksheet and inspired by his course "Venture Capital and Private Equity." Dr. Baks is an esteemed professor in the Practice of Finance and the Executive Director and Co-Founder of the Emory Center for Alternative Investments, specializing in alternative investments, entrepreneurial finance, and investment management. He is an award-winning educator with numerous publications, recognized for his engaging and dynamic speaking style.</p>
+            </Card>
+        }
+    </Space>
+</>
     );
 }

@@ -1,3 +1,4 @@
+import React from "react";
 import Home from "../pages/Home";
 import ExpirationPlayoffDiagramMultiSeries from "../chartjs/ExpirationPlayoffDiagramMultiSeries";
 import {Navigate, Outlet} from "react-router-dom";

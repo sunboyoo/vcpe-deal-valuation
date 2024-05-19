@@ -1,3 +1,5 @@
+
+import React from "react";
 import * as ChartJSUtils from "../chartjs/ExpirationPayoffDiagram/chartjs-utils";
 import {Tag} from "antd";
 

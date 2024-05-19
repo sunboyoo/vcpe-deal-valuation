@@ -10,7 +10,7 @@ import * as ChartJSUtils from "../ExpirationPayoffDiagram/chartjs-utils";
 // This is globally registering
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function ({csStack}){
+export default function App({csStack}){
 
     const data = {
         labels: [],

@@ -1,3 +1,5 @@
+
+import React from "react";
 import {Card, Space} from "antd";
 import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
 import {callOptionsText, segmentedLineToOption} from "../../lib/line/line-option-converter";

@@ -1,9 +1,10 @@
+
+import React from "react";
 import {
     BarChartOutlined,
     DotChartOutlined,
     LineChartOutlined,
 } from '@ant-design/icons';
-
 
 export const route = {
         path: '/',

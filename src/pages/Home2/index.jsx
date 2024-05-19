@@ -1,9 +1,7 @@
 import {Layout, Space, Spin} from "antd";
-import {lazy, Suspense} from "react";
+import React, {lazy, Suspense} from "react";
 import {Content, Header} from "antd/es/layout/layout";
 import {Outlet, useNavigate} from "react-router-dom";
-import {PageContainer, ProLayout} from "@ant-design/pro-components";
-import {defaultSettings} from "../../models/setting";
 
 const Navigation = lazy(() => import("../Navigation"));
 
@@ -16,9 +14,8 @@ export default function () {
         navigate("/"+key)
     }
     return (
-        <ProLayout justify="center" align="middle">
-            {/*<Space direction="vertical" >*/}
-            <PageContainer>
+        <Layout justify="center" align="middle">
+            <Space direction="vertical" >
                 <Header>
                     {/* Suspense贴近包裹懒加载对象,那么fallback的动画会出现在懒加载对象应该出现的位置 */}
                     <Suspense fallback={<Spin/>}>
@@ -32,8 +29,7 @@ export default function () {
                         <Outlet/>
                     </Suspense>
                 </Content>
-            </PageContainer>
-            {/*</Space>*/}
-        </ProLayout>
+            </Space>
+        </Layout>
     )
 }

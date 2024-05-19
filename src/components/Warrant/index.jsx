@@ -1,15 +1,18 @@
 import {Button, Card, Form, InputNumber, Space, Statistic} from "antd";
-import {Call_Eur, Call_Eur_RE, Put_Eur} from "../../lib/option";
-import {useState} from "react";
+import {Warrant as warrant} from "../../lib/warrant";
+import React, {useState} from "react";
 
 const initialValues = {
     S: 100.00,
     r: 5.00,
     sigma:	90.00,
     X: 100,
-    T: 5
+    T: 6,
+    n: 1,
+    m: 0.1,
+    y: 1
 }
-export default function EuropeanCallPutOption(){
+export default function Warrant(){
     const [variables, setVariables] = useState({...initialValues})
 
     const [visible, setVisible] = useState(false)
@@ -37,17 +40,17 @@ export default function EuropeanCallPutOption(){
     return  (
         <>
         <Space direction="vertical">
-            <Card title="European Call & Put Option" >
+            <Card title="Warrant">
                 <Form
                     name="basic"
                     layout={"horizontal"}
+                    labelAlign={"left"}
                     labelCol={{
                         span: 16,
                     }}
                     wrapperCol={{
                         span: 24,
                     }}
-                    labelAlign={"left"}
                     // style={{
                     //     // maxWidth: 600,
                     // }}
@@ -121,7 +124,7 @@ export default function EuropeanCallPutOption(){
                     </Form.Item>
 
                     <Form.Item
-                        label="Time to Expiration, Expected Holding Period (T)"
+                        label="Time to Expiration (T)"
                         name="T"
                         rules={[
                             {
@@ -136,6 +139,53 @@ export default function EuropeanCallPutOption(){
                         <InputNumber  size={"middle"} style={{width: "100%"}} addonAfter="Years"/>
                     </Form.Item>
 
+                    <Form.Item
+                        label="Outstanding Shares (n)"
+                        name="n"
+                        rules={[
+                            {
+                                required: true,
+                                message: thisIsARequiredField,
+                            },{
+                                pattern: regexPositiveNumber,
+                                message: "This is a positive number."
+                            }
+                        ]}
+                    >
+                        <InputNumber  size={"middle"} style={{width: "100%"}}/>
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Warrants Issued (m)"
+                        name="m"
+                        rules={[
+                            {
+                                required: true,
+                                message: thisIsARequiredField,
+                            },{
+                                pattern: regexPositiveNumber,
+                                message: "This is a positive number."
+                            }
+                        ]}
+                    >
+                        <InputNumber  size={"middle"} style={{width: "100%"}}/>
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Conversion Ratio (y)"
+                        name="y"
+                        rules={[
+                            {
+                                required: true,
+                                message: thisIsARequiredField,
+                            },{
+                                pattern: regexPositiveNumber,
+                                message: "This is a positive number."
+                            }
+                        ]}
+                    >
+                        <InputNumber  size={"middle"} style={{width: "100%"}}/>
+                    </Form.Item>
                     <Form.Item
                         // wrapperCol={{
                         //     offset: 8,
@@ -152,20 +202,9 @@ export default function EuropeanCallPutOption(){
             {visible &&
             <Card bordered={false}>
                 <Statistic
-                    title="European Call Option Value"
-                    value={Call_Eur(variables.S, variables.X, variables.T, variables.r/100.0, variables.sigma/100.0)}
-                    precision={3}
-                    prefix="$"
-                />
-                <Statistic
-                    title="European Put Option Value"
-                    value={Put_Eur(variables.S, variables.X, variables.T, variables.r/100.0, variables.sigma/100.0)}
-                    precision={3}
-                    prefix="$"
-                />
-                <Statistic
-                    title="Random Expiration European Call Option Value"
-                    value={Call_Eur_RE(variables.S, variables.X, variables.T, variables.r/100.0, variables.sigma/100.0)}
+                    title="Warrant Value"
+                    value={warrant(variables.S, variables.X, variables.T, variables.r/100.0, variables.sigma/100.0,
+                    variables.m, variables.n, variables.y)}
                     precision={3}
                     prefix="$"
                 />
