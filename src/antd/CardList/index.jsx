@@ -103,7 +103,7 @@ export default function ({initialValue, onChange}) {
 
                         <Card size={'small'}>
                             <Card.Meta
-                                avatar={<Tag bordered={false} color="success">{"Investment Sequence "+ item.id}</Tag>}
+                                avatar={<Tag bordered={false} color="#2db7f5">{"Investment Sequence "+ item.id}</Tag>}
                                 description={
                                     <>
                                         <Descriptions size={'small'}>
@@ -212,7 +212,7 @@ export default function ({initialValue, onChange}) {
                     >
                         <ProFormText
                             name="id"
-                            label={<Tag bordered={false} color="success">Investment Sequence</Tag>}
+                            label={<Tag bordered={false} color="#2db7f5">Investment Sequence</Tag>}
                             tooltip="Investment Sequence can not be changed."
                             placeholder={undefined}
                             disabled
@@ -333,7 +333,7 @@ export default function ({initialValue, onChange}) {
                     >
                         <ProFormText
                             name="id"
-                            label={<Tag bordered={false} color="success">Investment Sequence</Tag>}
+                            label={<Tag bordered={false} color="#2db7f5">Investment Sequence</Tag>}
                             tooltip="Investment Sequence ID can not be changed."
                             placeholder={undefined}
                             disabled
@@ -445,12 +445,12 @@ export default function ({initialValue, onChange}) {
                                     ]}
                                 >
                                     <Card.Meta
-                                    // avatar={<Tag bordered={false} color="success">{"Investment Sequence "+ item.id}</Tag>}
+                                    // avatar={<Tag bordered={false} color="#2db7f5">{"Investment Sequence "+ item.id}</Tag>}
                                     description={
                                         <>
                                             <Descriptions size={'small'}>
                                                 <Descriptions.Item span={3}>
-                                                    <Tag bordered={false} color="success">{"Investment Sequence "+ item.id}</Tag>
+                                                    <Tag bordered={false} color="#2db7f5">{"Investment Sequence "+ item.id}</Tag>
                                                 </Descriptions.Item>
                                                 <Descriptions.Item span={3}>
                                                     <h1>{item.seriesName}</h1>

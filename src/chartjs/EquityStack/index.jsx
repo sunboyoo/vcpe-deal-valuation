@@ -14,22 +14,22 @@ const baseStyle = {
 }
 
 const types = {
-    [SECURITY_TYPES.CS.code]: {
+    [SECURITY_TYPES.CS]: {
         code: 'CS',
         text: 'CS',
         backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(4), 0.4),
     },
-    [SECURITY_TYPES.CP_CS.code]: {
+    [SECURITY_TYPES.CP_CS]: {
         code: 'CP_CS',
         text: 'CP->CS',
         backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(4), 0.6),
     },
-    [SECURITY_TYPES.RP.code]: {
+    [SECURITY_TYPES.RP]: {
         code: 'RP',
         text: 'RP',
         backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.5),
     },
-    [SECURITY_TYPES.CP_RV.code]: {
+    [SECURITY_TYPES.CP_RV]: {
         code: 'CP_RV',
         text: 'CP->Redeem',
         backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.7),

@@ -1,63 +1,67 @@
-
 import React from "react";
 import * as ChartJSUtils from "../chartjs/ExpirationPayoffDiagram/chartjs-utils";
 import {Tag} from "antd";
 
 export const SECURITY_TYPES = {
+    RP: 'RP',
+    CP_RV: 'CP_RV',
+    CP: 'CP',
+    CS: 'CS',
+    CP_CS: 'CP_CS',
+}
+
+export const SECURITY_NAMES = {
+    RP: 'Redeemable Preferred',
+    CP_RV: 'Redeemable Value of Convertible Preferred',
+    CP: 'Convertible Preferred',
+    CS: 'Common Stock',
+    CP_CS: 'Common Stock Converted From Convertible Preferred',
+}
+
+export const SECURITY_LIQUIDATION_SEQUENCE = {
+    RP: 0,
+    CP_RV: 0,
+    CS: 1,
+    CP_CS:1,
+}
+
+export const SECURITY_TYPE_COLORS = {
     CS: {
         code: 'CS',
-        text: 'Common Stock',
-    },
-    RP: {
-        code: 'RP',
-        text: 'Redeemable Preferred',
-    },
-    CP: {
-        code: 'CP',
-        text: 'Convertible Preferred',
+        text: 'CS',
+        backgroundColor: '#1f77b4',
+        // backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(4), 0.4),
     },
     CP_CS: {
         code: 'CP_CS',
-        text: 'Common Stock Converted From Convertible Preferred',
+        text: 'CP->CS',
+        backgroundColor: '#ff7f0e',
+        // backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(4), 0.6),
+    },
+    RP: {
+        code: 'RP',
+        text: 'RP',
+        backgroundColor: '#2ca02c',
+        // backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.5),
     },
     CP_RV: {
         code: 'CP_RV',
-        text: 'Redeemable Value of Convertible Preferred',
-    },
-};
-
-export const SECURITY_TYPE_COLORS = {
-    [SECURITY_TYPES.CS.code]: {
-        code: 'CS',
-        text: 'CS',
-        backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(4), 0.4),
-    },
-    [SECURITY_TYPES.CP_CS.code]: {
-        code: 'CP_CS',
-        text: 'CP->CS',
-        backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(4), 0.6),
-    },
-    [SECURITY_TYPES.RP.code]: {
-        code: 'RP',
-        text: 'RP',
-        backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.5),
-    },
-    [SECURITY_TYPES.CP_RV.code]: {
-        code: 'CP_RV',
         text: 'CP->Redeem',
-        backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.7),
+        backgroundColor: '#ff7f0e',
+        // backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(0), 0.7),
     },
-    [SECURITY_TYPES.CP.code]: {
+    CP: {
         code: 'CP',
         text: 'CP',
-        backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(1), 0.7),
+        backgroundColor: '#ff7f0e',
+        // backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(1), 0.7),
     },
 }
 
 export const SECURITY_TYPE_TAGS = {
-    [SECURITY_TYPES.CS.code]: <Tag color={SECURITY_TYPE_COLORS.CS.backgroundColor}>CS</Tag>,
-    [SECURITY_TYPES.CP_CS.code]: <Tag color={SECURITY_TYPE_COLORS.CP_CS.backgroundColor}>CP -> CS</Tag>,
-    [SECURITY_TYPES.RP.code]: <Tag color={SECURITY_TYPE_COLORS.RP.backgroundColor}>RP</Tag>,
-    [SECURITY_TYPES.CP_RV.code]: <Tag color={SECURITY_TYPE_COLORS.CP_RV.backgroundColor}>CP -> Redeem</Tag>,
-    [SECURITY_TYPES.CP.code]: <Tag color={SECURITY_TYPE_COLORS.CP.backgroundColor}>CP</Tag>,
+    CS: <Tag color={SECURITY_TYPE_COLORS.CS.backgroundColor}>CS</Tag>,
+    CP_CS: <Tag color={SECURITY_TYPE_COLORS.CP_CS.backgroundColor}>CP -> CS</Tag>,
+    RP: <Tag color={SECURITY_TYPE_COLORS.RP.backgroundColor}>RP</Tag>,
+    CP_RV: <Tag color={SECURITY_TYPE_COLORS.CP_RV.backgroundColor}>CP -> Redeem</Tag>,
+    CP: <Tag color={SECURITY_TYPE_COLORS.CP.backgroundColor}>CP</Tag>,
 }

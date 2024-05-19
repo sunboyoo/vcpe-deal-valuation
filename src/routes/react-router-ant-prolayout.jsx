@@ -1,5 +1,7 @@
 import React from "react";
 import {Link} from "react-router-dom";
+
+const DEBUG = false;
 /*
 * ProLayout 配合 React Router
 * 配置步骤
@@ -19,7 +21,9 @@ export function reactRouterNavigateOnClickMenu(navigate){
             return (
                 <div
                     onClick={()=>{
-                        console.log('useNavigate()', item.path)
+                        if (DEBUG) {
+                            console.log('useNavigate()', item.path)
+                        }
                         navigate(item.path)
                     }}
                 >
@@ -50,7 +54,9 @@ export function reactRouterLinkMenu(){
 * */
 export function breadcrumbRender(basename){
     return ((routers = []) => {
-            console.log('breadcrumbRender', routers)
+            if (DEBUG){
+                console.log('breadcrumbRender', routers)
+            }
             return routers.map(router => ({
                 ...router,
                 linkPath: basename + router.linkPath

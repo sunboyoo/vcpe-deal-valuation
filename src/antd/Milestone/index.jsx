@@ -142,7 +142,7 @@ const App = ({conversionSteps, equityStacks, csStacks, onChange}) => {
                         padding: '10px',
                         boxShadow: current === index ? '0px 0px 10px rgba(0, 0, 0, 0.5)' : 'none',
                     }}>
-                        <EquityStack data={[...equityStack]}/>
+                        {/*<EquityStack data={[...equityStack]}/>*/}
                         <CommonStockDoughnut csStack={[...csStacks[index]]}/>
                     </div>
                 ))

@@ -225,13 +225,22 @@ function setCpConversionFirmValues(conversionScenarios){
 }
 
 
-function setRvpsAndConversions(seriesArray){
-    setRvps(seriesArray);
-    assignCpConversionOrder(seriesArray);
-    const conversionScenarios = getConversionScenarios(seriesArray);
-    setCpConversionFirmValues(conversionScenarios)
+/*
+* CP conversion firm values
+* */
+function getCpConversionFirmValues(seriesArray){
+    const conversionFirmValues = []
+    seriesArray.forEach((series) => {
+        if (series.cpConvertibleCs > 0 && series.cpConversionFirmValue > 0){
+            // multiple CPs may have the same ConversionFirmValue, do not duplicate
+            if (conversionFirmValues.indexOf(series.cpConversionFirmValue) === -1){
+                conversionFirmValues.push(series.cpConversionFirmValue)
+            }
+        }
+    })
+    conversionFirmValues.sort((a,b) => (a-b))
+    return conversionFirmValues;
 }
-
 /**
  * KeyFirmValues includes
  * (1) values for RP, CP redemptions
@@ -261,16 +270,8 @@ function getKeyFirmValues(seriesArray, tailScale=0.1){
     }
 
     // (2) During conversions, find conversion conditions
-    const conversionFirmValues = []
-    seriesArray.forEach((series) => {
-        if (series.cpConvertibleCs > 0 && series.cpConversionFirmValue > 0){
-            // multiple CPs may have the same ConversionFirmValue, do not duplicate
-            if (conversionFirmValues.indexOf(series.cpConversionFirmValue) === -1){
-                conversionFirmValues.push(series.cpConversionFirmValue)
-            }
-        }
-    })
-    conversionFirmValues.sort((a,b) => (a-b))
+    const conversionFirmValues = getCpConversionFirmValues(seriesArray);
+    console.log('conversionFirmValues', conversionFirmValues)
     conversionFirmValues.forEach((value) => {
         firmValues.push(value);
     })
@@ -430,7 +431,7 @@ function snapshotsToSegmentedLines(snapshotsBySeries){
 }
 
 
-export function getEquityStack(conversionScenario){
+export function getEquityStack(conversionScenario, conversionFirmValue){
     const equityStack = [];
 
     // (1) RP and CP_RV, sorted by Series Index
@@ -438,17 +439,21 @@ export function getEquityStack(conversionScenario){
         const shareholder = conversionScenario[i];
         if (shareholder.rpRv > 0){
             equityStack.push({
-                type: SECURITY_TYPES.RP.code,
+                type: SECURITY_TYPES.RP,
                 value: shareholder.rpRv,
                 seriesName: shareholder.series.seriesName,
+                seriesId: shareholder.series.id,
+                firmValue: conversionFirmValue,
             })
         }
 
         if (shareholder.cpRv > 0){
             equityStack.push({
-                type: SECURITY_TYPES.CP_RV.code,
+                type: SECURITY_TYPES.CP_RV,
                 value: shareholder.cpRv,
                 seriesName: shareholder.series.seriesName,
+                seriesId: shareholder.series.id,
+                firmValue: conversionFirmValue,
             })
         }
     }
@@ -458,17 +463,21 @@ export function getEquityStack(conversionScenario){
         const shareholder = conversionScenario[i];
         if (shareholder.cpCs > 0){
             equityStack.push({
-                type: SECURITY_TYPES.CP_CS.code,
+                type: SECURITY_TYPES.CP_CS,
                 value: shareholder.cpCs,
                 seriesName: shareholder.series.seriesName,
+                seriesId: shareholder.series.id,
+                firmValue: conversionFirmValue,
             })
         }
 
         if (shareholder.cs > 0){
             equityStack.push({
-                type: SECURITY_TYPES.CS.code,
+                type: SECURITY_TYPES.CS,
                 value: shareholder.cs,
                 seriesName: shareholder.series.seriesName,
+                seriesId: shareholder.series.id,
+                firmValue: conversionFirmValue,
             })
         }
     }
@@ -476,10 +485,10 @@ export function getEquityStack(conversionScenario){
     return equityStack;
 }
 
-export function getEquityStacks(conversionScenarios){
+export function getEquityStacks(conversionScenarios, conversionFirmValues){
     const equityStacks = [];
-    conversionScenarios.forEach((scenario) => {
-        equityStacks.push(getEquityStack(scenario));
+    conversionScenarios.forEach((scenario, i) => {
+        equityStacks.push(getEquityStack(scenario, [0, ...conversionFirmValues][i]));
     })
     return equityStacks
 }
@@ -489,7 +498,7 @@ export function getCsStacks(equityStacks){
     equityStacks.forEach((equityStack) => {
         const csStack = []
         equityStack.forEach((equity) => {
-            if (equity.type === SECURITY_TYPES.CS.code || equity.type === SECURITY_TYPES.CP_CS.code){
+            if (equity.type === SECURITY_TYPES.CS || equity.type === SECURITY_TYPES.CP_CS){
                 csStack.push({...equity})
             }
         })
@@ -519,19 +528,22 @@ export function analyze(seriesArray){
     setRvps(seriesArray);
     assignCpConversionOrder(seriesArray);
     const conversionScenarios = getConversionScenarios(seriesArray);
-    console.log('conversionScenarios', conversionScenarios)
     setCpConversionFirmValues(conversionScenarios);
-    console.log("setCpConversionFirmValues", seriesArray)
     const firmValues = getKeyFirmValues(seriesArray)
     const scenariosAtKeyFirmValues = getSnapshotsAtFirmValues(firmValues, seriesArray)
     const scenariosBySeries = organizeSnapshotsBySeries(scenariosAtKeyFirmValues, seriesArray);
     const lines = snapshotsToSegmentedLines(scenariosBySeries)
 
-    const equityStacks = getEquityStacks(conversionScenarios)
+
+    const conversionFirmValues = getCpConversionFirmValues(seriesArray)
+    const equityStacks = getEquityStacks(conversionScenarios, conversionFirmValues)
     const csStacks = getCsStacks(equityStacks);
     const conversionSteps = getConversionSteps(seriesArray)
 
     console.log("lines", lines)
+    console.log("equityStacks",  equityStacks)
+    console.log("csStacks",  csStacks)
+    console.log("conversionSteps", conversionSteps)
     return {lines, equityStacks, csStacks, conversionSteps, processedSeriesArray: seriesArray}
 }
 

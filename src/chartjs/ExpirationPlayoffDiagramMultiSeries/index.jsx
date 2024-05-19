@@ -10,6 +10,10 @@ import Milestone from "../../antd/Milestone";
 import {useState, useEffect} from "react";
 import CardList from "../../antd/CardList";
 import {SECURITY_TYPE_TAGS} from "../../lib/constants";
+import Sankey from "../../echarts/Sankey";
+import SankeyDiagramInstructions from "./sankey-desc";
+import SeriesListDescription from "./series-list-desc";
+
 
 const initialSeriesValue = [{
     id: 0,
@@ -122,26 +126,27 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
     return (
         <>
             <Space direction="vertical">
+
                 <Card>
                     <h1>The Equity Securities held by Founders and Series Investors</h1>
-                    <p>{ SECURITY_TYPE_TAGS.CS} Common Stock</p>
-                    <p>{SECURITY_TYPE_TAGS.RP} Redeemable Preferred</p>
-                    <p>{SECURITY_TYPE_TAGS.CP} Convertible Preferred</p>
-                    <p>{SECURITY_TYPE_TAGS.CP_CS} Common Stock that Convertible Preferred can be converted into</p>
-                    <p>{SECURITY_TYPE_TAGS.CP_RV} Redeemable Value of Convertible Preferred</p>
-                    <p>In the event of a company exit or liquidation, the order in which investors are paid back is determined by the investment agreement. This order can prioritize different series of investors based on the terms agreed upon. A common structure prioritizes later series investors first.</p>
-                    <p>For example, in the event of an exit or liquidation, usually the Series E investors are redeemed first, followed by Series D, then Series C, then Series B, and finally Series A, as specified in the investment agreement.</p>
+                    <CardList
+                        initialValue={seriesValue}
+                        onChange={(newValue) => {
+                            console.log('onChange', newValue);
+                            setSeriesValue([...newValue]);
+                        }}
+                    ></CardList>
+                    <SeriesListDescription />
                 </Card>
-                <CardList
-                    initialValue={seriesValue}
-                    onChange={(newValue) => {
-                        console.log('onChange', newValue);
-                        setSeriesValue([...newValue]);
-                    }}
-                ></CardList>
+
+
+                <Card title='The Conversions of Convertible Preferred (CP)'>
+                    <Sankey equityStacks={equityStacks}/>
+                    <SankeyDiagramInstructions/>
+                </Card>
 
                 {seriesValue && seriesValue.length > 0 && (
-                    <Card title="The Conversions of Convertible Preferred Shares">
+                    <Card title="The Conversions of Convertible Preferred (CP)">
                         <Milestone
                             conversionSteps={conversionSteps}
                             equityStacks={equityStacks}
