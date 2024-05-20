@@ -7,13 +7,11 @@ import {ExpirationPayoffDiagramPvGpvLpv} from "../ExpirationPayoffDiagramPvGpvLp
 import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
 import {callOptionsText, segmentedLineToOption} from "../../lib/line/line-option-converter";
 import Milestone from "../../antd/Milestone";
-import {useState, useEffect} from "react";
+import {useState} from "react";
 import CardList from "../../antd/CardList";
-import {SECURITY_TYPE_TAGS} from "../../lib/constants";
 import Sankey from "../../echarts/Sankey";
 import SankeyDiagramInstructions from "./sankey-desc";
 import SeriesListDescription from "./series-list-desc";
-
 
 const initialSeriesValue = [{
     id: 0,
@@ -58,22 +56,11 @@ const initialSeriesValue = [{
     cpOptionalValue: 0,
     rpRv: 15,
 },
-
 ]
 
 export default function ExpirationPlayoffDiagramMultiSeries() {
     const [seriesValue, setSeriesValue] = useState(initialSeriesValue);
-    const [datasets, setDatasets] = useState([]);
-    const [subtitleTexts, setSubtitleTexts] = useState([]);
-    const [labels, setLabels] = useState([]);
-    const [yMax, setYMax] = useState(0);
-    const [conversionSteps, setConversionSteps] = useState([]);
-    const [equityStacks, setEquityStacks] = useState([]);
-    const [csStacks, setCsStacks] = useState([]);
-    const [pvGpvLpv, setPvGpvLpv] = useState()
 
-    useEffect(() => {
-        if (seriesValue.length > 0) {
             const seriesArray = [];
             seriesValue.forEach((item) => {
                 const { id, seriesName, cs, cpConvertibleCs, cpOptionalValue, rpRv } = item;
@@ -84,13 +71,13 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
 
             const xs = [];
             const ys = [];
-            const newDatasets = [];
-            const newSubtitleTexts = [];
+            const datasets = [];
+            const subtitleTexts = [];
             lines.forEach((line, i) => {
                 const [x, y] = line.plotPointsWithTail();
                 xs.push(x);
                 ys.push(y);
-                newDatasets.push({
+                datasets.push({
                     label: i,
                     data: y,
                     borderColor: ChartJSUtils.namedColor(i),
@@ -100,33 +87,26 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                     tension: 0,
                     yAxisID: "y",
                 });
-                newSubtitleTexts.push(processedSeriesArray[i].seriesName + ": Partial Valuation = " + callOptionsText(segmentedLineToOption(line)));
+                subtitleTexts.push(processedSeriesArray[i].seriesName + ": Partial Valuation = " + callOptionsText(segmentedLineToOption(line)));
             });
 
             const x = xs[0];
             const yMax = Math.max(...(ys.flat()));
 
-            setDatasets(newDatasets);
-            setSubtitleTexts(newSubtitleTexts);
-            setLabels(x);
-            setYMax(yMax);
-            setConversionSteps(conversionSteps);
-            setEquityStacks(equityStacks);
-            setCsStacks(csStacks);
+            const labels = x;
 
+            let pvGpvLpv;
 
             if (lines.length > 0){
                 const [x5, y5, k5] = lines[lines.length-1].plotPoints()
-                setPvGpvLpv(new PvGpvLpv(new LimitedPartnership(undefined, 20/100., 25/100.), 5, x5, y5, k5))
+                pvGpvLpv = new PvGpvLpv(new LimitedPartnership(undefined, 20/100., 25/100.), 5, x5, y5, k5)
             }
-        }
-    }, [seriesValue]);
+
 
 
     return (
         <>
             <Space direction="vertical">
-
                 <Card>
                     <h1>The Equity Securities held by Founders and Series Investors</h1>
                     <CardList
@@ -140,20 +120,18 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                 </Card>
 
 
-                <Card title='The Conversions of Convertible Preferred (CP)'>
-                    <Sankey equityStacks={equityStacks}/>
-                    <SankeyDiagramInstructions/>
-                </Card>
-
-                {seriesValue && seriesValue.length > 0 && (
-                    <Card title="The Conversions of Convertible Preferred (CP)">
+                {seriesValue && seriesValue.length > 0 && equityStacks && equityStacks.length > 0 && (
+                    <Card>
                         <Milestone
                             conversionSteps={conversionSteps}
-                            equityStacks={equityStacks}
                             csStacks={csStacks}
                         />
-                    </Card>
-                )}
+                        <div style={{margin: '100px'}}/>
+                        <h2>Convertible Preferred (CP) Conversion Sankey Diagram</h2>
+                        <Sankey equityStacks={equityStacks}/>
+                        <SankeyDiagramInstructions/>
+                    </Card>)
+                }
                 {seriesValue && seriesValue.length > 0 && (
                     <Card>
                         <ExpirationPayoffDiagram3

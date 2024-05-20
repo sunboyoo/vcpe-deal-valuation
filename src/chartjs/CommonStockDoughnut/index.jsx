@@ -3,6 +3,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Doughnut } from 'react-chartjs-2';
 import React from "react";
 import * as ChartJSUtils from "../ExpirationPayoffDiagram/chartjs-utils";
+import {SECURITY_TYPE_COLORS, SECURITY_TYPES} from "../../lib/constants";
 
 //  the best practice is to specify plugins for individual chart components rather than
 //  globally registering them with ChartJS.register().
@@ -25,20 +26,22 @@ export default function App({csStack}){
     };
 
     csStack.forEach((cs, i) => {
-        data.labels.push(cs.seriesName + ': ' + cs.type);
+        data.labels.push(cs.seriesName + ': ' + (cs.type === SECURITY_TYPES.CP_CS ? 'CP->CS' : cs.type));
         data.datasets[0].data.push(cs.value);
-        data.datasets[0].backgroundColor.push(ChartJSUtils.transparentize(ChartJSUtils.namedColor(i), 0.6));
+        data.datasets[0].backgroundColor.push(SECURITY_TYPE_COLORS[cs.type]['backgroundColor']);
     })
 
     const options = {
-        responsive: false,
+        responsive: true,
+        maintainAspectRatio: false,
+
         plugins: {
             legend: {
                 position: 'bottom',
             },
             title: {
                 display: true,
-                text: 'Common Stock Ownership %'
+                text: 'Common Stock Ownership Distribution'
             },
             datalabels: {
                 formatter: (value, context) => {
@@ -48,15 +51,19 @@ export default function App({csStack}){
                 },
                 color: '#fff',
             }
-        }
+        },
+        width: 600, // Set your desired width
+        height: 600, // Set your desired height
     }
 
     return (
-        <Doughnut
+        <div style={{ width: '300px', height: '300px' }}> {/* Set your desired width and height */}
+            <Doughnut
             data={data}
             options={options}
             // specify plugins for individual chart components rather than globally registering them with ChartJS.register().
             plugins={[ChartDataLabels]}
-        />
+            />
+        </div>
     )
 }

@@ -43,6 +43,7 @@ export default function ({initialValue, onChange}) {
                         }
                         // await deleteById(item.id);**************************************************
                         const newValue = seriesInput.filter(e => e.id !== item.id).map(((e,i) => ({...e, id:i})))
+                        console.log('newValue', newValue)
                         setSeriesInput(newValue);
                         if (onChange) {
                             onChange(newValue);

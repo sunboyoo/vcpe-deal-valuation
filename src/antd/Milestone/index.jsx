@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Steps} from 'antd';
 import CommonStockDoughnut from "../../chartjs/CommonStockDoughnut";
-import EquityStack from "../../chartjs/EquityStack";
 
 function arrayToString(arr) {
     if (arr.length === 0) {
@@ -18,7 +17,7 @@ function arrayToString(arr) {
     }
 }
 
-const App = ({conversionSteps, equityStacks, csStacks, onChange}) => {
+const App = ({conversionSteps, csStacks, onChange}) => {
     const [current, setCurrent] = useState(0);
     const [intervalId, setIntervalId] = useState(null);
     const [showAutoProgress, setShowAutoProgress] = useState(true);  // State to toggle button visibility
@@ -31,12 +30,12 @@ const App = ({conversionSteps, equityStacks, csStacks, onChange}) => {
     };
 
     const items = [{
-        title: 'Firm Value = 0',
+        title: 'Firm Value = $0',
     }]
     conversionSteps.forEach((step) => {
         items.push({
-            title: `Firm Value = ${step.firmValue}`,
-            subTitle: `${arrayToString(step.seriesList)} CP converted into CS`,
+            title: `Firm Value = $${step.firmValue}`,
+            subTitle: `[${arrayToString(step.seriesList)}] CP converted into CS`,
         })
     })
 
@@ -92,27 +91,29 @@ const App = ({conversionSteps, equityStacks, csStacks, onChange}) => {
 
     return (
         <>
+            <h2>Impact of Convertible Preferred Stock Conversions on Equity Ownership</h2>
+
             <div style={{margin: 24, textAlign: 'center'}}>
                 <Button
                     type="default"
                     style={{margin: '8px'}}
                     onClick={() => prev()}
                     disabled={current <= 0 || intervalId !== null}>
-                    Previous
+                    Go to the previous scenario
                 </Button>
                 <Button
                     type="default"
                     style={{margin: '8px'}}
                     onClick={() => next()}
                     disabled={current >= items.length - 1 || intervalId !== null}>
-                    Next
+                    Go to the next scenario
                 </Button>
                 {showAutoProgress && (
                     <Button
                         type="primary"
                         style={{margin: '8px'}}
                         onClick={startAutoProgress}>
-                        Auto Progress
+                        Automatically progress through each scenario
                     </Button>
                 )}
                 {!showAutoProgress && (
@@ -121,7 +122,7 @@ const App = ({conversionSteps, equityStacks, csStacks, onChange}) => {
                         type="primary"
                         style={{margin: '8px'}}
                         onClick={stopAutoProgress}>
-                        Stop Auto Progress
+                        Stop Automatically Progress
                     </Button>
                 )}
             </div>
@@ -135,15 +136,18 @@ const App = ({conversionSteps, equityStacks, csStacks, onChange}) => {
                 items={items}
             />
             <p/>
-            <div style={{width: '100%', display: 'flex', justifyContent: 'space-between'}}>
-                {equityStacks.map((equityStack, index) => (
+            <div style={{width: '100%', display: 'flex', justifyContent: 'space-around'}}>
+                {csStacks.map((csStack, index) => (
                     <div key={index} style={{
                         flex: 1,
-                        padding: '10px',
+                        // padding: '0px',
                         boxShadow: current === index ? '0px 0px 10px rgba(0, 0, 0, 0.5)' : 'none',
+                        width: '300px', // Set your desired width
+                        height: '400px', // Set your desired height
+                        alignContent: 'center',
                     }}>
                         {/*<EquityStack data={[...equityStack]}/>*/}
-                        <CommonStockDoughnut csStack={[...csStacks[index]]}/>
+                        <CommonStockDoughnut csStack={[...csStack]}/>
                     </div>
                 ))
                 }
