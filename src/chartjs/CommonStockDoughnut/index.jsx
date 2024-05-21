@@ -2,7 +2,6 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Doughnut } from 'react-chartjs-2';
 import React from "react";
-import * as ChartJSUtils from "../ExpirationPayoffDiagram/chartjs-utils";
 import {SECURITY_TYPE_COLORS, SECURITY_TYPES} from "../../lib/constants";
 
 //  the best practice is to specify plugins for individual chart components rather than
@@ -25,7 +24,7 @@ export default function App({csStack}){
         ],
     };
 
-    csStack.forEach((cs, i) => {
+    csStack.forEach((cs) => {
         data.labels.push(cs.seriesName + ': ' + (cs.type === SECURITY_TYPES.CP_CS ? 'CP->CS' : cs.type));
         data.datasets[0].data.push(cs.value);
         data.datasets[0].backgroundColor.push(SECURITY_TYPE_COLORS[cs.type]['backgroundColor']);

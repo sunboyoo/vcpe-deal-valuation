@@ -15,7 +15,7 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { ProFormText, ProFormDigit, StepsForm } from '@ant-design/pro-components';
 
 import { useState } from 'react';
-import {SECURITY_TYPE_COLORS, SECURITY_TYPE_TAGS} from "../../lib/constants";
+import {SECURITY_TYPE_TAGS} from "../../lib/constants";
 
 export default function ({initialValue, onChange}) {
     const [messageApi] = message.useMessage();
