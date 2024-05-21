@@ -9,7 +9,7 @@ import {
     Result,
     Tag,
     Tooltip,
-    message,
+    message, Button,
 } from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { ProFormText, ProFormDigit, StepsForm } from '@ant-design/pro-components';
@@ -413,16 +413,16 @@ export default function ({initialValue, onChange}) {
                     gutter: 16,
                     xs: 1,
                     sm: 2,
-                    md: 3,
-                    lg: 3,
-                    xl: 4,
-                    xxl: 4,
+                    md: 4,
+                    lg: 5,
+                    xl: 6,
+                    xxl: 6,
                 }}
                 dataSource={[...list, createNewItem]}
                 renderItem={(item, _) => {
                     if (item !== createNewItem) {
                         return (
-                            <List.Item key={item.id}>
+                            <List.Item key={item.id} >
                                 <Card
                                     size={'small'}
                                     hoverable
@@ -450,7 +450,7 @@ export default function ({initialValue, onChange}) {
                                     description={
                                         <>
                                             <Descriptions size={'small'}>
-                                                <Descriptions.Item span={3}>
+                                                <Descriptions.Item span={3} >
                                                     <Tag bordered={false} color="#2db7f5">{"Investment Sequence "+ item.id}</Tag>
                                                 </Descriptions.Item>
                                                 <Descriptions.Item span={3}>
@@ -483,16 +483,20 @@ export default function ({initialValue, onChange}) {
                                     onClick={() => setCreateModalDrawerStepsFormOpen(true)}
                                     hoverable
                                     actions={[
-                                        <a key={'create'}>
-                                            <PlusOutlined /> Add a new investment series
-                                        </a>,
-                                    ]}
-                                    style={{ minWidth: '300px' }}
-                                >
-                                    <Card.Meta
+                                        <h3 key={'create'} style={{color: '#3498db'}}>
+                                            <PlusOutlined/> <br/>Add a new series
+                                        </h3>,
+                                        ]}
+                                    >
+                                <Card.Meta
                                         title={false}
-                                        description={ seriesInput.length <= 0 ?
-                                            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={'Empty'} /> : <p>{'Total ' + seriesInput.length + ' items'}</p>
+                                        description={
+                                            <h4 style={{color: 'black'}}>
+                                                {seriesInput.length <= 0 ?
+                                                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={'Empty'} /> :
+                                                <p>{'Total ' + seriesInput.length + ' items'}</p>}
+                                            </h4>
+
                                         }
                                     />
                                 </Card>

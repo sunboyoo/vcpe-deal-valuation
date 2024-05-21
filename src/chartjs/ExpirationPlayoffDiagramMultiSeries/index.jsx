@@ -1,4 +1,4 @@
-import {Card, Space} from "antd";
+import {Card, Divider, Space} from "antd";
 import React from "react";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
 import {addSeries, analyze} from "../../lib/series";
@@ -12,6 +12,7 @@ import CardList from "../../antd/CardList";
 import Sankey from "../../echarts/Sankey";
 import SankeyDiagramInstructions from "./sankey-desc";
 import SeriesListDescription from "./series-list-desc";
+import MilestoneInstruction from "./milestone-desc";
 
 const initialSeriesValue = [{
     id: 0,
@@ -116,6 +117,7 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                             setSeriesValue([...newValue]);
                         }}
                     ></CardList>
+                    <Divider />
                     <SeriesListDescription />
                 </Card>
 
@@ -126,9 +128,15 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                             conversionSteps={conversionSteps}
                             csStacks={csStacks}
                         />
+                        <Divider />
+                        <MilestoneInstruction/>
                         <div style={{margin: '100px'}}/>
+                        <Divider />
+
                         <h2>Convertible Preferred (CP) Conversion Sankey Diagram</h2>
                         <Sankey equityStacks={equityStacks}/>
+                        <Divider />
+
                         <SankeyDiagramInstructions/>
                     </Card>)
                 }

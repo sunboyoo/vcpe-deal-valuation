@@ -56,7 +56,7 @@ export default function App({csStack}){
     }
 
     return (
-        <div style={{ width: '300px', height: '300px' }}> {/* Set your desired width and height */}
+        <div style={{ width: '300px', height: '300px', textAlign:'center' }}> {/* Set your desired width and height */}
             <Doughnut
             data={data}
             options={options}

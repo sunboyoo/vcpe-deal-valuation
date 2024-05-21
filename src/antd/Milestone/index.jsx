@@ -144,7 +144,9 @@ const App = ({conversionSteps, csStacks, onChange}) => {
                         boxShadow: current === index ? '0px 0px 10px rgba(0, 0, 0, 0.5)' : 'none',
                         width: '300px', // Set your desired width
                         height: '400px', // Set your desired height
-                        alignContent: 'center',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
                     }}>
                         {/*<EquityStack data={[...equityStack]}/>*/}
                         <CommonStockDoughnut csStack={[...csStack]}/>
