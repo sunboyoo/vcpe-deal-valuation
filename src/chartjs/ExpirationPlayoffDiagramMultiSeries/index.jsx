@@ -13,6 +13,8 @@ import Sankey from "../../echarts/Sankey";
 import SankeyDiagramInstructions from "./sankey-desc";
 import SeriesListDescription from "./series-list-desc";
 import MilestoneInstruction from "./milestone-desc";
+import WaterfallLayout from "../../components/WaterfallLayout";
+import {Content} from "antd/es/layout/layout";
 
 const initialSeriesValue = [{
     id: 0,
@@ -96,17 +98,52 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
 
             const labels = x;
 
-            let pvGpvLpv;
-
-            if (lines.length > 0){
-                const [x5, y5, k5] = lines[lines.length-1].plotPoints()
-                pvGpvLpv = new PvGpvLpv(new LimitedPartnership(undefined, 20/100., 25/100.), 5, x5, y5, k5)
+            const pvGpvLpvArray = [];
+            if (Array.isArray(lines) && lines.length > 0){
+                lines.forEach((line, i) => {
+                    // Series.js already generated lines with tails. so here no need to plotPoints with tails.
+                    const [x, y, k] = line.plotPoints();
+                    pvGpvLpvArray.push(new PvGpvLpv(new LimitedPartnership(undefined, 20/100., 25/100.), 5, x, y, k))
+                })
             }
-
 
 
     return (
         <>
+            {/*<WaterfallLayout/>*/}
+            <Content style={{backgroundColor: 'white', padding: '10px'}}>
+                <h1>The Equity Securities held by Founders and Series Investors</h1>
+                <CardList
+                    initialValue={seriesValue}
+                    onChange={(newValue) => {
+                        console.log('onChange', newValue);
+                        setSeriesValue([...newValue]);
+                    }}
+                ></CardList>
+            </Content>
+            <Content style={{backgroundColor: 'rgb(250, 250, 250)', padding: '10px'}}>
+                <SeriesListDescription/>
+            </Content>
+            <Content style={{backgroundColor: 'white', padding: '10px'}}>
+                {seriesValue && seriesValue.length > 0 && equityStacks && equityStacks.length > 0 && (
+                    <>
+                        <Milestone
+                            conversionSteps={conversionSteps}
+                            csStacks={csStacks}
+                        />
+                        <Divider />
+                        <MilestoneInstruction/>
+                        <div style={{margin: '100px'}}/>
+                        <Divider />
+
+                        <h2>Convertible Preferred (CP) Conversion Sankey Diagram</h2>
+                        <Sankey equityStacks={equityStacks}/>
+                        <Divider />
+
+                        <SankeyDiagramInstructions/>
+                    </>)
+                }
+            </Content>
             <Space direction="vertical">
                 <Card>
                     <h1>The Equity Securities held by Founders and Series Investors</h1>
@@ -142,6 +179,7 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                 }
                 {seriesValue && seriesValue.length > 0 && (
                     <Card>
+                        <h2>Expiration Payoff Diagram for All Series</h2>
                         <ExpirationPayoffDiagram3
                             datasets={datasets}
                             labels={labels}
@@ -150,11 +188,18 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                         />
                     </Card>
                 )}
-                {pvGpvLpv && (
-                    <ExpirationPayoffDiagramPvGpvLpv
-                        pvGpvLpv={pvGpvLpv}
-                    />
-                )}
+                {
+                    pvGpvLpvArray.map((pvGpvLpv, i) => (
+                        <>
+                            <h2>{processedSeriesArray[i].seriesName}</h2>
+                            <ExpirationPayoffDiagramPvGpvLpv
+                                pvGpvLpv={pvGpvLpv}
+                            />
+                        </>
+
+                    ))
+
+                }
             </Space>
         </>
     )

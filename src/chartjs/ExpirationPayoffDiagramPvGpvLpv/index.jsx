@@ -5,7 +5,7 @@ import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
 import {callOptionsText, segmentedLineToOption} from "../../lib/line/line-option-converter";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
 
-export function ExpirationPayoffDiagramPvGpvLpv({pvGpvLpv, result}){
+export function ExpirationPayoffDiagramPvGpvLpv({pvGpvLpv, result=undefined}){
     const {pv, gpv, lpv, lpc} = pvGpvLpv
     const [xPv, yPv, sPv] = pv.plotPointsWithLPCAndTail(lpc)
     const [xGpv, yGpv, sGpv] = gpv.plotPointsWithTail()
@@ -74,37 +74,37 @@ export function ExpirationPayoffDiagramPvGpvLpv({pvGpvLpv, result}){
 
     return (
         <>
-            <Card>
+            {/*<Card>*/}
                 <ExpirationPayoffDiagram3
                     datasets={[datasetPv, datasetLpc]}
                     labels={xPv}
                     subtitleTexts={[subtitleTextPv, subtitleTextLpc]}
                     yMax={yMax}/>
-            </Card>
+            {/*</Card>*/}
             <Space><p/></Space>
-            <Card>
+            {/*<Card>*/}
                 <ExpirationPayoffDiagram3
                     datasets={[datasetGpv, datasetLpc]}
                     labels={xGpv}
                     subtitleTexts={[subtitleTextGpv, subtitleTextLpc]}
                     yMax={yMax}/>
-            </Card>
+            {/*</Card>*/}
             <Space><p/></Space>
-            <Card>
+            {/*<Card>*/}
                 <ExpirationPayoffDiagram3
                     datasets={[datasetLpv, datasetLpc]}
                     labels={xLpv}
                     subtitleTexts={[subtitleTextLpv, subtitleTextLpc]}
                     yMax={yMax}/>
-            </Card>
+            {/*</Card>*/}
             <Space><p/></Space>
-            <Card>
+            {/*<Card>*/}
                 <ExpirationPayoffDiagram3
                     datasets={[datasetPv, datasetGpv, datasetLpv, datasetLpc]}
                     labels={xPv}
                     subtitleTexts={[subtitleTextPv, subtitleTextGpv, subtitleTextLpv, subtitleTextLpc]}
                     yMax={yMax}/>
-            </Card>
+            {/*</Card>*/}
         </>
     )
 }
