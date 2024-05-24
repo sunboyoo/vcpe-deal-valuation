@@ -23,6 +23,10 @@ export class SegmentedLine {
         const leftLimit = this.y(x - this.eps)
         const rightLimit = this.y(x + this.eps)
         const delta = Math.abs(rightLimit - leftLimit)
+
+        // if (delta >= (this.eps * 10^2)) {
+        //     console.log("**************************不连续")
+        // }
         return delta < (this.eps * 10^2)
     }
     static of(x, y, slopes){
@@ -266,10 +270,10 @@ export function testSegmentedLine(){
 
     if (debug){
         console.log(line)
-        console.log("line.continuityAt(0.1)", line.continuityAt(0.1))
-        console.log("line.continuityAt(10)", line.continuityAt(10))
-        console.log("line.continuityAt(20)", line.continuityAt(20))
-        console.log("line.continuityAt(30)", line.continuityAt(30))
+        // console.log("line.continuityAt(0.1)", line.continuityAt(0.1))
+        // console.log("line.continuityAt(10)", line.continuityAt(10))
+        // console.log("line.continuityAt(20)", line.continuityAt(20))
+        // console.log("line.continuityAt(30)", line.continuityAt(30))
         console.log("line.isDownAt(0.1)", line.isDownAt(0.1))
         console.log("line.isDownAt(10)", line.isDownAt(10))
         console.log("line.isDownAt(10.1)", line.isDownAt(10.1))

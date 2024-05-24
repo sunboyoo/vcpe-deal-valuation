@@ -15,18 +15,28 @@ import {ExpirationPayoffDiagramPvGpvLpv} from "../../chartjs/ExpirationPayoffDia
 // ci = carried interest		20%
 // lfp = lifetime fee percentage
 // debt = debt		$0.00
-const initialValues = {
-    inv:	4,
-    ci: 20,
-    lfp: 25,
-}
-export default function ExpirationPayoffDiagramPvGpvLpvWithInput({xs, ys, slopes}){
-    const [variables, setVariables] = useState({...initialValues})
-    const [visible, setVisible] = useState(false)
+
+export default function ExpirationPayoffDiagramPvGpvLpvWithInput({
+                                                                     xs,
+                                                                     ys,
+                                                                     slopes,
+                                                                     invDefault,
+                                                                     ciDefault = 20.,
+                                                                     lfpDefault = 25.
+                                                                 }) {
+    const [variables, setVariables] = useState({
+        inv: invDefault,
+        ci: ciDefault,
+        lfp: lfpDefault,
+    })
+    const [visible, setVisible] = useState(invDefault > 0 && ciDefault >= 0 && lfpDefault >= 0);
 
     const onFinish = (values) => {
-        setVariables({...values})
-        setVisible(true)
+        const {inv, ci, lfp,} = values;
+        if (inv > 0 && ci >= 0 && lfp >= 0) {
+            setVariables({...values})
+            setVisible(true)
+        }
         console.log('Form.onFinish():', values);
     };
     const onFinishFailed = (errorInfo) => {
@@ -34,109 +44,109 @@ export default function ExpirationPayoffDiagramPvGpvLpvWithInput({xs, ys, slopes
         console.log('Form.onFinishFailed():', errorInfo);
     };
 
-    const onValuesChange = () => {
-        setVisible(false)
-        console.log("Form.onValuesChange()")
+    const onValuesChange = (changedValue, values) => {
+        const {inv, ci, lfp,} = values;
+        if (inv > 0 && ci >= 0 && lfp >= 0) {
+            setVariables({...values})
+            setVisible(true)
+        } else {
+            setVisible(false)
+        }
+
+        console.log("Form.onValuesChange()", changedValue, values)
     }
 
-    const regexPositiveNumber = /^(?!0+(\.0+)?$)(0+\.\d*[1-9]\d*|[1-9]\d*(\.\d+)?)$/
+    const regexPositiveNumber = /^(?!0+(\.0+)?$)(0*\.\d*[1-9]\d*|[1-9]\d*(\.\d*)?)$/
     const regexZeroOrPositiveNumber = /^(\d+(\.\d*)?|\.\d+)$/;
 
     const thisIsARequiredField = "This is a required field."
 
-
-
     // compute PV, GPV, and LPV
-    const { inv, ci, lfp} = variables
+    const {inv, ci, lfp,} = variables
 
-    const pvGpvLpv = new PvGpvLpv(new LimitedPartnership(undefined, ci/100., lfp/100.), inv, xs, ys, slopes)
+    const pvGpvLpv = new PvGpvLpv(new LimitedPartnership(undefined, ci / 100., lfp / 100.), inv, xs, ys, slopes)
 
-    return  (
+    return (
         <>
-            <Space direction="vertical" >
-                <Card title="Series A Common Stock" >
-                    <Form
-                        name="basic"
-                        layout={"horizontal"}
-                        labelCol={{
-                            span: 16,
-                        }}
-                        wrapperCol={{
-                            span: 24,
-                        }}
-                        labelAlign={"left"}
-                        // style={{
-                        //     // maxWidth: 600,
-                        // }}
-                        onFinish={onFinish}
-                        onFinishFailed={onFinishFailed}
-                        onValuesChange={onValuesChange}
-                        autoComplete="on"
-                        initialValues = {variables}
-                        requiredMark={false}
-                    >
-                        <Form.Item
-                            label="GP Carried Interest"
-                            name="ci"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: thisIsARequiredField,
-                                },{
-                                    pattern: regexZeroOrPositiveNumber,
-                                    message: "This is a zero or positive number.",
-                                }
-                            ]}
-                        >
-                            <InputNumber  size={"middle"} style={{width: "100%"}} addonAfter="%"/>
-                        </Form.Item>
-                        <Form.Item
-                            label="Lifetime Fee Percentage"
-                            name="lfp"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: thisIsARequiredField,
-                                },{
-                                    pattern: regexZeroOrPositiveNumber,
-                                    message: "This is a zero or positive number.",
-                                }
-                            ]}
-                        >
-                            <InputNumber  size={"middle"} style={{width: "100%"}} addonAfter="%"/>
-                        </Form.Item>
-                        <Form.Item
-                            label="Investment in This Round"
-                            name="inv"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: thisIsARequiredField,
-                                },{
-                                    pattern: regexPositiveNumber,
-                                    message: "This is a positive number."
-                                }
-                            ]}
-                        >
-                            <InputNumber  size={"middle"} style={{width: "100%"}} addonBefore="$"/>
-                        </Form.Item>
-                        <Form.Item
-                            // wrapperCol={{
-                            //     offset: 8,
-                            //     span: 16,
-                            // }}
-                        >
-                            <Button type="default" htmlType="submit" size={"middle"} style={{width: "100%"}}>
-                                CALCULATE
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Card>
-
-                <Space><p/></Space>
-            </Space>
-
             {visible && <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv}/>}
+
+            <Space>
+            <Form
+                size={'small'}
+                name="basic"
+                layout={"horizontal"}
+                labelCol={{
+                    span: 16,
+                }}
+                wrapperCol={{
+                    span: 24,
+                }}
+                // style={{maxWidth: '1000px'}}
+                labelAlign={"left"}
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}
+                onValuesChange={onValuesChange}
+                autoComplete="on"
+                initialValues={variables}
+                requiredMark={false}
+            >
+                <Form.Item
+                    label="GP Carried Interest"
+                    name="ci"
+                    rules={[
+                        {
+                            required: true,
+                            message: thisIsARequiredField,
+                        }, {
+                            pattern: regexZeroOrPositiveNumber,
+                            message: "This is a zero or positive number.",
+                        }
+                    ]}
+                >
+                    <InputNumber min={0} size={"middle"} style={{width: "100%"}} addonAfter="%"/>
+                </Form.Item>
+                <Form.Item
+                    label="Lifetime Fee Percentage"
+                    name="lfp"
+                    rules={[
+                        {
+                            required: true,
+                            message: thisIsARequiredField,
+                        }, {
+                            pattern: regexZeroOrPositiveNumber,
+                            message: "This is a zero or positive number.",
+                        }
+                    ]}
+                >
+                    <InputNumber min={0} size={"middle"} style={{width: "100%"}} addonAfter="%"/>
+                </Form.Item>
+                <Form.Item
+                    label="Investment in This Round"
+                    name="inv"
+                    rules={[
+                        {
+                            required: true,
+                            message: thisIsARequiredField,
+                        }, {
+                            pattern: regexPositiveNumber,
+                            message: "This is a positive number."
+                        }
+                    ]}
+                >
+                    <InputNumber min={1e-20} size={"middle"} style={{width: "100%"}} addonBefore="$"/>
+                </Form.Item>
+                {/*<Form.Item*/}
+                {/*    // wrapperCol={{*/}
+                {/*    //     offset: 8,*/}
+                {/*    //     span: 16,*/}
+                {/*    // }}*/}
+                {/*>*/}
+                {/*    <Button type="default" htmlType="submit" size={"middle"} style={{width: "100%"}}>*/}
+                {/*        Show Expiration Payoff Diagram*/}
+                {/*    </Button>*/}
+                {/*</Form.Item>*/}
+            </Form>
+            </Space>
 
         </>
     );

@@ -1,4 +1,4 @@
-import {Card, Divider, Space} from "antd";
+import {Card} from "antd";
 import React from "react";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
 import {addSeries, analyze} from "../../lib/series";
@@ -60,6 +60,8 @@ const initialSeriesValue = [{
 },
 ]
 
+const initialInvests = [0,5,10,15,30,15]
+
 export default function ExpirationPlayoffDiagramMultiSeries() {
     const [seriesValue, setSeriesValue] = useState(initialSeriesValue);
 
@@ -114,6 +116,7 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                 xs = {x1}
                 ys = {y1}
                 slopes = {k1}
+                invDefault={5}
             ></ExpirationPayoffDiagramPvGpvLpvWithInput>
             <Card>
                 <h1>The Equity Securities held by Founders and Series Investors</h1>
@@ -187,10 +190,16 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                             <div style={{height: '100px'}}/>
                             <Card>
                                 <h1>{processedSeriesArray[i].seriesName}</h1>
-                                <ExpirationPayoffDiagramPvGpvLpv
-                                    pvGpvLpv={pvGpvLpv}
-                                    showIndividualDiagrams={true}
-                                />
+                                <ExpirationPayoffDiagramPvGpvLpvWithInput
+                                    xs = {x1}
+                                    ys = {y1}
+                                    slopes = {k1}
+                                    invDefault={initialInvests[i]}
+                                ></ExpirationPayoffDiagramPvGpvLpvWithInput>
+                                {/*<ExpirationPayoffDiagramPvGpvLpv*/}
+                                {/*    pvGpvLpv={pvGpvLpv}*/}
+                                {/*    showIndividualDiagrams={true}*/}
+                                {/*/>*/}
                             </Card>
                         </div>
                 ))
