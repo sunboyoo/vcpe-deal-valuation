@@ -73,7 +73,6 @@ export default function ExpirationPayoffDiagramPvGpvLpvWithInput({
             <Space>
             <Form
                 size={'small'}
-                name="basic"
                 layout={"horizontal"}
                 labelCol={{
                     span: 16,
