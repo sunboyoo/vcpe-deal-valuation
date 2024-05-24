@@ -60,7 +60,9 @@ export class SegmentedLine {
             // (2) non-last segments
             if (Number.isFinite(y[i+1])){
                 // (2.1) HalfOpenSegment - for PCP drop at qualified event
-                segments.push(new LeftClosedRightOpenSegment(x[i], yi, slopes[i], x[i+1], undefined))
+                //ssegments.push(new LeftClosedRightOpenSegment(x[i], yi, slopes[i], x[i+1], undefined))
+                segments.push(new LineSegment(x[i], yi, slopes[i], x[i+1], undefined))
+                console.log('SegmentedLine****************************更改代码')
             } else {
                 // (2.2) LineSegment
                 segments.push(new LineSegment(x[i], yi, slopes[i], x[i+1], undefined))

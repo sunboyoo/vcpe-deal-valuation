@@ -47,6 +47,7 @@ export default function ExpirationPayoffDiagramPvGpvLpvWithInput({
     const onValuesChange = (changedValue, values) => {
         const {inv, ci, lfp,} = values;
         if (inv > 0 && ci >= 0 && lfp >= 0) {
+            console.log(xs, ys, slopes)
             setVariables({...values})
             setVisible(true)
         } else {
