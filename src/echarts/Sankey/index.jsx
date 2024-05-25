@@ -76,7 +76,7 @@ const SankeyDiagram = ({equityStacks}) => {
     const equityStacksByFirmValues = mappedEquityStacks.map((equityStack) =>
         equityStack.map(item => ({
             ...item,
-            name: `[${item.seriesName}] ${item.type === 'CP_RV' ? 'CP->Redeem' : item.type === 'CP_CS' ? 'CP->CS' : item.type}=${item.value} when firm value is ${item.firmValue}`,
+            name: `[${item.seriesName}] ${item.type === 'CP_RV' ? 'CP->Redeem' : item.type === 'CP_CS' ? 'CP->CS' : item.type}=${item.type === 'CP_RV' || item.type === 'RP' ? '$' : ''}${item.value} when firm value is ${item.firmValue}`,
             securityLiquidationSequence: SECURITY_LIQUIDATION_SEQUENCE[item.type],
         }))
     );

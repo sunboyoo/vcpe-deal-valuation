@@ -112,12 +112,6 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
 
     return (
         <>
-            <ExpirationPayoffDiagramPvGpvLpvWithInput
-                xs = {x1}
-                ys = {y1}
-                slopes = {k1}
-                invDefault={5}
-            ></ExpirationPayoffDiagramPvGpvLpvWithInput>
             <Card>
                 <h1>The Equity Securities held by Founders and Series Investors</h1>
                 <CardList
@@ -134,20 +128,20 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                     <div style={{margin: '100px'}}/>
 
                     <Card>
+                        <h2>Convertible Preferred (CP) Conversion Sankey Diagram</h2>
+                        <Sankey equityStacks={equityStacks}/>
+                    </Card>
+                    <SankeyDiagramInstructions/>
+
+                    <div style={{margin: '100px'}}/>
+
+                    <Card>
                         <Milestone
                             conversionSteps={conversionSteps}
                             csStacks={csStacks}
                         />
                     </Card>
                     <MilestoneInstruction/>
-
-                    <div style={{margin: '100px'}}/>
-
-                    <Card>
-                        <h2>Convertible Preferred (CP) Conversion Sankey Diagram</h2>
-                        <Sankey equityStacks={equityStacks}/>
-                    </Card>
-                    <SankeyDiagramInstructions/>
                 </>
             )
             }

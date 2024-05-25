@@ -1,4 +1,4 @@
-import {LeftClosedRightOpenSegment, LineSegment, Ray} from "./line-segment"
+import {LeftClosedRightOpenSegment, LineSegment, Ray, yOnLine} from "./line-segment"
 
 /*
     for ys, only the ys[0] and ys[xDrop] have values. all other need to be NaN or undefined
@@ -6,6 +6,11 @@ import {LeftClosedRightOpenSegment, LineSegment, Ray} from "./line-segment"
     ys = [0, NaN, NaN, 10] => [0, 10, 30, 10]
     slopes = [1, 2, 3, 4]
 * */
+
+function isLineContinuousAt(x0, y0, slope, x, y, eps = 1e-7){
+    const yContinuous = yOnLine(x0, y0, slope, x);
+    return Math.abs(yContinuous - y) < eps;
+}
 
 export class SegmentedLine {
     constructor(segments) {
@@ -58,11 +63,11 @@ export class SegmentedLine {
             }
 
             // (2) non-last segments
-            if (Number.isFinite(y[i+1])){
+            // 如果给出下一个y的数字，并且线在下一个y的位置是跳跃的， 那么是PCP
+            if (Number.isFinite(y[i+1]) && !isLineContinuousAt(x[i], yi, slopes[i], x[i+1], y[i+1], 1e-7)) {
                 // (2.1) HalfOpenSegment - for PCP drop at qualified event
-                //ssegments.push(new LeftClosedRightOpenSegment(x[i], yi, slopes[i], x[i+1], undefined))
-                segments.push(new LineSegment(x[i], yi, slopes[i], x[i+1], undefined))
-                console.log('SegmentedLine****************************更改代码')
+                segments.push(new LeftClosedRightOpenSegment(x[i], yi, slopes[i], x[i+1], undefined))
+
             } else {
                 // (2.2) LineSegment
                 segments.push(new LineSegment(x[i], yi, slopes[i], x[i+1], undefined))
