@@ -2,6 +2,7 @@ import {Button, Card, Divider, Form, InputNumber, Space, Table, Tag} from "antd"
 import React, {useState} from "react";
 import {DashOutlined} from "@ant-design/icons";
 import { postTransactionValuation, SecurityType} from "../../lib/generic-payoff";
+import OptionList from "../../antd/OptionList";
 
 // so = pre-money shares outstanding		11
 // sp = new common shares purchased		5
@@ -138,6 +139,7 @@ export default function GenericPayoff(){
 
     return  (
         <>
+            <OptionList/>
         <Space direction="vertical" >
             <Card title="Generic Payoff" >
                 <Form

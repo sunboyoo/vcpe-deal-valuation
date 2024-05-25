@@ -15,7 +15,7 @@ function isLineContinuousAt(x0, y0, slope, x, y, eps = 1e-7){
 export class SegmentedLine {
     constructor(segments) {
         this.segments = segments
-        this.eps = 1e-9
+        this.eps = 1e-7
     }
 
     /*
