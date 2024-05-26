@@ -1,5 +1,6 @@
 import {SecurityType} from "../generic-payoff";
-import {LeftClosedRightOpenSegment, LineSegment, Ray} from "./line-segment";
+import {LeftClosedRightOpenSegment, LineSegment, Ray, yOnLine} from "./line-segment";
+import {SegmentedLine} from "./segmented-line";
 
 export function segmentedLineToOption(line){
     const options = []
@@ -65,4 +66,59 @@ export function callOptionsText(callOptions){
 
 export function trimNumber(n) {
     return parseFloat(n).toFixed(4).replace(/\.?0*$/, '');
+}
+
+
+export function optionArrayToSegmentedLine(options) {
+    const segments = [];
+
+    options.forEach((option, i) => {
+        const { securityType, strike, fraction } = option;
+
+        if (i === 0) {
+            const x = strike;
+            const y = 0;
+            const k = fraction;
+            if (options.length === 1){
+                segments.push(new Ray(x, y, k));
+            } else {
+                // 这里只是考虑了没有跳跃的线条
+                segments.push(new LineSegment(x, y, k, options[i + 1].strike, undefined));
+            }
+        } else if (i < options.length - 1){
+            // 这里只是考虑了没有跳跃的线条
+            const x = strike;
+            const x0 = segments[i - 1].xStart;
+            const y0 = segments[i - 1].yStart;
+            const k0 = segments[i - 1].slope;
+            const y = yOnLine(x0, y0, k0, x)
+            segments.push(new LineSegment(x, y, segments[i-1].slope + fraction, options[i + 1].strike, undefined));
+        } else if (i === options.length - 1){
+            // 这里只是考虑了没有跳跃的线条
+            const x = strike;
+            const x0 = segments[i - 1].xStart;
+            const y0 = segments[i - 1].yStart;
+            const k0 = segments[i - 1].slope;
+            const y = yOnLine(x0, y0, k0, x)
+            segments.push(new Ray(x, y, segments[i-1].slope + fraction));
+        }
+    });
+
+    return new SegmentedLine(segments);
+}
+
+export function testOptionArrayToSegmentedLine() {
+    // Example usage
+    const options = [
+        { securityType: SecurityType.CallOption, strike: 10, fraction: 1 },
+        { securityType: SecurityType.CallOption, strike: 20, fraction: 2 },
+        { securityType: SecurityType.CallOption, strike: 30, fraction: 3 }
+    ];
+
+    const segmentedLine = optionArrayToSegmentedLine(options);
+
+    const options2 = segmentedLineToOption(segmentedLine);
+    const segmentedLine2 = optionArrayToSegmentedLine(options2);
+
+    console.log(segmentedLine, segmentedLine2, options, options2);
 }
