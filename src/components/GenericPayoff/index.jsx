@@ -1,17 +1,12 @@
 import {Button, Card, Divider, Form, Input, InputNumber, Select, Space, Table, Tag} from "antd";
 import React, {useState} from "react";
-import {DashOutlined, MinusCircleOutlined, MinusOutlined, PlusOutlined} from "@ant-design/icons";
+import {DashOutlined, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {postTransactionValuation, SecurityType} from "../../lib/generic-payoff";
-// import PayoffSchedule from "../../antd/PayoffSchedule";
 import GenericPayoffInstruction from "./desc";
 import {
     callOptionsText,
-    optionArrayToSegmentedLine,
-    testOptionArrayToSegmentedLine
 } from "../../lib/line/line-option-converter";
-import ExpirationPayoffDiagramSegmentedLine from "../../chartjs/ExpirationPayoffDiagramSegmentedLine";
-import ExpirationPayoffDiagramOptions from "../../chartjs/ExpirationPayoffDiagramOptions";
-import GenericExpirationPayoffDiagram from "../GenericExpirationPayoffDiagram";
+
 
 // so = pre-money shares outstanding		11
 // sp = new common shares purchased		5
@@ -413,7 +408,6 @@ export default function GenericPayoff() {
                     </Card>
                 }
             </Space>
-            <GenericExpirationPayoffDiagram></GenericExpirationPayoffDiagram>
         </>
     );
 }

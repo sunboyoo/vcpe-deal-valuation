@@ -152,22 +152,21 @@ export default function GenericExpirationPayoffDiagram() {
                                                 label={key === fields[0].key ? 'Strike Price' : ''}
                                                 rules={[{required: true, message: 'Missing Strike Price'},
                                                     {
-                                                        validator: (_, value, callback) => {
-                                                            const optionsInput = fields.map(
-                                                                (field) =>
-                                                                    options[field.name] || {}
-                                                            );
+                                                        validator: (_, value) => {
+                                                            return new Promise((resolve, reject) => { // Updated to return a promise
+                                                                const optionsInput = fields.map(
+                                                                    (field) => options[field.name] || {}
+                                                                );
 
-                                                            if (index > 0) {
-                                                                for (let j = 0; j < index; j++){
-                                                                    if (value <= optionsInput[j].strike) {
-                                                                        callback("Strike prices must be in ascending order");
+                                                                if (index > 0) {
+                                                                    for (let j = 0; j < index; j++) {
+                                                                        if (value <= optionsInput[j].strike) {
+                                                                            reject(new Error("Strike prices must be in ascending order"));
+                                                                        }
                                                                     }
                                                                 }
-                                                            } else {
-                                                                callback();
-                                                            }
-
+                                                                resolve();
+                                                            });
                                                         }
                                                     }
                                                 ]}
@@ -216,9 +215,12 @@ export default function GenericExpirationPayoffDiagram() {
 
             <div style={{height: '20px'}}></div>
 
-            <Card>
-                <ExpirationPayoffDiagramOptions options={options}/>
-            </Card>
+            {options && options.length > 0 &&
+                <Card>
+                    <ExpirationPayoffDiagramOptions options={options}/>
+                </Card>
+            }
+
 
             <div style={{height: '20px'}}></div>
 
