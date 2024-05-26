@@ -4,9 +4,14 @@ import {DashOutlined, MinusCircleOutlined, MinusOutlined, PlusOutlined} from "@a
 import {postTransactionValuation, SecurityType} from "../../lib/generic-payoff";
 // import PayoffSchedule from "../../antd/PayoffSchedule";
 import GenericPayoffInstruction from "./desc";
-import {optionArrayToSegmentedLine, testOptionArrayToSegmentedLine} from "../../lib/line/line-option-converter";
+import {
+    callOptionsText,
+    optionArrayToSegmentedLine,
+    testOptionArrayToSegmentedLine
+} from "../../lib/line/line-option-converter";
 import ExpirationPayoffDiagramSegmentedLine from "../../chartjs/ExpirationPayoffDiagramSegmentedLine";
 import ExpirationPayoffDiagramOptions from "../../chartjs/ExpirationPayoffDiagramOptions";
+import GenericExpirationPayoffDiagram from "../GenericExpirationPayoffDiagram";
 
 // so = pre-money shares outstanding		11
 // sp = new common shares purchased		5
@@ -73,9 +78,7 @@ export default function GenericPayoff() {
     const [variables, setVariables] = useState({...initialValues})
     const [result, setResult] = useState(undefined)
     const [visible, setVisible] = useState(false)
-    // const [options, setOptions] = useState({...optionsInitialValues})
 
-    testOptionArrayToSegmentedLine();
     const onFinish = (values) => {
         const {tv, H, r, vol, lfp, inv, options} = values
         const lpOptions = options.map((item, index) => ({...item, fraction: parseNumberFromFractionText(item.fraction)}))
@@ -162,18 +165,8 @@ export default function GenericPayoff() {
     },
     ] : [];
 
-    const options = [
-        { securityType: SecurityType.CallOption, strike: 10, fraction: 1 },
-        { securityType: SecurityType.CallOption, strike: 20, fraction: 2 },
-        { securityType: SecurityType.CallOption, strike: 30, fraction: 3 }
-    ];
-
-    const segmentedLine = optionArrayToSegmentedLine(options);
-
     return (
         <>
-            <ExpirationPayoffDiagramOptions options={options}/>
-            <ExpirationPayoffDiagramSegmentedLine segmentedLine={segmentedLine}/>
             <Space direction="vertical">
                 <Card>
                     <Form
@@ -288,6 +281,8 @@ export default function GenericPayoff() {
                         </Form.Item>
 
                         <h1>Payoff Schedule</h1>
+                        <h3 style={{color: '#3498db'}}>{callOptionsText(variables.options)}</h3>
+
                         <Form.List name="options">
                             {(fields, {add, remove}) => (
                                 <>
@@ -418,6 +413,7 @@ export default function GenericPayoff() {
                     </Card>
                 }
             </Space>
+            <GenericExpirationPayoffDiagram></GenericExpirationPayoffDiagram>
         </>
     );
 }

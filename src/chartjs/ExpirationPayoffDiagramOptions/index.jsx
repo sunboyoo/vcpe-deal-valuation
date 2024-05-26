@@ -1,9 +1,10 @@
 import React from "react";
 import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
-import {callOptionsText, optionArrayToSegmentedLine, segmentedLineToOption} from "../../lib/line/line-option-converter";
+import {callOptionsText, optionArrayToSegmentedLine} from "../../lib/line/line-option-converter";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
 
 export default function ExpirationPayoffDiagramOptions({options, result = undefined}) {
+
     const [x, y, slopes] = optionArrayToSegmentedLine(options).plotPointsWithTail()
 
     let subtitleText

@@ -50,10 +50,22 @@ export const route = {
                     }, {
                         path: 'series-a-pcp',
                         name: 'PCP',
-                    }, {
+                    }
+                ],
+            }, {
+                path: 'generic',
+                name: 'Generic Payoff',
+                icon: <DotChartOutlined/>,
+                access: 'canAdmin',
+                routes: [
+                    {
+                        path: 'generic-payoff-diagram',
+                        name: 'Generic Payoff Diagram',
+                    },
+                    {
                         path: 'generic-payoff',
                         name: 'Generic Payoff',
-                    }
+                    },
                 ],
             }, {
                 path: 'multi-series',
