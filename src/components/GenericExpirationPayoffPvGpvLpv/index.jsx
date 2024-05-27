@@ -1,23 +1,12 @@
-import {Button, Card, Divider, Form, Input, InputNumber, Select, Space, Table, Tag} from "antd";
+import {Button, Card,  Form, Input, InputNumber, Select, Space, } from "antd";
 import React, {useState} from "react";
-import {DashOutlined, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
-import {postTransactionValuation, SecurityType} from "../../lib/generic-payoff";
-import GenericPayoffInstruction from "./desc";
-import {
-    callOptionsText,
-} from "../../lib/line/line-option-converter";
-
-
-// so = pre-money shares outstanding		11
-// sp = new common shares purchased		5
-// inv = investment in this round		$4.00
-// tv = total valuation		$18.00
-// sd = volatility	σ=	90.00%
-// r = interest rate	r=	5.00%
-// H = expected holding period	H=	6
-// ci = carried interest		20%
-// lfp = lifetime fee percentage
-// debt = debt		$0.00
+import { MinusCircleOutlined,  PlusOutlined} from "@ant-design/icons";
+import { SecurityType} from "../../lib/generic-payoff";
+import ExpirationPayoffDiagramOptions from "../../chartjs/ExpirationPayoffDiagramOptions";
+import {callOptionsText, OptionsUtils} from "../../lib/line/line-option-converter";
+import {LimitedPartnership, PvGpvLpv} from "../../lib/line/pv-gpv-lpv";
+import {ExpirationPayoffDiagramPvGpvLpv} from "../../chartjs/ExpirationPayoffDiagramPvGpvLpv";
+import {IntegerStep} from "../../antd/IntegerStep";
 
 
 const optionsInitialValues = [
@@ -37,22 +26,18 @@ const optionsInitialValues = [
         securityType: SecurityType.CallOption,
         strike: 36,
         fraction: -1 / 20
-    }, {
-        securityType: SecurityType.BinaryCallOption,
-        strike: 130,
-        fraction: 1.2
-    }
+    },
+    // {
+    //     securityType: SecurityType.BinaryCallOption,
+    //     strike: 130,
+    //     fraction: 1.2
+    // }
 ]
 
-const initialValues = {
-    inv: 12,
-    tv: 50,
-    vol: 90,
-    r: 5,
-    H: 4,
-    lfp: 25,
-    options: optionsInitialValues,
-}
+const regexPositiveNumber = /^(?!0+(\.0+)?$)(0*\.\d*[1-9]\d*|[1-9]\d*(\.\d*)?)$/
+const regexZeroOrPositiveNumber = /^(\d+(\.\d*)?|\.\d+)$/;
+
+const thisIsARequiredField = "This is a required field."
 
 const parseNumberFromFractionText = (value) => {
     if (typeof value === 'string' && value.includes('/')) {
@@ -69,120 +54,96 @@ const parseNumberFromFractionText = (value) => {
     }
 };
 
-export default function GenericPayoff() {
-    const [variables, setVariables] = useState({...initialValues})
-    const [result, setResult] = useState(undefined)
+export default function GenericExpirationPayoffDiagramPvGpvLpv() {
+    const [options, setOptions] = useState([...optionsInitialValues])
     const [visible, setVisible] = useState(false)
+    const [variables, setVariables] = useState({
+        inv: 5.,
+        ci: 20.,
+        lfp: 25.,
+    })
 
-    const onFinish = (values) => {
-        const {tv, H, r, vol, lfp, inv, options} = values
-        const lpOptions = options.map((item, index) => ({...item, fraction: parseNumberFromFractionText(item.fraction)}))
-        setVariables({...values})
-        setResult(postTransactionValuation(lpOptions, tv, H, r / 100., vol / 100., lfp / 100., inv))
+    /*
+    * Options
+    * */
+
+    const onFinishOptions = (values) => {
+        OptionsUtils.validate(values.options);
+
+        setOptions(values.options.map((item) => ({...item, fraction: parseNumberFromFractionText(item.fraction)})))
         setVisible(true)
         console.log('Form.onFinish():', values);
-        console.log(postTransactionValuation(lpOptions, tv, H, r / 100., vol / 100., lfp / 100., inv))
     };
-    const onFinishFailed = (errorInfo) => {
+
+    const onFinishFailedOptions = (errorInfo) => {
         setVisible(false)
         console.log('Form.onFinishFailed():', errorInfo);
     };
 
-    const onValuesChange = () => {
+    const onValuesChangeOptions = (valuesChanged, values) => {
         setVisible(false)
-        console.log("Form.onValuesChange()")
+        console.log("Form.onValuesChange()", values)
+        try{
+            onFinishOptions(values)
+        } catch (e) {
+            onFinishFailedOptions(e)
+        }
     }
 
-    const regexPositiveNumber = /^(?!0+(\.0+)?$)(0+\.\d*[1-9]\d*|[1-9]\d*(\.\d+)?)$/
-    const regexZeroOrPositiveNumber = /^(\d+(\.\d*)?|\.\d+)$/;
+    /*
+    * PvGpvLpv
+    * */
 
-    const thisIsARequiredField = "This is a required field."
-
-
-    const columns = [
-        {
-            title: '',
-            dataIndex: 'name',
-            render: (_, value) => {
-                return (
-                    <span>
-                    {value.child ? <><DashOutlined/><DashOutlined/></> : <></>}
-                        {
-                            value.tags &&
-                            value.tags.map((tag) =>
-                                <Tag color="blue" key={tag}>
-                                    {tag.toUpperCase()}
-                                </Tag>)
-                        }
-                        <span>{value.name}</span>
-                </span>)
-            }
-        },
-        {
-            title: '',
-            dataIndex: 'value',
-            align: "right"
+    const onFinishPvGpvLpv = (values) => {
+        const {inv, ci, lfp,} = values;
+        if (inv > 0 && ci >= 0 && lfp >= 0) {
+            setVariables({...values})
+            setVisible(true)
         }
-    ];
+        console.log('Form.onFinish():', values);
+    };
+    const onFinishFailedPvGpvLpv = (errorInfo) => {
+        setVisible(false)
+        console.log('Form.onFinishFailed():', errorInfo);
+    };
 
-    const data0 = result ? [
-        {
-            key: '1',
-            name: 'LPV',
-            value: result.LPV.toFixed(3),
-            child: false
-        },
-    ] : [];
-
-    const data1 = result ? [
-        {
-            key: '1',
-            name: 'Post-Tx V',
-            value: result.transactionValuation.postTransactionValuation.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: false
-        }, {
-            key: '2',
-            name: 'LPV',
-            value: result.transactionValuation.postTransactionLPV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: true
+    const onValuesChangePvGpvLpv = (changedValue, values) => {
+        const {inv, ci, lfp,} = values;
+        if (inv > 0 && ci >= 0 && lfp >= 0) {
+            setVariables({...values})
+            setVisible(true)
+        } else {
+            setVisible(false)
         }
-    ] : [];
+
+        console.log("Form.onValuesChange()", changedValue, values)
+    }
 
 
-    const data2 = result ? [{
-        key: '5',
-        name: 'LPV',
-        value: result.transactionValuation.postTransactionLPV.toFixed(3),
-        tags: ['Post-Transaction Valuation'],
-        child: true
-    },
-    ] : [];
-
+    // compute PV, GPV, and LPV
+    const {inv, ci, lfp,} = variables
+    const pvGpvLpv = PvGpvLpv.ofPayoffOptions(new LimitedPartnership(undefined, ci/100., lfp/100.), inv, options)
     return (
         <>
             <Space direction="vertical">
                 <Card>
                     <Form
-                        name="basic"
-                        layout={"vertical"}
+                        size={'small'}
+                        layout={"horizontal"}
                         labelCol={{
-                            span: 16,
+                            span: 24,
                         }}
                         wrapperCol={{
                             span: 24,
                         }}
                         labelAlign={"left"}
-                        onFinish={onFinish}
-                        onFinishFailed={onFinishFailed}
-                        onValuesChange={onValuesChange}
+                        onFinish={onFinishPvGpvLpv}
+                        onFinishFailed={onFinishFailedPvGpvLpv}
+                        onValuesChange={onValuesChangePvGpvLpv}
                         autoComplete="on"
                         initialValues={variables}
                         requiredMark={false}
-
                     >
-                        <h1>Inputs</h1>
                         <Form.Item
                             label="Investment in This Round"
                             name="inv"
@@ -196,41 +157,15 @@ export default function GenericPayoff() {
                                 }
                             ]}
                         >
-                            <InputNumber size={"middle"} style={{width: "100%"}} addonBefore="$"/>
+                            <IntegerStep
+                                min={0}
+                                max={100}
+                                addonBefore={'$'}
+                            />
                         </Form.Item>
                         <Form.Item
-                            label="Total Valuation"
-                            name="tv"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: thisIsARequiredField,
-                                }, {
-                                    pattern: regexPositiveNumber,
-                                    message: "This is a positive number."
-                                }
-                            ]}
-                        >
-                            <InputNumber size={"middle"} style={{width: "100%"}} addonBefore="$"/>
-                        </Form.Item>
-                        <Form.Item
-                            label="Volatility"
-                            name="vol"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: thisIsARequiredField,
-                                }, {
-                                    pattern: regexPositiveNumber,
-                                    message: "This is a positive number."
-                                }
-                            ]}
-                        >
-                            <InputNumber size={"middle"} style={{width: "100%"}} addonAfter="%"/>
-                        </Form.Item>
-                        <Form.Item
-                            label="Annualized Risk-free Interest Rate (r)"
-                            name="r"
+                            label="GP Carried Interest"
+                            name="ci"
                             rules={[
                                 {
                                     required: true,
@@ -241,23 +176,11 @@ export default function GenericPayoff() {
                                 }
                             ]}
                         >
-                            <InputNumber size={"middle"} style={{width: "100%"}} addonAfter="%"/>
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Time to Expiration, Expected Holding Period"
-                            name="H"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: thisIsARequiredField,
-                                }, {
-                                    pattern: regexPositiveNumber,
-                                    message: "This is a positive number."
-                                }
-                            ]}
-                        >
-                            <InputNumber size={"middle"} style={{width: "100%"}} addonAfter="Years"/>
+                            <IntegerStep
+                                min={0}
+                                max={100}
+                                addonAfter={'%'}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Lifetime Fee Percentage"
@@ -272,16 +195,49 @@ export default function GenericPayoff() {
                                 }
                             ]}
                         >
-                            <InputNumber size={"middle"} style={{width: "100%"}} addonAfter="%"/>
+                            <IntegerStep
+                                min={0}
+                                max={100}
+                                addonAfter={'%'}
+                            />
                         </Form.Item>
+                    </Form>
+                </Card>
+            </Space>
+            <div style={{height: '10px'}}></div>
 
-                        <h1>Payoff Schedule</h1>
-                        <h3 style={{color: '#3498db'}}>{callOptionsText(variables.options)}</h3>
+            {options && options.length > 0 &&
+                <Card>
+                    <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv}/>
+                </Card>
+            }
+            <div style={{height: '10px'}}/>
+            <Space direction="vertical">
+                <Card>
+                    <Form
+                        name="basic"
+                        layout={"vertical"}
+                        labelCol={{
+                            span: 16,
+                        }}
+                        wrapperCol={{
+                            span: 24,
+                        }}
+                        labelAlign={"left"}
+                        onFinish={onFinishOptions}
+                        onFinishFailed={onFinishFailedOptions}
+                        onValuesChange={onValuesChangeOptions}
+                        autoComplete="on"
+                        initialValues={{options}}
+                        requiredMark={false}
+                    >
+                        <h1>Partial Valuation (PV) - Payoff Schedule</h1>
+                        <h3 style={{color: '#3498db'}}>{callOptionsText(options)}</h3>
 
                         <Form.List name="options">
                             {(fields, {add, remove}) => (
                                 <>
-                                    {fields.map(({key, name, ...restField}) => (
+                                    {fields.map(({key, name, ...restField}, index) => (
                                         <Space
                                             key={key}
                                             style={{display: 'flex', marginBottom: 0}}
@@ -330,7 +286,26 @@ export default function GenericPayoff() {
                                                 {...restField}
                                                 name={[name, 'strike']}
                                                 label={key === fields[0].key ? 'Strike Price' : ''}
-                                                rules={[{required: true, message: 'Missing Strike Price'}]}
+                                                rules={[{required: true, message: 'Missing Strike Price'},
+                                                    {
+                                                        validator: (_, value) => {
+                                                            return new Promise((resolve, reject) => { // Updated to return a promise
+                                                                const optionsInput = fields.map(
+                                                                    (field) => options[field.name] || {}
+                                                                );
+
+                                                                if (index > 0) {
+                                                                    for (let j = 0; j < index; j++) {
+                                                                        if (value <= optionsInput[j].strike) {
+                                                                            reject(new Error("Strike prices must be in ascending order"));
+                                                                        }
+                                                                    }
+                                                                }
+                                                                resolve();
+                                                            });
+                                                        }
+                                                    }
+                                                ]}
                                             >
                                                 <InputNumber
                                                     placeholder="0"
@@ -365,37 +340,10 @@ export default function GenericPayoff() {
                                 </>
                             )}
                         </Form.List>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit">
-                                Calculate
-                            </Button>
-                        </Form.Item>
                     </Form>
                 </Card>
-                {/*<Card>*/}
-                {/*    <PayoffSchedule onFinish={(options) => {*/}
-                {/*        console.log('received values', options)*/}
-                {/*    }}/>*/}
-                {/*</Card>*/}
-
-                {visible &&
-                    <Card bordered={false} title={"Valuation"}>
-                        <Table columns={columns} dataSource={data0} size="small" pagination={false}/>
-                    </Card>
-                } {visible &&
-                <Card bordered={false} title={"Post-Transaction Valuation"}>
-                    <Table columns={columns} dataSource={data1} size="small" pagination={false}/>
-                    <Divider/>
-                    <Table columns={columns} dataSource={data2} size="small" pagination={false}/>
-                </Card>}
             </Space>
-            <div style={{height: '100px'}}></div>
-
-            <Space>
-                <GenericPayoffInstruction/>
-            </Space>
-
-            <div style={{height: '100px'}}></div>
+            <div style={{height: '10px'}}/>
 
             <Space direction="vertical">
                 {visible &&

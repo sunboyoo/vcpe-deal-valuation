@@ -46,7 +46,7 @@ const parseNumberFromFractionText = (value) => {
     }
 };
 
-export default function GenericExpirationPayoffDiagram() {
+export default function GenericExpirationPayoffDiagramPvGpvLpv() {
     const [options, setOptions] = useState([...optionsInitialValues])
     const [visible, setVisible] = useState(false)
 
@@ -75,7 +75,6 @@ export default function GenericExpirationPayoffDiagram() {
 
     return (
         <>
-
             <Space direction="vertical">
                 <Card>
                     <Form

@@ -12,6 +12,8 @@ import SeriesAPcp from "../components/SeriesAPcp";
 import GenericPayoff from "../components/GenericPayoff";
 import Welcome from "../pages/Welcome";
 import GenericExpirationPayoffDiagram from "../components/GenericExpirationPayoffDiagram";
+import GenericExpirationPayoffDiagramPvGpvLpv from "../components/GenericExpirationPayoffPvGpvLpv";
+
 
 // 懒加载, 延时测试效果
 // const EuropeanCallPutOption = lazy(() =>
@@ -108,12 +110,16 @@ const routes = [
                 element: <Outlet/>,
                 children: [
                     {
-                        path: 'generic-payoff',
-                        element: <GenericPayoff/>
-                    }, {
                         path: 'generic-payoff-diagram',
                         element: <GenericExpirationPayoffDiagram/>
-                    }
+                    },{
+                        path: 'generic-payoff-diagram-pvgpvlpv',
+                        element: <GenericExpirationPayoffDiagramPvGpvLpv/>
+                    },
+                    {
+                        path: 'generic-payoff',
+                        element: <GenericPayoff/>
+                    },
                 ]
             },{
                 path: '*',

@@ -1,5 +1,4 @@
 import React from "react";
-import {Card, Space} from "antd";
 import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
 import {callOptionsText, segmentedLineToOption} from "../../lib/line/line-option-converter";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
@@ -89,47 +88,47 @@ export function ExpirationPayoffDiagramPvGpvLpv({
                         labels={xPv}
                         subtitleTexts={[subtitleTextPv, subtitleTextGpv, subtitleTextLpv, subtitleTextLpc]}
                         yMax={yMax}/>
-                    <div style={{height: '50px'}}/>
+                    <div style={{height: '10px'}}/>
                 </>
             }
 
             {showPv && showIndividualDiagrams &&
                 <>
-                    <div style={{height: '50px'}}/>
+                    <div style={{height: '10px'}}/>
                     <ExpirationPayoffDiagram3
                         datasets={showLpc ? [datasetPv, datasetLpc] : [datasetPv]}
                         labels={xPv}
                         subtitleTexts={showLpc ? [subtitleTextPv, subtitleTextLpc] : [subtitleTextPv]}
                         yMax={yMax}/>
-                    <div style={{height: '50px'}}/>
+                    <div style={{height: '10px'}}/>
                 </>
             }
 
             {showGpv && showIndividualDiagrams &&
                 <>
-                    <div style={{height: '50px'}}/>
+                    <div style={{height: '10px'}}/>
                     <ExpirationPayoffDiagram3
                         datasets={[datasetGpv, datasetLpc]}
                         labels={xGpv}
                         subtitleTexts={[subtitleTextGpv, subtitleTextLpc]}
                         yMax={yMax}/>
-                    <div style={{height: '0px'}}/>
+                    <div style={{height: '10px'}}/>
                 </>
             }
 
             {showLpv && showIndividualDiagrams &&
                 <>
-                    <div style={{height: '50px'}}/>
+                    <div style={{height: '10px'}}/>
 
                     <ExpirationPayoffDiagram3
                         datasets={[datasetLpv, datasetLpc]}
                         labels={xLpv}
                         subtitleTexts={[subtitleTextLpv, subtitleTextLpc]}
                         yMax={yMax}/>
-                    <div style={{height: '50px'}}/>
+                    <div style={{height: '10px'}}/>
 
                 </>
             }
-        </>
+            </>
     )
 }

@@ -29,6 +29,7 @@ export default function ExpirationPayoffDiagramPvGpvLpvWithInput({
         ci: ciDefault,
         lfp: lfpDefault,
     })
+
     const [visible, setVisible] = useState(invDefault > 0 && ciDefault >= 0 && lfpDefault >= 0);
 
     const onFinish = (values) => {
