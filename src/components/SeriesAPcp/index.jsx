@@ -32,7 +32,7 @@ const initialValues = {
     ci: 20,//%
     lfp: 25,//%
     debt: 0,
-    threshold: 90
+    threshold: 30
 }
 export default function SeriesAPcp(){
     const [variables, setVariables] = useState({...initialValues})
@@ -157,14 +157,17 @@ export default function SeriesAPcp(){
     // compute PV, GPV, and LPV
     const {so, sp, cr, inv, fvPref, liqPref, simDiv, comDiv, tv, vol, r, H, ci, lfp, debt, threshold} = variables
     const fraction = (sp*cr)/(so+sp*cr)
-    const fvPrefActual = fvPref*(1+liqPref)
+    const fvPrefActual = fvPref*liqPref
     const drop = fvPrefActual*(1 - fraction)
     const yThreshold = fvPrefActual + fraction*(threshold - fvPrefActual) - drop
-    const xs = [0, fvPref*(1+liqPref), threshold]
+    const xs = [0, fvPref*liqPref, threshold]
     const ys = [0, undefined, yThreshold]
     const slopes = [1, fraction, fraction]
     const pvGpvLpv = new PvGpvLpv(new LimitedPartnership(undefined, ci/100., lfp/100.), inv, xs, ys, slopes)
-
+    console.log(fvPref, liqPref)
+    console.log('xs', xs)
+    console.log('ys', ys)
+    console.log('pv', pvGpvLpv.pv.plotPoints())
     return  (
         <>
         <Space direction="vertical" >
@@ -205,7 +208,7 @@ export default function SeriesAPcp(){
                         <InputNumber  size={"middle"} style={{width: "100%"}}/>
                     </Form.Item>
                     <Form.Item
-                        label="New Convertible Preferred Stock Shares Purchased"
+                        label="New PCP Shares Purchased"
                         name="sp"
                         rules={[
                             {
@@ -458,7 +461,9 @@ export default function SeriesAPcp(){
         </Space>
 
     <Space direction="vertical">
-        {visible && <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv} result={result}/>}
+        {visible && <Card>
+            <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv} result={result}/>
+        </Card>}
         {visible &&
             <Card bordered={false} title={"Expiration Payoff Diagram"} >
                 <p>Please note that the following expiration payoff diagrams assume that there are no dividends. If there are dividends, they should be taken into consideration in order to get an accurate representation of the potential payoff at expiration.</p>

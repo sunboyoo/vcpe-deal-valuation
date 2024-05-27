@@ -155,7 +155,7 @@ export default function SeriesARpCs(){
 
     // compute PV, GPV, and LPV
     const {so, sp, inv, fvPref, liqPref, simDiv, comDiv, tv, vol, r, H, ci, lfp, debt} = variables
-    const xs = [0, fvPref*(1+liqPref)]
+    const xs = [0, fvPref*liqPref]
     const ys = [0, undefined]
     const slopes = [1, sp/(so+sp)]
     const pvGpvLpv = new PvGpvLpv(new LimitedPartnership(undefined, ci/100., lfp/100.), inv, xs, ys, slopes)
@@ -422,7 +422,9 @@ export default function SeriesARpCs(){
         </Space>
 
     <Space direction="vertical">
-        {visible && <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv} result={result}/>}
+        {visible && <Card>
+            <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv} result={result}/>
+        </Card>}
         {visible &&
             <Card bordered={false} title={"Expiration Payoff Diagram"} >
                 <p>Please note that the following expiration payoff diagrams assume that there are no dividends. If there are dividends, they should be taken into consideration in order to get an accurate representation of the potential payoff at expiration.</p>

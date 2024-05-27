@@ -67,7 +67,7 @@ export const route = {
                     },
                     {
                         path: 'generic-payoff',
-                        name: 'Generic Payoff',
+                        name: 'Generic Payoff Valuation',
                     },
                 ],
             }, {

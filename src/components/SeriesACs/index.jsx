@@ -361,7 +361,9 @@ export default function SeriesACs(){
         </Space>
 
     <Space direction="vertical">
-        {visible && <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv} result={result}/>}
+        {visible && <Card>
+            <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv} result={result}/>
+        </Card>}
         {visible &&
             <Card bordered={false} title={"Expiration Payoff Diagram"} >
                 <p>Please note that the following expiration payoff diagrams assume that there are no dividends. If there are dividends, they should be taken into consideration in order to get an accurate representation of the potential payoff at expiration.</p>

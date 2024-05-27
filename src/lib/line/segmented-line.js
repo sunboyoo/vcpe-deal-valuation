@@ -1,4 +1,11 @@
-import {LeftClosedRightOpenSegment, LineSegment, Ray, yOnLine} from "./line-segment"
+import {
+    LeftClosedRightOpenSegment,
+    LeftOpenRightClosedSegment,
+    LineSegment,
+    OpenLineSegment,
+    Ray,
+} from "./line-segment"
+import {StraightLine} from "./straight-line";
 
 /*
     for ys, only the ys[0] and ys[xDrop] have values. all other need to be NaN or undefined
@@ -7,10 +14,7 @@ import {LeftClosedRightOpenSegment, LineSegment, Ray, yOnLine} from "./line-segm
     slopes = [1, 2, 3, 4]
 * */
 
-function isLineContinuousAt(x0, y0, slope, x, y, eps = 1e-7){
-    const yContinuous = yOnLine(x0, y0, slope, x);
-    return Math.abs(yContinuous - y) < eps;
-}
+
 
 export class SegmentedLine {
     constructor(segments) {
@@ -23,54 +27,115 @@ export class SegmentedLine {
     * false - discontinuity at x
     * */
 
-    continuityAt(x){
-        // const eps = 1e-6
-        const leftLimit = this.y(x - this.eps)
-        const rightLimit = this.y(x + this.eps)
-        const delta = Math.abs(rightLimit - leftLimit)
+    leftHandContinuity(x){
+        let includesX = false;
+        let includesLeft = false;
+        this.segments.forEach(segment => {
+            if (segment.includes(x)){
+                includesX = true;
+            }
 
-        // if (delta >= (this.eps * 10^2)) {
-        //     console.log("**************************不连续")
-        // }
-        return delta < (this.eps * 10^2)
+            if (segment.includes(x - this.eps)){
+                includesLeft = true
+            }
+        })
+
+        if (!includesX){
+            throw new Error(`${x} is not on the line.`)
+        }
+
+        if (!includesLeft){
+            throw new Error(`${x - this.eps} is not on the line.`)
+        }
+
+        const yLeftLimit = this.y(x - this.eps)
+        const y = this.y(x)
+        const delta = Math.abs(y - yLeftLimit)
+
+        return delta < (this.eps)
     }
-    static of(x, y, slopes){
+
+    rightHandContinuity(x){
+        return this.leftHandContinuity(x + this.eps);
+    }
+
+    continuityAt(x){
+        return this.rightHandContinuity(x) && this.rightHandContinuity(x);
+    }
+
+    static of(xArray, yArray, kArray){
         // check the input
-        if (!Array.isArray(x) || !Array.isArray(y) || !Array.isArray(slopes)){
-            throw new Error("xs, ys, and slopes should be arrays.")
+        if (!Array.isArray(xArray) || !Array.isArray(yArray) || !Array.isArray(kArray)){
+            throw new Error("xArray, yArray, kArray should be arrays.")
         }
-        if (x.length !== y.length || x.length !== slopes.length || x.length < 1){
-            throw new Error("xs, ys, and slopes should have the same number of elements and can't be empty.")
+
+        if (xArray.length !== yArray.length || xArray.length !== kArray.length || xArray.length < 1){
+            throw new Error("xArray, yArray, kArray should have the same number of elements and can't be empty.")
         }
-        if (!Number.isFinite(y[0])){
-            throw new Error("ys[0] must be provided.")
+
+        if (!Number.isFinite(yArray[0])){
+            throw new Error("yArray[0] must be provided.")
         }
-        const length = x.length
+
+        const length = xArray.length
         for (let i=0; i<length; i++){
-            if (!Number.isFinite(x[i]) || !Number.isFinite(slopes[i])){
-                throw new Error("xs and slopes should have explicit number values.")
+            if (!Number.isFinite(xArray[i]) || !Number.isFinite(kArray[i])){
+                throw new Error("xArray and kArray should have explicit number values.")
             }
         }
 
         const segments = []
         for (let i=0; i < length; i++) {
-            const yi = Number.isFinite(y[i]) ? y[i] : segments[i-1].yEnd
+            // y0 has a finite value
+            // y[i] has a finite value when Left-Hand is not continuous - PCP point
+            // y[i] could be undefined when Left-Hand is continuous
+            const xi = xArray[i];
+            const ki = kArray[i];
+            const yi = Number.isFinite(yArray[i]) ? yArray[i] : segments[i-1].yEnd
+            const straightLine = new StraightLine(xi, yi, ki)
 
-            // (1) the last segment is a Ray
             if (i === length-1){
-                segments.push(new Ray(x[i], yi, slopes[i]))
-                continue
-            }
+                // (1) the last segment is a Ray
+                segments.push(new Ray(xi, yi, ki))
 
-            // (2) non-last segments
-            // 如果给出下一个y的数字，并且线在下一个y的位置是跳跃的， 那么是PCP
-            if (Number.isFinite(y[i+1]) && !isLineContinuousAt(x[i], yi, slopes[i], x[i+1], y[i+1], 1e-7)) {
-                // (2.1) HalfOpenSegment - for PCP drop at qualified event
-                segments.push(new LeftClosedRightOpenSegment(x[i], yi, slopes[i], x[i+1], undefined))
+            } else if (i === 0){
+                // The first segment
 
+                if (Number.isFinite(yArray[i+1]) && !(straightLine.contains(xArray[i+1], yArray[i+1]))){
+                    // 下一个(x,y)不在同一条直线上
+                    segments.push(new LeftClosedRightOpenSegment(xi, yi, ki, xArray[i+1], undefined));
+                } else {
+                    // 下一个(x,y)在同一条直线上
+                    segments.push(new LineSegment(xi, yi, ki, xArray[i+1], undefined))
+                }
             } else {
-                // (2.2) LineSegment
-                segments.push(new LineSegment(x[i], yi, slopes[i], x[i+1], undefined))
+                // non-first and non-last segments
+                const leftSegment = segments[i-1]
+
+                if (straightLine.contains(leftSegment.xEnd, leftSegment.yEnd)) {
+                    // Left-hand continuous
+
+                    if (yArray[i+1] === undefined || straightLine.contains(xArray[i+1], yArray[i+1])) {
+                        // Right-hand continuous
+                        segments.push(new LineSegment(xi, yi, ki, xArray[i+1], undefined))
+                    } else {
+                        // Right-hand non-continuous
+                        // PCP drop at the right end
+                        segments.push(new LeftClosedRightOpenSegment(xi, yi, ki, xArray[i+1], undefined))
+                    }
+                } else {
+                    // Left-hand non-continuous
+
+                    if (yArray[i+1] === undefined || straightLine.contains(xArray[i+1], yArray[i+1])) {
+                        // Right-hand continuous
+                        // after PCP drop
+                        segments.push(new LeftOpenRightClosedSegment(xi, yi, ki, xArray[i+1], undefined))
+                    } else {
+                        // Right-hand non-continuous
+                        // PCP drop at the left end and right end
+                        segments.push(new OpenLineSegment(xi, yi, ki, xArray[i+1], undefined))
+                    }
+                }
             }
         }
 
@@ -168,11 +233,19 @@ export class SegmentedLine {
         const xArray = []
         for (let i=0; i < this.segments.length; i++){
             const xi = this.segments[i].x(y)
-            if (xi){
+            /**
+             * @returns {undefined|number[]|number}
+             */
+            if (Number.isFinite(xi)){
                 xArray.push(xi)
+            } else if (Array.isArray(xi)){
+                xi.forEach(x => {
+                    if (Number.isFinite(x)){
+                        xArray.push(x);
+                    }
+                })
             }
         }
-
         return xArray
     }
 
@@ -196,6 +269,14 @@ export class SegmentedLine {
             if (segment instanceof LeftClosedRightOpenSegment){
                 x.push(segment.xStart, segment.xEnd - this.eps)
                 y.push(segment.yStart, segment.y(segment.xEnd - this.eps))
+                slopes.push(segment.slope, segment.slope)
+            } else if (segment instanceof LeftOpenRightClosedSegment){
+                x.push(segment.xStart + this.eps, segment.xEnd)
+                y.push(segment.y(segment.xStart + this.eps), segment.y(segment.xEnd))
+                slopes.push(segment.slope, segment.slope)
+            } else if (segment instanceof OpenLineSegment){
+                x.push(segment.xStart + this.eps, segment.xEnd - this.eps)
+                y.push(segment.y(segment.xStart + this.eps), segment.y(segment.xEnd - this.eps))
                 slopes.push(segment.slope, segment.slope)
             } else if (segment instanceof LineSegment){
                 x.push(segment.xStart)
@@ -230,7 +311,7 @@ export class SegmentedLine {
     addTail(x, y, slopes, scale=0.1){
         let deltaX;
         // if there is only one point on the line.
-        if (x[x.length - 1] - x[0] === 0){
+        if (x.length === 1){
             deltaX = 1;
         } else{
             deltaX = (x[x.length - 1] - x[0]) * scale;

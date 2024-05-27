@@ -1,16 +1,4 @@
-
-export function yOnLine(x0, y0, slope, x){
-    return y0 + (x - x0) * slope
-}
-
-function xOnLine(x0, y0, slope, y){
-    return x0 + (y - y0) / slope
-}
-
-function slopeOf(x0, y0, x1, y1){
-    return (y1 - y0) / (x1 - x0)
-}
-
+import {StraightLine} from "./straight-line";
 
 export class Ray{
     constructor(xStart, yStart, slope) {
@@ -31,12 +19,23 @@ export class Ray{
             throw new Error(`${x} is not on this line.`)
         }
 
-        return yOnLine(this.xStart, this.yStart, this.slope, x)
+        return new StraightLine(this.xStart, this.yStart, this.slope).y(x);
     }
 
     x(y){
-        const x = xOnLine(this.xStart, this.yStart, this.slope, y)
-        return this.includes(x) ? x : undefined
+        const x = new StraightLine(this.xStart, this.yStart, this.slope).x(y);
+
+        if (Number.isFinite(x)){
+            return this.includes(x) ? x : undefined
+        } else if (x === undefined) {
+            return undefined
+        } else if (Array.isArray(x) && x.length === 2 &&
+            x[0] === Number.NEGATIVE_INFINITY &&
+            x[1] === Number.POSITIVE_INFINITY){
+            return [this.xStart, Number.POSITIVE_INFINITY];
+        } else {
+            throw new Error(`Error with Ray.x(${x})`)
+        }
     }
 }
 
@@ -47,17 +46,33 @@ export class LineSegment extends Ray{
         this.xEnd = xEnd
         this.yEnd = yEnd
 
-        if (slope===undefined && yEnd===undefined){
+        if (!Number.isFinite(slope) && !Number.isFinite(yEnd)){
             throw new Error("slope and yEnd cannot be both undefined.")
         }
 
-        if (slope === undefined){
-            this.slope = slopeOf(xStart, yStart, xEnd, yEnd)
-        } else if (yEnd === undefined){
-            this.yEnd = yOnLine(xStart, yStart, slope, xEnd)
+        if (!Number.isFinite(slope)){
+            this.slope = StraightLine.slopeFor(xStart, yStart, xEnd, yEnd);
+        } else if (!Number.isFinite(yEnd)){
+            this.yEnd = new StraightLine(xStart, yStart, slope).y(xEnd);
         } else {
             this.slope = slope
             this.yEnd = yEnd
+        }
+    }
+
+    x(y){
+        const x = new StraightLine(this.xStart, this.yStart, this.slope).x(y);
+
+        if (Number.isFinite(x)){
+            return this.includes(x) ? x : undefined
+        } else if (x === undefined) {
+            return undefined
+        } else if (Array.isArray(x) && x.length === 2 &&
+            x[0] === Number.NEGATIVE_INFINITY &&
+            x[1] === Number.POSITIVE_INFINITY){
+            return [this.xStart, this.xEnd];
+        } else {
+            throw new Error(`Error with Ray.x(${x})`)
         }
     }
 
@@ -73,5 +88,23 @@ export class LineSegment extends Ray{
 export class LeftClosedRightOpenSegment extends LineSegment{
     includes(x){
         return x >= this.xStart && x < this.xEnd
+    }
+}
+
+export class LeftOpenRightClosedSegment extends LineSegment{
+    includes(x){
+        return x > this.xStart && x <= this.xEnd
+    }
+}
+
+// (xStart, yStart, and (xEnd, yEnd) are valid on OpenLineSegment.
+// LeftClosedRightOpenSegment.includes(xEnd) is false.
+// OpenLineSegment.y(xStart) raise Error.
+// OpenLineSegment.y(xEnd) raise Error.
+// OpenLineSegment.y(xStart + Number.EPSILON) is valid.
+// OpenLineSegment.y(xEnd - Number.EPSILON) is valid.
+export class OpenLineSegment extends LineSegment{
+    includes(x){
+        return x > this.xStart && x < this.xEnd;
     }
 }

@@ -2,10 +2,6 @@ import React from 'react';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import {Button, Form, Input, InputNumber, Select, Space} from 'antd';
 import {SecurityType} from "../../lib/generic-payoff";
-import ExpirationPayoffDiagramSegmentedLine from "../../chartjs/ExpirationPayoffDiagramSegmentedLine";
-import {optionArrayToSegmentedLine} from "../../lib/line/line-option-converter";
-
-
 
 const parseNumberFromFractionText = (value) => {
     if (typeof value === 'string' && value.includes('/')) {
