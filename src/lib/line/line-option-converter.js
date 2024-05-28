@@ -84,6 +84,7 @@ export function callOptionsText(callOptions){
         is_first_string = false;
     }
 
+    console.log("callOptionsText 无法显示BinaryCall")
     return string;
 }
 
