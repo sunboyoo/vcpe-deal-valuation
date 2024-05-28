@@ -24,11 +24,11 @@ const optionsInitialValues = [
         strike: 36,
         fraction: -1 / 20
     },
-    // {
-    //     securityType: SecurityType.BinaryCallOption,
-    //     strike: 130,
-    //     fraction: 1.2
-    // }
+    {
+        securityType: SecurityType.BinaryCallOption,
+        strike: 130,
+        fraction: 1.2
+    }
 ]
 
 const parseNumberFromFractionText = (value) => {

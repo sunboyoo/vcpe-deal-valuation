@@ -50,7 +50,7 @@ const App = () => {
             style={{
                 height: '100vh',
                 overflow: 'auto',
-            }}
+                }}
         >
             <ProConfigProvider hashed={false}>
                 <ConfigProvider

@@ -27,11 +27,11 @@ const optionsInitialValues = [
         strike: 36,
         fraction: -1 / 20
     },
-    // {
-    //     securityType: SecurityType.BinaryCallOption,
-    //     strike: 130,
-    //     fraction: 1.2
-    // }
+    {
+        securityType: SecurityType.BinaryCallOption,
+        strike: 130,
+        fraction: 1.2
+    }
 ]
 
 const regexPositiveNumber = /^(?!0+(\.0+)?$)(0*\.\d*[1-9]\d*|[1-9]\d*(\.\d*)?)$/
