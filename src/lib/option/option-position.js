@@ -1,4 +1,4 @@
-import {CallOption, Option} from "./option";
+import {Option} from "./option";
 
 /**
  * Class representing a position in an option portfolio.
@@ -12,8 +12,7 @@ export class OptionPosition {
      */
     constructor(option, quantity) {
         if (!(option instanceof Option)) {
-            console.log(option instanceof CallOption, option instanceof Option)
-            throw new Error(`Only instances of Option or its subclasses can be added. ${option} was provided. ${option instanceof CallOption}`);
+            throw new Error(`Only instances of Option or its subclasses can be added. ${option} was provided.`);
         }
 
         if (!Number.isFinite(quantity) && quantity !== 0) {

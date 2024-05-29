@@ -1,6 +1,6 @@
 
 import React from "react";
-import {optionPortfolioTest} from "../../lib/core/option-portfolio";
+import {optionPortfolioTest} from "../../lib/option/option-portfolio";
 
 export default function App () {
     optionPortfolioTest()
