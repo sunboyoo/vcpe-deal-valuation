@@ -1,6 +1,6 @@
 import {
     LeftClosedRightOpenSegment,
-    LineSegment,
+    LineSegment, Ray,
 } from "../line/line-segment";
 import {OptionPortfolio} from "../option/option-portfolio";
 import {OPTION_TYPES} from "../option/option";
@@ -26,7 +26,7 @@ export function segmentedLineToOptionPortfolio(segmentedLine){
         } else {
             const segmentPrev = segmentedLine.segments[i - 1];
             if (segmentPrev instanceof LeftClosedRightOpenSegment){
-                quantity = segmentPrev.slope;
+                quantity = segment.yStart - segmentPrev.yEnd;
                 optionType = OPTION_TYPES.BINARY_CALL_OPTION;
             } else if (segmentPrev instanceof LineSegment) {
                 quantity = segment.slope - segmentPrev.slope;
@@ -47,6 +47,8 @@ export function optionPortfolioToSegmentedLine(portfolio) {
         throw new Error(`Expected an OptionPortfolio, but got ${portfolio} `);
     }
 
+    const segments = [];
+
     portfolio.positions.forEach((position, i) => {
         let xStart = position.strike;
         let xEnd;
@@ -56,14 +58,19 @@ export function optionPortfolioToSegmentedLine(portfolio) {
 
         if (i === 0) {
             k = position.quantity;
+            yStart = 0;
+
+            if (portfolio.positions.length === 1) {
+                segments.push(new Ray(xStart, yStart, k));
+            }
         } else {
             const positionPrev = portfolio.positions[i - 1];
-
+        // *********************************未写完，继续
         }
 
 
 
     })
 
-
+    return new SegmentedLine(segments);
 }
