@@ -49,27 +49,32 @@ export class OptionPortfolio {
     text() {
         let s = '';
         this.positions.forEach(((position, index) => {
-            const quantity = position.quantity;
-            const option = position.option;
-            if (index === 0) {
-                if (quantity === 1) {
-                    s += ''
-                } else if (quantity === -1) {
-                    s += '-'
+            // 不显示 '0 x C(n)' 的情况
+            if (position.quantity !== 0) {
+                const quantity = position.quantity;
+                const option = position.option;
+
+                if (s === '') {
+                    if (quantity === 1) {
+                        s += ''
+                    } else if (quantity === -1) {
+                        s += '-'
+                    } else {
+                        s += quantity > 0 ? `${trimNumber(quantity)} x ` : `(${trimNumber(quantity)}) x `
+                    }
                 } else {
-                    s += quantity > 0 ? `${trimNumber(quantity)} x ` : `(${trimNumber(quantity)}) x `
+                    if (quantity === 1) {
+                        s += ' + '
+                    } else if (quantity === -1) {
+                        s += ' - '
+                    } else {
+                        s += quantity > 0 ? ` + ${trimNumber(quantity)} x ` : ` - ${trimNumber(Math.abs(quantity))} x `
+                    }
                 }
-            } else {
-                if (quantity === 1) {
-                    s += ' + '
-                } else if (quantity === -1) {
-                    s += ' - '
-                } else {
-                    s += quantity > 0 ? ` + ${trimNumber(quantity)} x ` : ` - ${trimNumber(Math.abs(quantity))} x `
-                }
+
+                s += `${option.text()}`
             }
 
-            s += `${option.text()}`
         }))
         return s;
     }

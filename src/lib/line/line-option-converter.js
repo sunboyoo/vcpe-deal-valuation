@@ -1,5 +1,5 @@
 import {SecurityType} from "../generic-payoff";
-import {LeftClosedRightOpenSegment, LineSegment, OpenLineSegment, Ray} from "./line-segment";
+import {LeftClosedRightOpenSegment, LineSegment, OpenOpen_TO_REMOVE, Ray} from "./line-segment";
 import {SegmentedLine} from "./segmented-line";
 import {StraightLine} from "./straight-line";
 
@@ -144,7 +144,7 @@ export function optionArrayToSegmentedLine(options) {
                     segments.push(new LineSegment(x, y, k, options[i + 1].strike, undefined));
                 } else if (options[i+1].securityType === SecurityType.BinaryCallOption){
                     // 这个x的位置是 BC, 下一个x的位置是 BC, OpenLineSegment
-                    segments.push(new OpenLineSegment(x, y, k, options[i + 1].strike, undefined));
+                    segments.push(new OpenOpen_TO_REMOVE(x, y, k, options[i + 1].strike, undefined));
                 }
             }
 

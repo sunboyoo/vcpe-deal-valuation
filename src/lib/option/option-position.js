@@ -15,9 +15,13 @@ export class OptionPosition {
             throw new Error(`Only instances of Option or its subclasses can be added. ${option} was provided.`);
         }
 
-        if (!Number.isFinite(quantity) && quantity !== 0) {
-            throw new Error(`Quantity should be a non-zero finite number. ${quantity} was provided.`);
+        if (!Number.isFinite(quantity)) {
+            throw new Error(`Quantity should be a finite number. ${quantity} was provided.`);
         }
+
+        // if (quantity === 0) {
+        //     throw new Error(`Quantity should be a non-zero number. ${quantity} was provided.`);
+        // }
 
         this.option = option;
         this.quantity = quantity;

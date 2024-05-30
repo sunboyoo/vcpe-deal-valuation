@@ -91,7 +91,7 @@ export class LeftClosedRightOpenSegment extends LineSegment{
     }
 }
 
-export class LeftOpenRightClosedSegment extends LineSegment{
+export class OpenClosed_TO_REMOVE extends LineSegment{
     includes(x){
         return x > this.xStart && x <= this.xEnd
     }
@@ -103,7 +103,7 @@ export class LeftOpenRightClosedSegment extends LineSegment{
 // OpenLineSegment.y(xEnd) raise Error.
 // OpenLineSegment.y(xStart + Number.EPSILON) is valid.
 // OpenLineSegment.y(xEnd - Number.EPSILON) is valid.
-export class OpenLineSegment extends LineSegment{
+export class OpenOpen_TO_REMOVE extends LineSegment{
     includes(x){
         return x > this.xStart && x < this.xEnd;
     }

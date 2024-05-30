@@ -1,8 +1,8 @@
 import {
     LeftClosedRightOpenSegment,
-    LeftOpenRightClosedSegment,
+    OpenClosed_TO_REMOVE,
     LineSegment,
-    OpenLineSegment,
+    OpenOpen_TO_REMOVE,
     Ray,
 } from "./line-segment"
 import {StraightLine} from "./straight-line";
@@ -129,11 +129,11 @@ export class SegmentedLine {
                     if (yArray[i+1] === undefined || straightLine.contains(xArray[i+1], yArray[i+1])) {
                         // Right-hand continuous
                         // after PCP drop
-                        segments.push(new LeftOpenRightClosedSegment(xi, yi, ki, xArray[i+1], undefined))
+                        segments.push(new OpenClosed_TO_REMOVE(xi, yi, ki, xArray[i+1], undefined))
                     } else {
                         // Right-hand non-continuous
                         // PCP drop at the left end and right end
-                        segments.push(new OpenLineSegment(xi, yi, ki, xArray[i+1], undefined))
+                        segments.push(new OpenOpen_TO_REMOVE(xi, yi, ki, xArray[i+1], undefined))
                     }
                 }
             }
@@ -270,11 +270,11 @@ export class SegmentedLine {
                 x.push(segment.xStart, segment.xEnd - this.eps)
                 y.push(segment.yStart, segment.y(segment.xEnd - this.eps))
                 slopes.push(segment.slope, segment.slope)
-            } else if (segment instanceof LeftOpenRightClosedSegment){
+            } else if (segment instanceof OpenClosed_TO_REMOVE){
                 x.push(segment.xStart + this.eps, segment.xEnd)
                 y.push(segment.y(segment.xStart + this.eps), segment.y(segment.xEnd))
                 slopes.push(segment.slope, segment.slope)
-            } else if (segment instanceof OpenLineSegment){
+            } else if (segment instanceof OpenOpen_TO_REMOVE){
                 x.push(segment.xStart + this.eps, segment.xEnd - this.eps)
                 y.push(segment.y(segment.xStart + this.eps), segment.y(segment.xEnd - this.eps))
                 slopes.push(segment.slope, segment.slope)

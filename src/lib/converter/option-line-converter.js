@@ -1,9 +1,6 @@
-import {
-    LeftClosedRightOpenSegment,
-    LineSegment, Ray,
-} from "../line/line-segment";
+import {LeftClosedRightOpenSegment, LineSegment, Ray,} from "../line/line-segment";
 import {OptionPortfolio} from "../option/option-portfolio";
-import {OPTION_TYPES} from "../option/option";
+import {BinaryCallOption, CallOption, OPTION_TYPES} from "../option/option";
 import {SegmentedLine} from "../line/segmented-line";
 
 export function segmentedLineToOptionPortfolio(segmentedLine){
@@ -50,27 +47,75 @@ export function optionPortfolioToSegmentedLine(portfolio) {
     const segments = [];
 
     portfolio.positions.forEach((position, i) => {
-        let xStart = position.strike;
-        let xEnd;
+        const option = position.option;
+        const strike = option.strike;
+        const quantity = position.quantity;
+        const xStart = strike;
         let yStart;
-        let yEnd;
-        let k;
+        let slope;
+
 
         if (i === 0) {
-            k = position.quantity;
+            // The first Line
+            slope = quantity;
             yStart = 0;
 
             if (portfolio.positions.length === 1) {
-                segments.push(new Ray(xStart, yStart, k));
+                // The first line is the last line
+                segments.push(new Ray(xStart, yStart, slope));
+            } else {
+                // There are more than one lines
+                const positionNext = portfolio.positions[1];
+                const optionNext = positionNext.option;
+                const xEnd = positionNext.option.strike;
+
+                if (optionNext instanceof BinaryCallOption){
+                    segments.push(new LeftClosedRightOpenSegment(xStart, yStart, slope, xEnd, undefined));
+                } else if (optionNext instanceof CallOption){
+                    segments.push(new LineSegment(xStart, yStart, slope, xEnd, undefined));
+                }
             }
-        } else {
-            const positionPrev = portfolio.positions[i - 1];
-        // *********************************未写完，继续
+        } else if (i < portfolio.positions.length - 1) {
+            // The middle line, not the first, not the last
+            const optionNext = portfolio.positions[i + 1].option;
+            const xEnd = optionNext.strike;
+            const slope = getSlope(position, segments[i-1]);
+            const yStart = getYStart(position, segments[i-1]);
+
+            if (optionNext instanceof BinaryCallOption) {
+                // (1) C----BC
+                // (3) BC----BC
+                segments.push(new LeftClosedRightOpenSegment(xStart, yStart, slope, xEnd, undefined));
+            } else if (optionNext instanceof CallOption){
+                // (2) BC----C
+                // (4) C----C
+                segments.push(new LineSegment(xStart, yStart, slope, xEnd, undefined));
+            }
+
+        } else if (i === portfolio.positions.length - 1) {
+            const slope = getSlope(position, segments[i-1]);
+            const yStart = getYStart(position, segments[i-1]);
+            segments.push(new Ray(xStart, yStart, slope));
         }
-
-
-
     })
 
     return new SegmentedLine(segments);
+}
+
+function getSlope(position, segmentPrev) {
+    const option = position.option;
+    if (option instanceof CallOption){
+        return segmentPrev.slope + position.quantity;
+    } else if (option instanceof BinaryCallOption){
+        return segmentPrev.slope;
+    }
+}
+
+function getYStart(position, segmentPrev) {
+    const option = position.option;
+    if (option instanceof CallOption){
+        return segmentPrev.yEnd;
+    } else if (option instanceof BinaryCallOption){
+        return segmentPrev.yEnd + position.quantity;
+    }
 }
