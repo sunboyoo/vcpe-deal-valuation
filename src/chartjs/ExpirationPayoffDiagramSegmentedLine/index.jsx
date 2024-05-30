@@ -1,7 +1,7 @@
 import React from "react";
 import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
-import {callOptionsText, segmentedLineToOption} from "../../lib/line/line-option-converter";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
+import {segmentedLineToOptionPortfolio} from "../../lib/converter/option-line-converter";
 
 export default function ExpirationPayoffDiagramSegmentedLine({segmentedLine, result = undefined}) {
     const [x, y, slopes] = segmentedLine.plotPointsWithTail()
@@ -9,9 +9,9 @@ export default function ExpirationPayoffDiagramSegmentedLine({segmentedLine, res
     let subtitleText
 
     if (result) {
-        subtitleText = "Payoff Schedule = " + callOptionsText(segmentedLineToOption(segmentedLine)) + " = " + result.toFixed(4)
+        subtitleText = "Payoff Schedule = " + segmentedLineToOptionPortfolio(segmentedLine).text() + " = " + result.toFixed(4)
     } else {
-        subtitleText = "Payoff Schedule = " + callOptionsText(segmentedLineToOption(segmentedLine))
+        subtitleText = "Payoff Schedule = " + segmentedLineToOptionPortfolio(segmentedLine).text()
     }
 
     const dataset = {

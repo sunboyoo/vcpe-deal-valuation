@@ -5,7 +5,6 @@ import {addSeries, analyze} from "../../lib/series";
 import {LimitedPartnership, PvGpvLpv} from "../../lib/line/pv-gpv-lpv";
 import {ExpirationPayoffDiagramPvGpvLpv} from "../ExpirationPayoffDiagramPvGpvLpv";
 import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
-import {callOptionsText, segmentedLineToOption} from "../../lib/line/line-option-converter";
 import Milestone from "../../antd/Milestone";
 import {useState} from "react";
 import CardList from "../../antd/CardList";
@@ -14,6 +13,7 @@ import SankeyDiagramInstructions from "./sankey-desc";
 import SeriesListDescription from "./series-list-desc";
 import MilestoneInstruction from "./milestone-desc";
 import ExpirationPayoffDiagramPvGpvLpvWithInput from "../ExpirationPayoffDiagramPvGpvLpvWithInput";
+import {segmentedLineToOptionPortfolio} from "../../lib/converter/option-line-converter";
 
 const initialSeriesValue = [{
     id: 0,
@@ -91,7 +91,7 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
             tension: 0,
             yAxisID: "y",
         });
-        subtitleTexts.push(processedSeriesArray[i].seriesName + ": Partial Valuation = " + callOptionsText(segmentedLineToOption(line)));
+        subtitleTexts.push(processedSeriesArray[i].seriesName + ": Partial Valuation = " + segmentedLineToOptionPortfolio(line).text());
     });
 
     const x = xs[0];

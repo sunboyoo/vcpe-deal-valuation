@@ -1,6 +1,6 @@
 import {SegmentedLine} from "./segmented-line";
 import {LeftClosedRightOpenSegment, LineSegment, Ray} from "./line-segment";
-import {optionArrayToSegmentedLine} from "./line-option-converter";
+import {optionArrayToOptionPortfolio, optionPortfolioToSegmentedLine} from "../converter/option-line-converter";
 
 export class LimitedPartnership{
     constructor(managementFee=0.02, carriedInterest=0.2, lifetimeFee=0.25) {
@@ -35,7 +35,7 @@ export class PvGpvLpv{
     }
 
     static ofPayoffOptions(limitedPartnership= new LimitedPartnership(), invest, optionArray){
-        const [x, y, slopes] = optionArrayToSegmentedLine(optionArray).plotPoints();
+        const [x, y, slopes] = optionPortfolioToSegmentedLine(optionArrayToOptionPortfolio(optionArray)).plotPoints();
         return new PvGpvLpv(limitedPartnership, invest, x, y, slopes)
     }
 

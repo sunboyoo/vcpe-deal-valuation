@@ -3,9 +3,7 @@ import React, {useState} from "react";
 import {DashOutlined, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {postTransactionValuation, SecurityType} from "../../lib/generic-payoff";
 import GenericPayoffInstruction from "./desc";
-import {
-    callOptionsText,
-} from "../../lib/line/line-option-converter";
+import {optionArrayToOptionPortfolio} from "../../lib/converter/option-line-converter";
 
 
 // so = pre-money shares outstanding		11
@@ -276,7 +274,7 @@ export default function GenericPayoff() {
                         </Form.Item>
 
                         <h1>Payoff Schedule</h1>
-                        <h3 style={{color: '#3498db'}}>{callOptionsText(variables.options)}</h3>
+                        <h3 style={{color: '#3498db'}}>{optionArrayToOptionPortfolio(variables.options).text()}</h3>
 
                         <Form.List name="options">
                             {(fields, {add, remove}) => (

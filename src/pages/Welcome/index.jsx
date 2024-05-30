@@ -1,9 +1,10 @@
 
 import React from "react";
-import {optionPortfolioTest} from "../../lib/option/option-portfolio";
+import {testConversionFunctions, testPortfolioConversionFunctions} from "../../lib/converter/option-line-converter";
 
 export default function App () {
-    optionPortfolioTest()
+    testConversionFunctions()
+    testPortfolioConversionFunctions()
     return (
         <div>Welcome</div>
     )

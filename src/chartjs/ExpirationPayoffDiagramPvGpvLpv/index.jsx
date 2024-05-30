@@ -1,7 +1,7 @@
 import React from "react";
 import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
-import {callOptionsText, segmentedLineToOption} from "../../lib/line/line-option-converter";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
+import {segmentedLineToOptionPortfolio} from "../../lib/converter/option-line-converter";
 
 export function ExpirationPayoffDiagramPvGpvLpv({
                                                     pvGpvLpv,
@@ -24,13 +24,13 @@ export function ExpirationPayoffDiagramPvGpvLpv({
     const subtitleTextLpc = "LP Cost = " + lpc
 
     if (result) {
-        subtitleTextPv = "Partial Valuation = " + callOptionsText(segmentedLineToOption(pv)) + " = " + result.PV.toFixed(4)
-        subtitleTextGpv = "GP Carry Valuation = " + callOptionsText(segmentedLineToOption(gpv)) + " = " + result.GPCV.toFixed(4)
-        subtitleTextLpv = "LP Valuation = " + callOptionsText(segmentedLineToOption(lpv)) + " = " + result.LPV.toFixed(4)
+        subtitleTextPv = "Partial Valuation = " + segmentedLineToOptionPortfolio(pv).text() + " = " + result.PV.toFixed(4)
+        subtitleTextGpv = "GP Carry Valuation = " + segmentedLineToOptionPortfolio(gpv).text() + " = " + result.GPCV.toFixed(4)
+        subtitleTextLpv = "LP Valuation = " + segmentedLineToOptionPortfolio(lpv).text() + " = " + result.LPV.toFixed(4)
     } else {
-        subtitleTextPv = "Partial Valuation = " + callOptionsText(segmentedLineToOption(pv))
-        subtitleTextGpv = "GP Carry Valuation = " + callOptionsText(segmentedLineToOption(gpv))
-        subtitleTextLpv = "LP Valuation = " + callOptionsText(segmentedLineToOption(lpv))
+        subtitleTextPv = "Partial Valuation = " + segmentedLineToOptionPortfolio(pv).text()
+        subtitleTextGpv = "GP Carry Valuation = " + segmentedLineToOptionPortfolio(gpv).text()
+        subtitleTextLpv = "LP Valuation = " + segmentedLineToOptionPortfolio(lpv).text()
     }
 
     const datasetPv = {

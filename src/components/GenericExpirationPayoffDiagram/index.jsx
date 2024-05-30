@@ -3,7 +3,8 @@ import React, {useState} from "react";
 import { MinusCircleOutlined,  PlusOutlined} from "@ant-design/icons";
 import { SecurityType} from "../../lib/generic-payoff";
 import ExpirationPayoffDiagramOptions from "../../chartjs/ExpirationPayoffDiagramOptions";
-import {callOptionsText, OptionsUtils} from "../../lib/line/line-option-converter";
+import {OptionArrayUtils} from "../../lib/line/line-option-converter";
+import {optionArrayToOptionPortfolio} from "../../lib/converter/option-line-converter";
 
 
 const optionsInitialValues = [
@@ -51,7 +52,7 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
     const [visible, setVisible] = useState(false)
 
     const onFinish = (values) => {
-        OptionsUtils.validate(values.options);
+        OptionArrayUtils.validate(values.options);
 
         setOptions(values.options.map((item) => ({...item, fraction: parseNumberFromFractionText(item.fraction)})))
         setVisible(true)
@@ -95,7 +96,7 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
                         requiredMark={false}
                     >
                         <h1>Payoff Schedule</h1>
-                        <h3 style={{color: '#3498db'}}>{callOptionsText(options)}</h3>
+                        <h3 style={{color: '#3498db'}}>{optionArrayToOptionPortfolio(options).text()}</h3>
 
                         <Form.List name="options">
                             {(fields, {add, remove}) => (

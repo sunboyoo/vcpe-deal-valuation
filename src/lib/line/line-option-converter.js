@@ -3,7 +3,7 @@ import {LeftClosedRightOpenSegment, LineSegment, OpenOpen_TO_REMOVE, Ray} from "
 import {SegmentedLine} from "./segmented-line";
 import {StraightLine} from "./straight-line";
 
-export class OptionsUtils {
+export class OptionArrayUtils {
     static validate(optionArray){
         if (!Array.isArray(optionArray)){
             throw new Error("Options must be an array");
@@ -29,7 +29,7 @@ export class OptionsUtils {
     }
 }
 
-export function segmentedLineToOption(line){
+export function segmentedLineToOptionArray(line){
     const options = []
 
     for (let i=0; i<line.segments.length;i++) {
@@ -57,7 +57,6 @@ export function segmentedLineToOption(line){
 
     return options
 }
-
 
 export function callOptionsText(callOptions){
     let string = "";
