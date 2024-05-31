@@ -2,7 +2,9 @@ import {Card} from "antd";
 import React from "react";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
 import {addSeries, analyze} from "../../lib/series";
-import {LimitedPartnership, PvGpvLpv} from "../../lib/line/pv-gpv-lpv";
+import {PvGpvLpv} from "../../lib/partial-valuation/pv-gpv-lpv";
+import {LimitedPartnership} from "../../lib/partial-valuation/limited-partnership"
+
 import {ExpirationPayoffDiagramPvGpvLpv} from "../ExpirationPayoffDiagramPvGpvLpv";
 import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
 import Milestone from "../../antd/Milestone";

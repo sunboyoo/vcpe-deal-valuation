@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import { MinusCircleOutlined,  PlusOutlined} from "@ant-design/icons";
 import { SecurityType} from "../../lib/generic-payoff";
 import ExpirationPayoffDiagramOptions from "../../chartjs/ExpirationPayoffDiagramOptions";
-import {OptionArrayUtils} from "../../lib/line/line-option-converter";
+import {OptionArrayUtils} from "../../lib/converter/line-option-converter";
 import {optionArrayToOptionPortfolio} from "../../lib/converter/option-line-converter";
 
 

@@ -19,10 +19,16 @@ export function ExpirationPayoffDiagramPvGpvLpv({
     const [xLpv, yLpv, sLpv] = lpv.plotPointsWithTail()
 
     let subtitleTextPv
-    let subtitleTextGpv
-    let subtitleTextLpv
+    let subtitleTextGpv=''
+    let subtitleTextLpv=''
     const subtitleTextLpc = "LP Cost = " + lpc
 
+    console.log('PV', pv)
+    console.log('GPV', gpv)
+    console.log('LPV', lpv)
+    console.log('xPv, yPv', xPv, yPv)
+    console.log('xGpv, yGpv', xGpv, yGpv)
+    console.log('xLpv, yLpv', xLpv, yLpv)
     if (result) {
         subtitleTextPv = "Partial Valuation = " + segmentedLineToOptionPortfolio(pv).text() + " = " + result.PV.toFixed(4)
         subtitleTextGpv = "GP Carry Valuation = " + segmentedLineToOptionPortfolio(gpv).text() + " = " + result.GPCV.toFixed(4)
@@ -85,7 +91,7 @@ export function ExpirationPayoffDiagramPvGpvLpv({
                 <>
                     <ExpirationPayoffDiagram3
                         datasets={[datasetPv, datasetGpv, datasetLpv, datasetLpc]}
-                        labels={xPv}
+                        labels={xGpv}
                         subtitleTexts={[subtitleTextPv, subtitleTextGpv, subtitleTextLpv, subtitleTextLpc]}
                         yMax={yMax}/>
                     <div style={{height: '10px'}}/>

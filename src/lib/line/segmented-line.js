@@ -1,8 +1,6 @@
 import {
     LeftClosedRightOpenSegment,
-    OpenClosed_TO_REMOVE,
     LineSegment,
-    OpenOpen_TO_REMOVE,
     Ray,
 } from "./line-segment"
 import {StraightLine} from "./straight-line";
@@ -26,17 +24,17 @@ export class SegmentedLine {
     * true - continuity at x
     * false - discontinuity at x
     * */
-
-    leftHandContinuity(x){
+    rightHandContinuity(x){
+        const xRight = x + this.eps;
         let includesX = false;
-        let includesLeft = false;
+        let includesXRight = false;
         this.segments.forEach(segment => {
             if (segment.includes(x)){
                 includesX = true;
             }
 
-            if (segment.includes(x - this.eps)){
-                includesLeft = true
+            if (segment.includes(xRight)){
+                includesXRight = true
             }
         })
 
@@ -44,24 +42,17 @@ export class SegmentedLine {
             throw new Error(`${x} is not on the line.`)
         }
 
-        if (!includesLeft){
-            throw new Error(`${x - this.eps} is not on the line.`)
+        if (!includesXRight){
+            throw new Error(`${xRight} is not on the line.`)
         }
 
-        const yLeftLimit = this.y(x - this.eps)
+        const yRight = this.y(xRight)
         const y = this.y(x)
-        const delta = Math.abs(y - yLeftLimit)
+        const delta = Math.abs(y - yRight)
 
         return delta < (this.eps)
     }
 
-    rightHandContinuity(x){
-        return this.leftHandContinuity(x + this.eps);
-    }
-
-    continuityAt(x){
-        return this.rightHandContinuity(x) && this.rightHandContinuity(x);
-    }
 
     static of(xArray, yArray, kArray){
         // check the input
@@ -96,11 +87,11 @@ export class SegmentedLine {
 
             if (i === length-1){
                 // (1) the last segment is a Ray
+                // (2) when length===1, the first segment is a Ray
                 segments.push(new Ray(xi, yi, ki))
 
-            } else if (i === 0){
-                // The first segment
-
+            } else {
+                // (1) not the last segment
                 if (Number.isFinite(yArray[i+1]) && !(straightLine.contains(xArray[i+1], yArray[i+1]))){
                     // 下一个(x,y)不在同一条直线上
                     segments.push(new LeftClosedRightOpenSegment(xi, yi, ki, xArray[i+1], undefined));
@@ -108,80 +99,12 @@ export class SegmentedLine {
                     // 下一个(x,y)在同一条直线上
                     segments.push(new LineSegment(xi, yi, ki, xArray[i+1], undefined))
                 }
-            } else {
-                // non-first and non-last segments
-                const leftSegment = segments[i-1]
-
-                if (straightLine.contains(leftSegment.xEnd, leftSegment.yEnd)) {
-                    // Left-hand continuous
-
-                    if (yArray[i+1] === undefined || straightLine.contains(xArray[i+1], yArray[i+1])) {
-                        // Right-hand continuous
-                        segments.push(new LineSegment(xi, yi, ki, xArray[i+1], undefined))
-                    } else {
-                        // Right-hand non-continuous
-                        // PCP drop at the right end
-                        segments.push(new LeftClosedRightOpenSegment(xi, yi, ki, xArray[i+1], undefined))
-                    }
-                } else {
-                    // Left-hand non-continuous
-
-                    if (yArray[i+1] === undefined || straightLine.contains(xArray[i+1], yArray[i+1])) {
-                        // Right-hand continuous
-                        // after PCP drop
-                        segments.push(new OpenClosed_TO_REMOVE(xi, yi, ki, xArray[i+1], undefined))
-                    } else {
-                        // Right-hand non-continuous
-                        // PCP drop at the left end and right end
-                        segments.push(new OpenOpen_TO_REMOVE(xi, yi, ki, xArray[i+1], undefined))
-                    }
-                }
             }
         }
 
         return new SegmentedLine(segments)
 
     }
-    // constructor(x, y, slopes) {
-    //     // check the input
-    //     if (!Array.isArray(x) || !Array.isArray(y) || !Array.isArray(slopes)){
-    //         throw new Error("xs, ys, and slopes should be arrays.")
-    //     }
-    //     if (x.length !== y.length || x.length !== slopes.length || x.length < 1){
-    //         throw new Error("xs, ys, and slopes should have the same number of elements and can't be empty.")
-    //     }
-    //     if (!Number.isFinite(y[0])){
-    //         throw new Error("ys[0] must be provided.")
-    //     }
-    //     const length = x.length
-    //     for (let i=0; i<length; i++){
-    //         if (!Number.isFinite(x[i]) || !Number.isFinite(slopes[i])){
-    //             throw new Error("xs and slopes should have explicit number values.")
-    //         }
-    //     }
-    //
-    //     this.segments = []
-    //     for (let i=0; i < length; i++) {
-    //         const yi = Number.isFinite(y[i]) ? y[i] : this.segments[i-1].yEnd
-    //
-    //         // (1) the last segment is a Ray
-    //         if (i === length-1){
-    //             this.segments.push(new Ray(x[i], yi, slopes[i]))
-    //             continue
-    //         }
-    //
-    //         // (2) non-last segments
-    //         if (Number.isFinite(y[i+1])){
-    //             // (2.1) HalfOpenSegment - for PCP drop at qualified event
-    //             this.segments.push(new LeftClosedRightOpenSegment(x[i], yi, slopes[i], x[i+1], undefined))
-    //         } else {
-    //             // (2.2) LineSegment
-    //             this.segments.push(new LineSegment(x[i], yi, slopes[i], x[i+1], undefined))
-    //         }
-    //     }
-    //
-    //     this.eps = 1e-9
-    // }
 
     // x is any number in the range
     isDownAt(x){
@@ -224,7 +147,7 @@ export class SegmentedLine {
                 return this.segments[i].y(x)
             }
         }
-
+        console.log('SegmentedLine', this)
         throw new Error(`${x} is not on the segmented line.`)
     }
 
@@ -266,25 +189,13 @@ export class SegmentedLine {
         const slopes = []
         for (let i=0; i<this.segments.length;i++){
             const segment = this.segments[i]
+            x.push(segment.xStart)
+            y.push(segment.yStart)
+            slopes.push(segment.slope)
+
             if (segment instanceof LeftClosedRightOpenSegment){
-                x.push(segment.xStart, segment.xEnd - this.eps)
-                y.push(segment.yStart, segment.y(segment.xEnd - this.eps))
-                slopes.push(segment.slope, segment.slope)
-            } else if (segment instanceof OpenClosed_TO_REMOVE){
-                x.push(segment.xStart + this.eps, segment.xEnd)
-                y.push(segment.y(segment.xStart + this.eps), segment.y(segment.xEnd))
-                slopes.push(segment.slope, segment.slope)
-            } else if (segment instanceof OpenOpen_TO_REMOVE){
-                x.push(segment.xStart + this.eps, segment.xEnd - this.eps)
-                y.push(segment.y(segment.xStart + this.eps), segment.y(segment.xEnd - this.eps))
-                slopes.push(segment.slope, segment.slope)
-            } else if (segment instanceof LineSegment){
-                x.push(segment.xStart)
-                y.push(segment.yStart)
-                slopes.push(segment.slope)
-            } else if (segment instanceof Ray){
-                x.push(segment.xStart)
-                y.push(segment.yStart)
+                x.push(segment.xEnd - this.eps)
+                y.push(segment.y(segment.xEnd - this.eps))
                 slopes.push(segment.slope)
             }
         }
@@ -294,6 +205,12 @@ export class SegmentedLine {
     // to add Carried Interest Cutoff points
     addPoints(x, y, slopes, xNew, yNew){
         for(let i=0; i<xNew.length; i++){
+            // Do not add the repeat points
+            // This happens when PV slope is 0, and PV === LPC.
+            if (x.includes(xNew[i])){
+                continue;
+            }
+
             let indexToInsert = x.findIndex((e) => e > xNew[i])
             if (indexToInsert === -1){
                 x.push(xNew[i])

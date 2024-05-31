@@ -2,7 +2,9 @@ import {Button, Card, Divider, Form, InputNumber, Space, Table, Tag} from "antd"
 import React, {useState} from "react";
 import {DashOutlined} from "@ant-design/icons";
 import {seriesA_PCP} from "../../lib/series-a-pcp";
-import {LimitedPartnership, PvGpvLpv} from "../../lib/line/pv-gpv-lpv";
+import { PvGpvLpv} from "../../lib/partial-valuation/pv-gpv-lpv";
+import {LimitedPartnership} from "../../lib/partial-valuation/limited-partnership"
+
 import {ExpirationPayoffDiagramPvGpvLpv} from "../../chartjs/ExpirationPayoffDiagramPvGpvLpv";
 
 

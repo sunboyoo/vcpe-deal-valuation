@@ -1,9 +1,8 @@
-import {Button, Card, Divider, Form, InputNumber, Space, Table, Tag} from "antd";
+import {Form, InputNumber, Space, } from "antd";
 import React, {useState} from "react";
-import {seriesA_CS} from "../../lib/series-a-cs";
-import {DashOutlined} from "@ant-design/icons";
-import {LimitedPartnership, PvGpvLpv} from "../../lib/line/pv-gpv-lpv";
-import {ExpirationPayoffDiagramPvGpvLpv} from "../../chartjs/ExpirationPayoffDiagramPvGpvLpv";
+import {PvGpvLpv} from "../../lib/partial-valuation/pv-gpv-lpv";
+import {LimitedPartnership} from "../../lib/partial-valuation/limited-partnership"
+import {ExpirationPayoffDiagramPvGpvLpv} from "../ExpirationPayoffDiagramPvGpvLpv";
 
 // so = pre-money shares outstanding		11
 // sp = new common shares purchased		5

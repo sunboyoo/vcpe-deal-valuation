@@ -1,21 +1,7 @@
-import {SegmentedLine} from "./segmented-line";
-import {LeftClosedRightOpenSegment, LineSegment, Ray} from "./line-segment";
+import {SegmentedLine} from "../line/segmented-line";
+import {LeftClosedRightOpenSegment, LineSegment, Ray} from "../line/line-segment";
 import {optionArrayToOptionPortfolio, optionPortfolioToSegmentedLine} from "../converter/option-line-converter";
-
-export class LimitedPartnership{
-    constructor(managementFee=0.02, carriedInterest=0.2, lifetimeFee=0.25) {
-        // Management Fee
-        this.managementFee = managementFee ? managementFee : (lifetimeFee ? lifetimeFee/(1.0+lifetimeFee)/10.0 : 0.02)
-        // Carried Interest
-        this.carriedInterest = carriedInterest ? carriedInterest : 0.20
-        // LP's Lifetime Fee Percentage
-        this.lfp = lifetimeFee ? lifetimeFee : (this.managementFee*10.)/(1 - this.managementFee*10.)
-    }
-
-    lpc(invest){
-        return invest * (1 + this.lfp)
-    }
-}
+import {LimitedPartnership} from "./limited-partnership"
 
 export class PvGpvLpv{
     constructor(limitedPartnership= new LimitedPartnership(), invest, x, y, slopes) {
@@ -215,101 +201,117 @@ export class PvGpvLpv{
                         lpvSegments.push(new LeftClosedRightOpenSegment(pvSegment.xStart, getDistribution(pvSegment.yStart), 0, pvSegment.xEnd, undefined));
                     } else {// 没有 GP Carry
                         gpvSegments.push(new LeftClosedRightOpenSegment(pvSegment.xStart, 0, 0, pvSegment.xEnd, 0));
-                        lpvSegments.push(new LeftClosedRightOpenSegment(pvSegment.xStart, pvSegment.yStart, 0, pvSegment.xEnd, undefined));
+                        lpvSegments.push(new LeftClosedRightOpenSegment(pvSegment.xStart, pvSegment.yStart, 0, pvSegment.xEnd, pvSegment.yEnd));
                     }
                 } else if (pvSegment.slope > 0){ // 上涨直线
-
-                }
-
-
-                if (lpc >= pvSegment.yEnd) {
-                    // lpc 大于等于 segment 的 yEnd 时，没有分红 GPV
-                    // If lpc is greater than or equal to segment's yEnd, no carry GPV
-                    gpvSegments.push(new LeftClosedRightOpenSegment(pvSegment.xStart, 0, 0, pvSegment.xEnd, 0));
-                    // lpc 大于等于 segment 的 yEnd 时，没有分红 LPV
-                    // If lpc is greater than or equal to segment's yEnd, no carry LPV
-                    lpvSegments.push(new LeftClosedRightOpenSegment(pvSegment.xStart, pvSegment.yStart, pvSegment.slope, pvSegment.xEnd, pvSegment.yEnd));
-                } else if (lpc <= pvSegment.yStart) {
-                    // lpc 小于等于 segment 的 yStart 时，有分红 GPV
-                    // If lpc is less than or equal to segment's yStart, has carry GPV
-                    gpvSegments.push(new LeftClosedRightOpenSegment(pvSegment.xStart, getCarry(pvSegment.yStart), pvSegment.slope * carry, pvSegment.xEnd, undefined));
-                    // lpc 小于等于 segment 的 yStart 时，有分红 LPV
-                    // If lpc is less than or equal to segment's yStart, has carry LPV
-                    lpvSegments.push(new LeftClosedRightOpenSegment(pvSegment.xStart, getDistribution(pvSegment.yStart), pvSegment.slope * (1 - carry), pvSegment.xEnd, undefined));
-                } else {
-                    // lpc 在 segment 的 yStart 和 yEnd 之间时，分红截止点之前没有分红，之后有分红
-                    // If lpc is between segment's yStart and yEnd, no carry before cutoff, has carry after
-                    console.log('segment instanceof LeftClosedRightOpenSegment', pvSegment)
-                    const carryCutoff = pvSegment.x(lpc);
-                    gpvSegments.push(
-                        new LineSegment(pvSegment.xStart, 0, 0, carryCutoff, 0),
-                        new LeftClosedRightOpenSegment(carryCutoff, 0, pvSegment.slope * carry, pvSegment.xEnd, undefined)
-                    );
-                    lpvSegments.push(
-                        new LineSegment(pvSegment.xStart, pvSegment.yStart, pvSegment.slope, carryCutoff, lpc),
-                        new LeftClosedRightOpenSegment(carryCutoff, lpc, pvSegment.slope * (1 - carry), pvSegment.xEnd, undefined)
-                    );
+                    if (lpc >= pvSegment.yEnd) {
+                        // lpc 大于等于 segment 的 yEnd 时，没有分红 GPV
+                        // If lpc is greater than or equal to segment's yEnd, no carry GPV
+                        gpvSegments.push(new LeftClosedRightOpenSegment(pvSegment.xStart, 0, 0, pvSegment.xEnd, 0));
+                        // lpc 大于等于 segment 的 yEnd 时，没有分红 LPV
+                        // If lpc is greater than or equal to segment's yEnd, no carry LPV
+                        lpvSegments.push(new LeftClosedRightOpenSegment(pvSegment.xStart, pvSegment.yStart, pvSegment.slope, pvSegment.xEnd, pvSegment.yEnd));
+                    } else if (lpc <= pvSegment.yStart) {
+                        // lpc 小于等于 segment 的 yStart 时，有分红 GPV
+                        // If lpc is less than or equal to segment's yStart, has carry GPV
+                        gpvSegments.push(new LeftClosedRightOpenSegment(pvSegment.xStart, getCarry(pvSegment.yStart), pvSegment.slope * carry, pvSegment.xEnd, undefined));
+                        // lpc 小于等于 segment 的 yStart 时，有分红 LPV
+                        // If lpc is less than or equal to segment's yStart, has carry LPV
+                        lpvSegments.push(new LeftClosedRightOpenSegment(pvSegment.xStart, getDistribution(pvSegment.yStart), pvSegment.slope * (1 - carry), pvSegment.xEnd, undefined));
+                    } else if (lpc > pvSegment.yStart && lpc <= pvSegment.yEnd)  {
+                        // lpc 在 segment 的 yStart 和 yEnd 之间时，分红截止点之前没有分红，之后有分红
+                        // If lpc is between segment's yStart and yEnd, no carry before cutoff, has carry after
+                        console.log('segment instanceof LeftClosedRightOpenSegment', pvSegment)
+                        const carryCutoff = pvSegment.x(lpc);
+                        gpvSegments.push(
+                            new LineSegment(pvSegment.xStart, 0, 0, carryCutoff, 0),
+                            new LeftClosedRightOpenSegment(carryCutoff, 0, pvSegment.slope * carry, pvSegment.xEnd, undefined)
+                        );
+                        lpvSegments.push(
+                            new LineSegment(pvSegment.xStart, pvSegment.yStart, pvSegment.slope, carryCutoff, lpc),
+                            new LeftClosedRightOpenSegment(carryCutoff, lpc, pvSegment.slope * (1 - carry), pvSegment.xEnd, undefined)
+                        );
+                    }
+                } else if (pvSegment.slope < 0){
+                    throw new Error('pvSegment.slope < 0, 该功能还没有实现*******************************************')
                 }
             } else if (pvSegment instanceof LineSegment) {
-                if (lpc > pvSegment.yEnd) {
-                    // lpc 大于 segment 的 yEnd 时，没有分红 GPV
-                    // If lpc is greater than segment's yEnd, no carry GPV
-                    gpvSegments.push(new LineSegment(pvSegment.xStart, 0, 0, pvSegment.xEnd, 0));
-                    // lpc 大于 segment 的 yEnd 时，没有分红 LPV
-                    // If lpc is greater than segment's yEnd, no carry LPV
-                    lpvSegments.push(new LineSegment(pvSegment.xStart, pvSegment.yStart, pvSegment.slope, pvSegment.xEnd, pvSegment.yEnd));
-                } else if (lpc < pvSegment.yStart) {
-                    // lpc 小于 segment 的 yStart 时，有分红 GPV
-                    // If lpc is less than segment's yStart, has carry GPV
-                    gpvSegments.push(new LineSegment(pvSegment.xStart, getCarry(pvSegment.yStart), pvSegment.slope * carry, pvSegment.xEnd, undefined));
-                    // lpc 小于 segment 的 yStart 时，有分红 LPV
-                    // If lpc is less than segment's yStart, has carry LPV
-                    lpvSegments.push(new LineSegment(pvSegment.xStart, getDistribution(pvSegment.yStart), pvSegment.slope * (1 - carry), pvSegment.xEnd, undefined));
-                } else if (lpc === pvSegment.yStart && pvSegment.yStart === pvSegment.yEnd) {
-                    // lpc 等于 segment 的 yStart 和 yEnd 时，有分红 GPV 和 LPV
-                    // If lpc equals segment's yStart and yEnd, has carry GPV and LPV
-                    gpvSegments.push(new LineSegment(pvSegment.xStart, getCarry(pvSegment.yStart), 0, pvSegment.xEnd, undefined));
-                    lpvSegments.push(new LineSegment(pvSegment.xStart, getDistribution(pvSegment.yStart), 0, pvSegment.xEnd, undefined));
-                } else if (lpc === pvSegment.yStart && pvSegment.yStart < pvSegment.yEnd) {
-                    // lpc 等于 segment 的 yStart, yEnd > yStart 时，有分红 GPV
-                    // If lpc is less than segment's yStart, has carry GPV
-                    console.log('lpc === segment.yStart && segment.yStart < segment.yEnd', lpc, pvSegment.yEnd)
-                    gpvSegments.push(new LineSegment(pvSegment.xStart, getCarry(pvSegment.yStart), pvSegment.slope * carry, pvSegment.xEnd, undefined));
-                    // lpc 小于 segment 的 yStart 时，有分红 LPV
-                    // If lpc is less than segment's yStart, has carry LPV
-                    lpvSegments.push(new LineSegment(pvSegment.xStart, getDistribution(pvSegment.yStart), pvSegment.slope * (1 - carry), pvSegment.xEnd, undefined));
-                } else {
-                    // lpc 在 segment 的 yStart 和 yEnd 之间时，分红截止点之前没有分红，之后有分红
-                    // If lpc is between segment's yStart and yEnd, no carry before cutoff, has carry after
-                    const carryCutoff = pvSegment.x(lpc);
-
-                    gpvSegments.push(
-                        new LineSegment(pvSegment.xStart, 0, 0, carryCutoff, 0),
-                        new LineSegment(carryCutoff, 0, pvSegment.slope * carry, pvSegment.xEnd, undefined)
-                    );
-                    lpvSegments.push(
-                        new LineSegment(pvSegment.xStart, pvSegment.yStart, pvSegment.slope, carryCutoff, lpc),
-                        new LineSegment(carryCutoff, lpc, pvSegment.slope * (1 - carry), pvSegment.xEnd, undefined)
-                    );
+                if (pvSegment.slope === 0){ // 水平直线
+                    if (lpc < pvSegment.yStart){ // 有 GP Carry
+                        gpvSegments.push(new LineSegment(pvSegment.xStart, getCarry(pvSegment.yStart), 0, pvSegment.xEnd, undefined));
+                        lpvSegments.push(new LineSegment(pvSegment.xStart, getDistribution(pvSegment.yStart), 0, pvSegment.xEnd, undefined));
+                    } else {// 没有 GP Carry
+                        gpvSegments.push(new LineSegment(pvSegment.xStart, 0, 0, pvSegment.xEnd, 0));
+                        lpvSegments.push(new LineSegment(pvSegment.xStart, pvSegment.yStart, 0, pvSegment.xEnd, pvSegment.yEnd));
+                    }
+                } else if (pvSegment.slope > 0){ // 上涨直线
+                    if (lpc >= pvSegment.yEnd) {
+                        // lpc 大于等于 segment 的 yEnd 时，没有分红 GPV
+                        // If lpc is greater than or equal to segment's yEnd, no carry GPV
+                        gpvSegments.push(new LineSegment(pvSegment.xStart, 0, 0, pvSegment.xEnd, 0));
+                        // lpc 大于等于 segment 的 yEnd 时，没有分红 LPV
+                        // If lpc is greater than or equal to segment's yEnd, no carry LPV
+                        lpvSegments.push(new LineSegment(pvSegment.xStart, pvSegment.yStart, pvSegment.slope, pvSegment.xEnd, pvSegment.yEnd));
+                    } else if (lpc <= pvSegment.yStart) {
+                        // lpc 小于等于 segment 的 yStart 时，有分红 GPV
+                        // If lpc is less than or equal to segment's yStart, has carry GPV
+                        gpvSegments.push(new LineSegment(pvSegment.xStart, getCarry(pvSegment.yStart), pvSegment.slope * carry, pvSegment.xEnd, undefined));
+                        // lpc 小于等于 segment 的 yStart 时，有分红 LPV
+                        // If lpc is less than or equal to segment's yStart, has carry LPV
+                        lpvSegments.push(new LineSegment(pvSegment.xStart, getDistribution(pvSegment.yStart), pvSegment.slope * (1 - carry), pvSegment.xEnd, undefined));
+                    } else if (lpc > pvSegment.yStart && lpc <= pvSegment.yEnd)  {
+                        // lpc 在 segment 的 yStart 和 yEnd 之间时，分红截止点之前没有分红，之后有分红
+                        // If lpc is between segment's yStart and yEnd, no carry before cutoff, has carry after
+                        console.log('segment instanceof LeftClosedRightOpenSegment', pvSegment)
+                        const carryCutoff = pvSegment.x(lpc);
+                        gpvSegments.push(
+                            new LineSegment(pvSegment.xStart, 0, 0, carryCutoff, 0),
+                            new LineSegment(carryCutoff, 0, pvSegment.slope * carry, pvSegment.xEnd, undefined)
+                        );
+                        lpvSegments.push(
+                            new LineSegment(pvSegment.xStart, pvSegment.yStart, pvSegment.slope, carryCutoff, lpc),
+                            new LineSegment(carryCutoff, lpc, pvSegment.slope * (1 - carry), pvSegment.xEnd, undefined)
+                        );
+                    }
+                } else if (pvSegment.slope < 0){
+                    throw new Error('pvSegment.slope < 0, 该功能还没有实现*******************************************')
                 }
+
             } else if (pvSegment instanceof Ray) {
-                if (lpc < pvSegment.yStart) {
-                    // lpc 小于 segment 的 yStart 时，有分红 GPV 和 LPV
-                    // If lpc is less than segment's yStart, has carry GPV and LPV
-                    gpvSegments.push(new Ray(pvSegment.xStart, getCarry(pvSegment.yStart), pvSegment.slope * carry));
-                    lpvSegments.push(new Ray(pvSegment.xStart, getDistribution(pvSegment.yStart), pvSegment.slope * (1 - carry)));
-                } else {
-                    // lpc 大于等于 segment 的 yStart 时，分红截止点之前没有分红，之后有分红
-                    // If lpc is greater than or equal to segment's yStart, no carry before cutoff, has carry after
-                    const carryCutoff = pvSegment.x(lpc);
-                    gpvSegments.push(
-                        new LineSegment(pvSegment.xStart, 0, 0, carryCutoff, 0),
-                        new Ray(carryCutoff, 0, pvSegment.slope * carry)
-                    );
-                    lpvSegments.push(
-                        new LineSegment(pvSegment.xStart, pvSegment.yStart, pvSegment.slope, carryCutoff, lpc),
-                        new Ray(carryCutoff, lpc, pvSegment.slope * (1 - carry))
-                    );
+                // Ray.yEnd is INFINITE or constant
+                if (pvSegment.slope === 0){ // 水平直线
+                    if (lpc < pvSegment.yStart){ // 有 GP Carry
+                        gpvSegments.push(new Ray(pvSegment.xStart, getCarry(pvSegment.yStart), 0));
+                        lpvSegments.push(new Ray(pvSegment.xStart, getDistribution(pvSegment.yStart), 0));
+                    } else {// 没有 GP Carry
+                        gpvSegments.push(new Ray(pvSegment.xStart, 0, 0));
+                        lpvSegments.push(new Ray(pvSegment.xStart, pvSegment.yStart, 0));
+                    }
+                } else if (pvSegment.slope > 0){ // 上涨直线
+                    // Ray.yEnd is INFINITE or constant
+                    if (lpc <= pvSegment.yStart) {
+                        // lpc 小于等于 segment 的 yStart 时，有分红 GPV
+                        // If lpc is less than or equal to segment's yStart, has carry GPV
+                        gpvSegments.push(new Ray(pvSegment.xStart, getCarry(pvSegment.yStart), pvSegment.slope * carry));
+                        // lpc 小于等于 segment 的 yStart 时，有分红 LPV
+                        // If lpc is less than or equal to segment's yStart, has carry LPV
+                        lpvSegments.push(new Ray(pvSegment.xStart, getDistribution(pvSegment.yStart), pvSegment.slope * (1 - carry)));
+                    } else if (lpc > pvSegment.yStart)  {
+                        // lpc 在 segment 的 yStart 和 yEnd 之间时，分红截止点之前没有分红，之后有分红
+                        // If lpc is between segment's yStart and yEnd, no carry before cutoff, has carry after
+                        console.log('segment instanceof LeftClosedRightOpenSegment', pvSegment)
+                        const carryCutoff = pvSegment.x(lpc);
+                        gpvSegments.push(
+                            new LineSegment(pvSegment.xStart, 0, 0, carryCutoff, 0),
+                            new Ray(carryCutoff, 0, pvSegment.slope * carry)
+                        );
+                        lpvSegments.push(
+                            new LineSegment(pvSegment.xStart, pvSegment.yStart, pvSegment.slope, carryCutoff, lpc),
+                            new Ray(carryCutoff, lpc, pvSegment.slope * (1 - carry))
+                        );
+                    }
+                } else if (pvSegment.slope < 0){
+                    throw new Error('pvSegment.slope < 0, 该功能还没有实现*******************************************')
                 }
             }
         }

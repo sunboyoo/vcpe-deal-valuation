@@ -9,7 +9,6 @@ export function segmentedLineToOptionPortfolio(segmentedLine){
     }
 
     const portfolio = new OptionPortfolio();
-
     for (let i=0; i<segmentedLine.segments.length;i++) {
         const segment = segmentedLine.segments[i]
 

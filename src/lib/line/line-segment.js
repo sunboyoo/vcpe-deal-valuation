@@ -5,6 +5,10 @@ export class Ray{
         this.xStart = xStart
         this.yStart = yStart
         this.slope = slope
+        // creat a (xEnd, yEnd) to make codes work in case Ray.xEnd, Ray.yEnd is called by other functions.
+        // for example,
+        this.xEnd = Number.POSITIVE_INFINITY
+        this.yEnd = slope === 0 ? yStart : slope > 0 ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY
     }
     includes(x){
         return x >= this.xStart
@@ -88,23 +92,5 @@ export class LineSegment extends Ray{
 export class LeftClosedRightOpenSegment extends LineSegment{
     includes(x){
         return x >= this.xStart && x < this.xEnd
-    }
-}
-
-export class OpenClosed_TO_REMOVE extends LineSegment{
-    includes(x){
-        return x > this.xStart && x <= this.xEnd
-    }
-}
-
-// (xStart, yStart, and (xEnd, yEnd) are valid on OpenLineSegment.
-// LeftClosedRightOpenSegment.includes(xEnd) is false.
-// OpenLineSegment.y(xStart) raise Error.
-// OpenLineSegment.y(xEnd) raise Error.
-// OpenLineSegment.y(xStart + Number.EPSILON) is valid.
-// OpenLineSegment.y(xEnd - Number.EPSILON) is valid.
-export class OpenOpen_TO_REMOVE extends LineSegment{
-    includes(x){
-        return x > this.xStart && x < this.xEnd;
     }
 }

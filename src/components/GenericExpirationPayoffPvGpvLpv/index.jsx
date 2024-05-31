@@ -2,8 +2,10 @@ import {Button, Card,  Form, Input, InputNumber, Select, Space, } from "antd";
 import React, {useState} from "react";
 import { MinusCircleOutlined,  PlusOutlined} from "@ant-design/icons";
 import { SecurityType} from "../../lib/generic-payoff";
-import {OptionArrayUtils} from "../../lib/line/line-option-converter";
-import {LimitedPartnership, PvGpvLpv} from "../../lib/line/pv-gpv-lpv";
+import {OptionArrayUtils} from "../../lib/converter/line-option-converter";
+import { PvGpvLpv} from "../../lib/partial-valuation/pv-gpv-lpv";
+import {LimitedPartnership} from "../../lib/partial-valuation/limited-partnership"
+
 import {ExpirationPayoffDiagramPvGpvLpv} from "../../chartjs/ExpirationPayoffDiagramPvGpvLpv";
 import {IntegerStep} from "../../antd/IntegerStep";
 import {optionArrayToOptionPortfolio} from "../../lib/converter/option-line-converter";
