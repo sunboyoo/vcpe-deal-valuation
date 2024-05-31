@@ -41,6 +41,10 @@ export class Ray{
             throw new Error(`Error with Ray.x(${x})`)
         }
     }
+
+    text() {
+        return `Ray[(${this.xStart}, ${this.yStart}), ->) (k=${this.slope})`
+    }
 }
 
 
@@ -83,7 +87,12 @@ export class LineSegment extends Ray{
     includes(x){
         return x >= this.xStart && x <= this.xEnd
     }
+
+    text() {
+        return `[(${this.xStart}, ${this.yStart}), (${this.xStart}, ${this.yStart})] (k=${this.slope})`
+    }
 }
+
 
 // xEnd and yEnd is valid on LeftClosedRightOpenSegment.
 // LeftClosedRightOpenSegment.includes(xEnd) is false.
@@ -92,5 +101,9 @@ export class LineSegment extends Ray{
 export class LeftClosedRightOpenSegment extends LineSegment{
     includes(x){
         return x >= this.xStart && x < this.xEnd
+    }
+
+    text() {
+        return `LeftOpen((${this.xStart}, ${this.yStart}), (${this.xStart}, ${this.yStart})] (k=${this.slope})`
     }
 }

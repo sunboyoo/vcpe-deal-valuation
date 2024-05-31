@@ -262,6 +262,14 @@ export class SegmentedLine {
     setEps(eps){
         this.eps = eps
     }
+
+    text() {
+        let s = '';
+        this.segments.forEach(((segment, index) => {
+            s += (index === 0) || (index === this.segments.length - 1) ? segment.text() : segment.text() + ', ';
+        }))
+        return s;
+    }
 }
 
 export function testSegmentedLine(){

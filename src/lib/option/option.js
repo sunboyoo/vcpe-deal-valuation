@@ -23,8 +23,8 @@ export class Option {
             throw new Error(`The option type ${type} is not supported.`)
         }
 
-        if (!Number.isFinite(strike)) {
-            throw new Error(`The strike should be a number, but ${strike} was provided.`);
+        if (!Number.isFinite(strike) || strike < 0) {
+            throw new Error(`The strike should be a zero or positive number, but ${strike} was provided.`);
         }
 
         this.type = type;

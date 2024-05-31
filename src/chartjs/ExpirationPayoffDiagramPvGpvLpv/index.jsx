@@ -79,6 +79,9 @@ export function ExpirationPayoffDiagramPvGpvLpv({
 
     const yMax = Math.max(...yPv)
 
+    console.log('PV', pv.text(), pv)
+    console.log('GPV', gpv.text(), gpv)
+    console.log('LPV', lpv.text(), lpv)
     return (
         <>
             {showCombinedDiagram &&

@@ -19,6 +19,7 @@ export class OptionPosition {
             throw new Error(`Quantity should be a finite number. ${quantity} was provided.`);
         }
 
+        // Allow quantity === 0 to support the first LineSegment (0,0)[k=0]->(10,0)[k=1], 0xC(0) -> 1xC(10)
         // if (quantity === 0) {
         //     throw new Error(`Quantity should be a non-zero number. ${quantity} was provided.`);
         // }
