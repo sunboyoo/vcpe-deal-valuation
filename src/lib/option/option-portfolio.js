@@ -19,6 +19,8 @@ export class OptionPortfolio {
     addPosition(type, strike, quantity){
         // The strike needs to be unique and needs to be in ascending order
         if (this.positions.some(position => position.option.strike === strike)) {
+            console.log('OptionPortfolio', this)
+            console.log(`type: ${type}, strike: ${strike}, quantity: ${quantity}`);
             throw new Error(`Strike prices in OptionPortfolio should be unique. ${strike} was provided.`);
         }
 

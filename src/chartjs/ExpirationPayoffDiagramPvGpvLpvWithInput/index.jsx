@@ -133,7 +133,7 @@ export default function ExpirationPayoffDiagramPvGpvLpvWithInput({
                         }
                     ]}
                 >
-                    <InputNumber min={1e-20} size={"middle"} style={{width: "100%"}} addonBefore="$"/>
+                    <InputNumber min={0} size={"middle"} style={{width: "100%"}} addonBefore="$"/>
                 </Form.Item>
                 {/*<Form.Item*/}
                 {/*    // wrapperCol={{*/}

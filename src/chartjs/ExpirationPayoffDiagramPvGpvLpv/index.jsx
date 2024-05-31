@@ -23,12 +23,6 @@ export function ExpirationPayoffDiagramPvGpvLpv({
     let subtitleTextLpv=''
     const subtitleTextLpc = "LP Cost = " + lpc
 
-    console.log('PV', pv)
-    console.log('GPV', gpv)
-    console.log('LPV', lpv)
-    console.log('xPv, yPv', xPv, yPv)
-    console.log('xGpv, yGpv', xGpv, yGpv)
-    console.log('xLpv, yLpv', xLpv, yLpv)
     if (result) {
         subtitleTextPv = "Partial Valuation = " + segmentedLineToOptionPortfolio(pv).text() + " = " + result.PV.toFixed(4)
         subtitleTextGpv = "GP Carry Valuation = " + segmentedLineToOptionPortfolio(gpv).text() + " = " + result.GPCV.toFixed(4)
