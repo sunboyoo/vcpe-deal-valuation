@@ -84,7 +84,7 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
         xs.push(x);
         ys.push(y);
         datasets.push({
-            label: i,
+            label: seriesArray[i].seriesName,
             data: y,
             borderColor: ChartJSUtils.namedColor(i),
             backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.namedColor(i), 0.9),

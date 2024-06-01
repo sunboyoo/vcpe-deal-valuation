@@ -1,37 +1,39 @@
 import {Button, Card, Form, Input, InputNumber, Select, Space,} from "antd";
 import React, {useState} from "react";
 import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
-import {SecurityType} from "../../lib/generic-payoff";
 import ExpirationPayoffDiagramOptions from "../../chartjs/ExpirationPayoffDiagramOptions";
 import {optionArrayToOptionPortfolio} from "../../lib/converter/option-line-converter";
+import {OPTION_TYPES} from "../../lib/option/option";
 
 const optionsInitialValues = [
     {
-        securityType: SecurityType.CallOption,
+        securityType: OPTION_TYPES.CALL_OPTION,
         strike: 0,
         quantity: 1
     }, {
-        securityType: SecurityType.CallOption,
+        securityType: OPTION_TYPES.CALL_OPTION,
         strike: 10,
         quantity: -1
     }, {
-        securityType: SecurityType.CallOption,
+        securityType: OPTION_TYPES.CALL_OPTION,
         strike: 16,
         quantity: 1 / 4
     }, {
-        securityType: SecurityType.CallOption,
+        securityType: OPTION_TYPES.CALL_OPTION,
         strike: 36,
         quantity: -1 / 20
     },
     {
-        securityType: SecurityType.BinaryCallOption,
+        securityType: OPTION_TYPES.BINARY_CALL_OPTION,
         strike: 130,
         quantity: 1.2
     }
 ]
 
 const parseNumberFromFractionText = (value) => {
-    if (typeof value === 'string' && value.includes('/')) {
+    if (Number.isFinite(value)){
+        return value;
+    }else if (typeof value === 'string' && value.includes('/')) {
         const [numerator, denominator] = value.split('/').map(Number);
         if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
             return numerator / denominator;
@@ -45,7 +47,7 @@ const parseNumberFromFractionText = (value) => {
     }
 };
 
-export default function GenericExpirationPayoffDiagramPvGpvLpv() {
+export default function App() {
     const [options, setOptions] = useState([...optionsInitialValues])
     const [optionsInputError, setOptionsInputError] = useState(null);
 
@@ -75,6 +77,8 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
 
     return (
         <>
+            <h1 style={{color: '#595959'}}>Diagram of Option Portfolio</h1>
+            <p style={{color: '#595959'}}>Input the option portfolio to generate its payoff diagram</p>
             {options && options.length > 0 &&
                 <Card>
                     <ExpirationPayoffDiagramOptions options={options}/>
@@ -118,9 +122,9 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
                                             <Select
                                                 style={{width: '200px'}}
                                                 options={[
-                                                    {value: SecurityType.CallOption, label: 'Call Option'},
+                                                    {value: OPTION_TYPES.CALL_OPTION, label: 'Call Option'},
                                                     {
-                                                        value: SecurityType.BinaryCallOption,
+                                                        value: OPTION_TYPES.BINARY_CALL_OPTION,
                                                         label: 'Binary Call Option'
                                                     }
                                                 ]}
@@ -135,18 +139,18 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
                                                     validator: (_, value) => {
                                                         return new Promise((resolve, reject) => { // Updated to return a promise
                                                             const optionsInput = fields.map(
-                                                                (field,i) => {
+                                                                (field, i) => {
                                                                     if (i === index) {
                                                                         // When the input doesn't meet other validator,
                                                                         // the fields doesn't take the input value
-                                                                        return {...options[field.name], strike: value };
+                                                                        return {...options[field.name], strike: value};
                                                                     }
-                                                                    return    options[field.name] || {}
+                                                                    return options[field.name] || {}
                                                                 }
                                                             );
 
                                                             // Handled by {required: true, message: 'This is a required field.'}
-                                                            if (value === null || value === undefined){
+                                                            if (value === null || value === undefined) {
                                                                 resolve();
                                                             }
 
@@ -159,13 +163,6 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
                                                                 }
                                                             }
 
-                                                            // Try to validate the input data
-                                                            try {
-                                                                optionArrayToOptionPortfolio(optionsInput.map((item) => ({...item, quantity: parseNumberFromFractionText(item.quantity)}))
-                                                                );
-                                                            } catch (e) {
-                                                                reject(new Error(e.message));
-                                                            }
                                                             resolve();
                                                         });
                                                     }
@@ -173,7 +170,7 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
                                             ]}
                                         >
                                             <InputNumber
-                                                placeholder="0"
+                                                placeholder={'0'}
                                                 min={0}
                                                 prefix={'$'}
                                                 style={{width: '100%'}}/>
@@ -194,24 +191,6 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
                                                             parseNumberFromFractionText(value);
                                                         } catch (error) {
                                                             return Promise.reject(new Error('Invalid fraction or number'));
-                                                        }
-
-                                                        // Try to validate the input data
-                                                        try {
-                                                            const optionsInput = fields.map(
-                                                                (field,i) => {
-                                                                    if (i === index) {
-                                                                        // When the input doesn't meet other validator,
-                                                                        // the fields doesn't take the input value
-                                                                        return {...options[field.name], quantity: value };
-                                                                    }
-                                                                    return    options[field.name] || {}
-                                                                }
-                                                            );
-                                                            optionArrayToOptionPortfolio(optionsInput.map((item) => ({...item, quantity: parseNumberFromFractionText(item.quantity)}))
-                                                            );
-                                                        } catch (e) {
-                                                            return Promise.reject(new Error(e.message));
                                                         }
 
                                                         return Promise.resolve();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import {Button, Form, Input, InputNumber, Select, Space} from 'antd';
-import {SecurityType} from "../../lib/generic-payoff";
+import {OPTION_TYPES} from "../../lib/option/option";
 
 const parseNumberFromFractionText = (value) => {
     if (typeof value === 'string' && value.includes('/')) {
@@ -21,23 +21,23 @@ const parseNumberFromFractionText = (value) => {
 const initialValues = {
     formValues: [
         {
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike: 0,
             fraction: '1'
         }, {
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike: 10,
             fraction: '-1'
         }, {
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike: 16,
             fraction: '1/4'
         }, {
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike: 36,
             fraction: '-1/20'
         }, {
-            securityType: SecurityType.BinaryCallOption,
+            securityType: OPTION_TYPES.BINARY_CALL_OPTION,
             strike: 130,
             fraction: '1.2'
         }
@@ -95,8 +95,8 @@ const App = ({onFinish}) => {
                                     <Select
                                         style={{minWidth: 190}}
                                         options={[
-                                            {value: SecurityType.CallOption, label: 'Call Option'},
-                                            {value: SecurityType.BinaryCallOption, label: 'Binary Call Option'}]}
+                                            {value: OPTION_TYPES.CALL_OPTION, label: 'Call Option'},
+                                            {value: OPTION_TYPES.BINARY_CALL_OPTION, label: 'Binary Call Option'}]}
                                     />
                                 </Form.Item>
                                 <Form.Item

@@ -1,8 +1,10 @@
-import {Form, InputNumber, Space, } from "antd";
+import {Col, Form, InputNumber, Row, Space,} from "antd";
 import React, {useState} from "react";
 import {PvGpvLpv} from "../../lib/partial-valuation/pv-gpv-lpv";
 import {LimitedPartnership} from "../../lib/partial-valuation/limited-partnership"
 import {ExpirationPayoffDiagramPvGpvLpv} from "../ExpirationPayoffDiagramPvGpvLpv";
+import {IntegerStep} from "../../antd/IntegerStep";
+import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
 
 // so = pre-money shares outstanding		11
 // sp = new common shares purchased		5
@@ -70,18 +72,19 @@ export default function ExpirationPayoffDiagramPvGpvLpvWithInput({
     return (
         <>
             {visible && <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv}/>}
-
-            <Space>
+            {!visible && <ExpirationPayoffDiagram3
+                datasets={[0]}
+                labels={[0]}
+                yMax={0}/>}
             <Form
                 size={'small'}
                 layout={"horizontal"}
                 labelCol={{
-                    span: 16,
+                    span: 24,
                 }}
                 wrapperCol={{
                     span: 24,
                 }}
-                // style={{maxWidth: '1000px'}}
                 labelAlign={"left"}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
@@ -90,63 +93,72 @@ export default function ExpirationPayoffDiagramPvGpvLpvWithInput({
                 initialValues={variables}
                 requiredMark={false}
             >
-                <Form.Item
-                    label="GP Carried Interest"
-                    name="ci"
-                    rules={[
-                        {
-                            required: true,
-                            message: thisIsARequiredField,
-                        }, {
-                            pattern: regexZeroOrPositiveNumber,
-                            message: "This is a zero or positive number.",
-                        }
-                    ]}
-                >
-                    <InputNumber min={0} size={"middle"} style={{width: "100%"}} addonAfter="%"/>
-                </Form.Item>
-                <Form.Item
-                    label="Lifetime Fee Percentage"
-                    name="lfp"
-                    rules={[
-                        {
-                            required: true,
-                            message: thisIsARequiredField,
-                        }, {
-                            pattern: regexZeroOrPositiveNumber,
-                            message: "This is a zero or positive number.",
-                        }
-                    ]}
-                >
-                    <InputNumber min={0} size={"middle"} style={{width: "100%"}} addonAfter="%"/>
-                </Form.Item>
-                <Form.Item
-                    label="Investment in This Round"
-                    name="inv"
-                    rules={[
-                        {
-                            required: true,
-                            message: thisIsARequiredField,
-                        }, {
-                            pattern: regexPositiveNumber,
-                            message: "This is a positive number."
-                        }
-                    ]}
-                >
-                    <InputNumber min={0} size={"middle"} style={{width: "100%"}} addonBefore="$"/>
-                </Form.Item>
-                {/*<Form.Item*/}
-                {/*    // wrapperCol={{*/}
-                {/*    //     offset: 8,*/}
-                {/*    //     span: 16,*/}
-                {/*    // }}*/}
-                {/*>*/}
-                {/*    <Button type="default" htmlType="submit" size={"middle"} style={{width: "100%"}}>*/}
-                {/*        Show Expiration Payoff Diagram*/}
-                {/*    </Button>*/}
-                {/*</Form.Item>*/}
+                <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12} md={8}>
+                        <Form.Item
+                            label="Investment in This Round"
+                            name="inv"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: thisIsARequiredField,
+                                }, {
+                                    pattern: regexPositiveNumber,
+                                    message: "This is a positive number."
+                                }
+                            ]}
+                        >
+                            <IntegerStep
+                                min={0}
+                                max={100}
+                                addonBefore={'$'}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={12} md={8}>
+                        <Form.Item
+                            label="GP Carried Interest"
+                            name="ci"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: thisIsARequiredField,
+                                }, {
+                                    pattern: regexZeroOrPositiveNumber,
+                                    message: "This is a zero or positive number.",
+                                }
+                            ]}
+                        >
+                            <IntegerStep
+                                min={0}
+                                max={100}
+                                addonAfter={'%'}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={12} md={8}>
+                        <Form.Item
+                            label="Lifetime Fee Percentage"
+                            name="lfp"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: thisIsARequiredField,
+                                }, {
+                                    pattern: regexZeroOrPositiveNumber,
+                                    message: "This is a zero or positive number.",
+                                }
+                            ]}
+                        >
+                            <IntegerStep
+                                min={0}
+                                max={100}
+                                addonAfter={'%'}
+                            />
+                        </Form.Item>
+                    </Col>
+                </Row>
             </Form>
-            </Space>
 
         </>
     );

@@ -1,9 +1,10 @@
 import {Button, Card, Divider, Form, Input, InputNumber, Select, Space, Table, Tag} from "antd";
 import React, {useState} from "react";
 import {DashOutlined, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
-import {postTransactionValuation, SecurityType} from "../../lib/generic-payoff";
+import {postTransactionValuation} from "../../lib/generic-payoff";
 import GenericPayoffInstruction from "./desc";
 import {optionArrayToOptionPortfolio} from "../../lib/converter/option-line-converter";
+import {OPTION_TYPES} from "../../lib/option/option";
 
 
 // so = pre-money shares outstanding		11
@@ -20,23 +21,23 @@ import {optionArrayToOptionPortfolio} from "../../lib/converter/option-line-conv
 
 const optionsInitialValues = [
     {
-        securityType: SecurityType.CallOption,
+        securityType: OPTION_TYPES.CALL_OPTION,
         strike: 0,
         quantity: 1
     }, {
-        securityType: SecurityType.CallOption,
+        securityType: OPTION_TYPES.CALL_OPTION,
         strike: 10,
         quantity: -1
     }, {
-        securityType: SecurityType.CallOption,
+        securityType: OPTION_TYPES.CALL_OPTION,
         strike: 16,
         quantity: 1 / 4
     }, {
-        securityType: SecurityType.CallOption,
+        securityType: OPTION_TYPES.CALL_OPTION,
         strike: 36,
         quantity: -1 / 20
     }, {
-        securityType: SecurityType.BinaryCallOption,
+        securityType: OPTION_TYPES.BINARY_CALL_OPTION,
         strike: 130,
         quantity: 1.2
     }
@@ -74,7 +75,10 @@ export default function GenericPayoff() {
 
     const onFinish = (values) => {
         const {tv, H, r, vol, lfp, inv, options} = values
-        const lpOptions = options.map((item, index) => ({...item, quantity: parseNumberFromFractionText(item.quantity)}))
+        const lpOptions = options.map((item) => ({
+            ...item,
+            quantity: parseNumberFromFractionText(item.quantity)
+        }))
         setVariables({...values})
         setResult(postTransactionValuation(lpOptions, tv, H, r / 100., vol / 100., lfp / 100., inv))
         setVisible(true)
@@ -166,7 +170,7 @@ export default function GenericPayoff() {
                         name="basic"
                         layout={"vertical"}
                         labelCol={{
-                            span: 16,
+                            span: 24,
                         }}
                         wrapperCol={{
                             span: 24,
@@ -273,67 +277,112 @@ export default function GenericPayoff() {
                             <InputNumber size={"middle"} style={{width: "100%"}} addonAfter="%"/>
                         </Form.Item>
 
-                        <h1>Payoff Schedule</h1>
-                        <h3 style={{color: '#3498db'}}>{optionArrayToOptionPortfolio(variables.options).text()}</h3>
+                        <h1>Payoff Schedule - Option Portfolio</h1>
+                        <h3 style={{color: '#595959'}}>Input LP Payoff Schedule When Calculate Post-Transaction Valuation</h3>
+                        <h3 style={{color: '#3498db'}}>{optionArrayToOptionPortfolio(variables.options.map((item) => ({
+                            ...item,
+                            quantity: parseNumberFromFractionText(item.quantity)
+                        }))).text()}</h3>
 
                         <Form.List name="options">
                             {(fields, {add, remove}) => (
                                 <>
-                                    {fields.map(({key, name, ...restField}) => (
+                                    {fields.map(({key, name, ...restField}, index) => (
                                         <Space
                                             key={key}
-                                            style={{display: 'flex', marginBottom: 0}}
+                                            style={{display: 'flex'}}
                                             align="baseline"
                                         >
                                             <Form.Item
                                                 {...restField}
                                                 name={[name, 'securityType']}
-                                                label={key === fields[0].key ? 'Call Option Type' : ''}
+                                                label={key === fields[0].key ? 'Option Type' : ''}
                                                 rules={[{required: true, message: 'Missing Security Type'}]}
                                             >
                                                 <Select
                                                     style={{width: '200px'}}
                                                     options={[
-                                                        {value: SecurityType.CallOption, label: 'Call Option'},
+                                                        {value: OPTION_TYPES.CALL_OPTION, label: 'Call Option'},
                                                         {
-                                                            value: SecurityType.BinaryCallOption,
+                                                            value: OPTION_TYPES.BINARY_CALL_OPTION,
                                                             label: 'Binary Call Option'
                                                         }
                                                     ]}
                                                 />
                                             </Form.Item>
+
+                                            <Form.Item
+                                                {...restField}
+                                                name={[name, 'strike']}
+                                                label={key === fields[0].key ? 'Strike Price' : ''}
+                                                rules={[{required: true, message: 'Missing Strike Price'},
+                                                    {
+                                                        validator: (_, value) => {
+                                                            return new Promise((resolve, reject) => { // Updated to return a promise
+                                                                const optionsInput = fields.map(
+                                                                    (field, i) => {
+                                                                        if (i === index) {
+                                                                            // When the input doesn't meet other validator,
+                                                                            // the fields doesn't take the input value
+                                                                            return {
+                                                                                ...variables.options[field.name],
+                                                                                strike: value,
+                                                                            };
+                                                                        }
+                                                                        return variables.options[field.name] || {}
+                                                                    }
+                                                                );
+
+                                                                // Handled by {required: true, message: 'This is a required field.'}
+                                                                if (value === null || value === undefined) {
+                                                                    resolve();
+                                                                }
+
+                                                                // check ascending order
+                                                                for (let j = 0; j < optionsInput.length; j++) {
+                                                                    if (index < j && value >= optionsInput[j].strike) {
+                                                                        reject(new Error("Strike prices must be in ascending order"));
+                                                                    } else if (index > j && value <= optionsInput[j].strike) {
+                                                                        reject(new Error("Strike prices must be in ascending order"));
+                                                                    }
+                                                                }
+
+                                                                resolve();
+                                                            });
+                                                        }
+                                                    }]}
+                                            >
+                                                <InputNumber
+                                                    placeholder="0"
+                                                    min={0}
+                                                    prefix={'$'}
+                                                    style={{width: '100%'}}/>
+                                            </Form.Item>
                                             <Form.Item
                                                 {...restField}
                                                 name={[name, 'quantity']}
-                                                label={key === fields[0].key ? 'Fraction' : ''}
+                                                label={key === fields[0].key ? 'Number of Options Held' : ''}
                                                 rules={[
-                                                    {required: true, message: 'Missing Fraction'},
+                                                    {required: true, message: 'This is a required field.'},
                                                     {
                                                         validator: (_, value) => {
+                                                            if (value === null || value === undefined || value === '') {
+                                                                return Promise.resolve();
+                                                            }
+
                                                             try {
                                                                 parseNumberFromFractionText(value);
-                                                                return Promise.resolve();
                                                             } catch (error) {
                                                                 return Promise.reject(new Error('Invalid fraction or number'));
                                                             }
+
+                                                            return Promise.resolve();
                                                         }
                                                     }
                                                 ]}
                                             >
                                                 <Input
                                                     placeholder="-1/2"
-                                                    style={{width: '100%'}}/>
-                                            </Form.Item>
-                                            <Form.Item
-                                                {...restField}
-                                                name={[name, 'strike']}
-                                                label={key === fields[0].key ? 'Strike Price' : ''}
-                                                rules={[{required: true, message: 'Missing Strike Price'}]}
-                                            >
-                                                <InputNumber
-                                                    placeholder="0"
-                                                    min={0}
-                                                    prefix={'$'}
                                                     style={{width: '100%'}}/>
                                             </Form.Item>
                                             <div className={'ant-form-item-row'}>

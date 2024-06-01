@@ -1,4 +1,4 @@
-import {SecurityType} from "./generic-payoff";
+import {OPTION_TYPES} from "./option/option";
 
 export function kinkSlopeOptionFunction(kinkSlopeList) {
     // Sort the kinks in ascending order
@@ -72,7 +72,7 @@ export function kinkSlopesToCallOptions(kinkSlopes){
         const strike = x;
         const fraction = (i === 0) ? slope : (slope - kinkSlopes[i-1].slope);
         callOptions.push({
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike,
             fraction
         });

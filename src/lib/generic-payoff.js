@@ -7,11 +7,8 @@
 
 import {Call_Bin_Eur_RE, Call_Eur_RE} from "./option";
 import goalSeek from "./goal-seek";
+import {OPTION_TYPES} from "./option/option";
 
-export const SecurityType = {
-    CallOption: "CallOption",
-    BinaryCallOption: "BinaryCallOption"
-}
 
 // s = stock price
 // x = strike price
@@ -22,11 +19,11 @@ export const SecurityType = {
 export function payoff(options, s, H, r, vol){
     let v = 0
     for (let i=0; i < options.length; i++) {
-        const {securityType, strike, fraction} = options[i]
-        if (securityType === SecurityType.CallOption){
-            v += fraction * Call_Eur_RE(s, strike, H, r, vol)
-        } else if (securityType === SecurityType.BinaryCallOption){
-            v += fraction * Call_Bin_Eur_RE(s, strike, H, r, vol)
+        const {securityType, strike, quantity} = options[i]
+        if (securityType === OPTION_TYPES.CALL_OPTION){
+            v += quantity * Call_Eur_RE(s, strike, H, r, vol)
+        } else if (securityType === OPTION_TYPES.BINARY_CALL_OPTION){
+            v += quantity * Call_Bin_Eur_RE(s, strike, H, r, vol)
         }
     }
     return v;
@@ -84,25 +81,25 @@ export function testPayoff(){
 
     const options = [
         {
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike: 0,
-            fraction: 1
+            quantity: 1
         }, {
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike: 10,
-            fraction: -1
+            quantity: -1
         }, {
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike: 16,
-            fraction: 1/4
+            quantity: 1/4
         }, {
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike: 36,
-            fraction: -1/20
+            quantity: -1/20
         }, {
-            securityType: SecurityType.BinaryCallOption,
+            securityType: OPTION_TYPES.BINARY_CALL_OPTION,
             strike: 130,
-            fraction: 1.2
+            quantity: 1.2
         }
     ]
 
@@ -120,25 +117,25 @@ export function testTransactionValuation(){
 
     const options = [
         {
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike: 0,
-            fraction: 1
+            quantity: 1
         }, {
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike: 10,
-            fraction: -1
+            quantity: -1
         }, {
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike: 16,
-            fraction: 1/4
+            quantity: 1/4
         }, {
-            securityType: SecurityType.CallOption,
+            securityType: OPTION_TYPES.CALL_OPTION,
             strike: 36,
-            fraction: -1/20
+            quantity: -1/20
         }, {
-            securityType: SecurityType.BinaryCallOption,
+            securityType: OPTION_TYPES.BINARY_CALL_OPTION,
             strike: 130,
-            fraction: 1.2
+            quantity: 1.2
         }
     ]
 

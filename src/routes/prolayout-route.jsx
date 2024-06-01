@@ -59,11 +59,11 @@ export const route = {
                 access: 'canAdmin',
                 routes: [
                     {
-                        path: 'generic-payoff-diagram',
-                        name: 'Generic Payoff Diagram',
+                        path: 'payoff-diagram-option-portfolio',
+                        name: 'Payoff Diagram of Option Portfolio',
                     },{
-                        path: 'generic-payoff-diagram-pvgpvlpv',
-                        name: 'Generic Payoff Diagram PV GPV LPV',
+                        path: 'payoff-diagram-pvgpvlpv',
+                        name: 'Payoff Diagram of PV, GPV, and LPV',
                     },
                     {
                         path: 'generic-payoff',

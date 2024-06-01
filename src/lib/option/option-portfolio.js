@@ -26,6 +26,14 @@ export class OptionPortfolio {
 
         const option = type === OPTION_TYPES.CALL_OPTION ? new CallOption(strike) : new BinaryCallOption(strike) ;
 
+        // Binary Call Option Can't be at the first position.
+        if (type === OPTION_TYPES.BINARY_CALL_OPTION) {
+            if ((this.positions.length === 0) ||
+                (this.positions.length > 0 && !(this.positions[0].option.strike < strike))){
+                throw new Error(`Binary Call Option can't be the first element.`)
+            }
+        }
+
         // Prepare for additional validation
         const positionArray = this.positions.map((position) => position)
         positionArray.push(new OptionPosition(option, quantity));

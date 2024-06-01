@@ -11,7 +11,7 @@ import SeriesARpCs from "../components/SeriesARpCs";
 import SeriesAPcp from "../components/SeriesAPcp";
 import GenericPayoff from "../components/GenericPayoff";
 import Welcome from "../pages/Welcome";
-import GenericExpirationPayoffDiagram from "../components/GenericExpirationPayoffDiagram";
+import ExpirationPayoffDiagramOptionPortfolio from "../components/ExpirationPayoffDiagramOptionPortfolio";
 import GenericExpirationPayoffDiagramPvGpvLpv from "../components/GenericExpirationPayoffPvGpvLpv";
 
 // 懒加载, 延时测试效果
@@ -110,11 +110,11 @@ const routes = [
                 children: [
 
                     {
-                        path: 'generic-payoff-diagram',
-                        element: <GenericExpirationPayoffDiagram/>
+                        path: 'payoff-diagram-option-portfolio',
+                        element: <ExpirationPayoffDiagramOptionPortfolio/>
                     },{
 
-                        path: 'generic-payoff-diagram-pvgpvlpv',
+                        path: 'payoff-diagram-pvgpvlpv',
                         element: <GenericExpirationPayoffDiagramPvGpvLpv/>
                     },
                     {
