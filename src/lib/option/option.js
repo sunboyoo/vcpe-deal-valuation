@@ -24,7 +24,7 @@ export class Option {
         }
 
         if (!Number.isFinite(strike) || strike < 0) {
-            throw new Error(`The strike should be a zero or positive number, but ${strike} was provided.`);
+            throw new Error(`The strike price must be zero or positive. ${strike} was provided.`);
         }
 
         this.type = type;

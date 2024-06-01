@@ -9,24 +9,24 @@ const optionsInitialValues = [
     {
         securityType: SecurityType.CallOption,
         strike: 0,
-        fraction: 1
+        quantity: 1
     }, {
         securityType: SecurityType.CallOption,
         strike: 10,
-        fraction: -1
+        quantity: -1
     }, {
         securityType: SecurityType.CallOption,
         strike: 16,
-        fraction: 1 / 4
+        quantity: 1 / 4
     }, {
         securityType: SecurityType.CallOption,
         strike: 36,
-        fraction: -1 / 20
+        quantity: -1 / 20
     },
     {
         securityType: SecurityType.BinaryCallOption,
         strike: 130,
-        fraction: 1.2
+        quantity: 1.2
     }
 ]
 
@@ -36,7 +36,7 @@ const parseNumberFromFractionText = (value) => {
         if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
             return numerator / denominator;
         } else {
-            throw new Error('Invalid fraction');
+            throw new Error('Invalid quantity');
         }
     } else if (!isNaN(parseFloat(value))) {
         return parseFloat(value);
@@ -50,7 +50,7 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
     const [optionsInputError, setOptionsInputError] = useState(null);
 
     const onFinish = (values) => {
-        setOptions(values.options.map((item) => ({...item, fraction: parseNumberFromFractionText(item.fraction)})))
+        setOptions(values.options.map((item) => ({...item, quantity: parseNumberFromFractionText(item.quantity)})))
         setOptionsInputError(null)
         console.log('Form.onFinish():', values);
     };
@@ -62,7 +62,7 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
     const onValuesChange = (valuesChanged, values) => {
         setOptionsInputError(null)
         try {
-            const optionsInput = values.options.map((item) => ({...item, fraction: parseNumberFromFractionText(item.fraction)}))
+            const optionsInput = values.options.map((item) => ({...item, quantity: parseNumberFromFractionText(item.quantity)}))
             // Try to validate the input data
             optionArrayToOptionPortfolio(optionsInput);
             // If no error, pass to onFinish()
@@ -85,7 +85,7 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
                     name="basic"
                     layout={"vertical"}
                     labelCol={{
-                        span: 16,
+                        span: 24,
                     }}
                     wrapperCol={{
                         span: 24,
@@ -106,13 +106,13 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
                                 {fields.map(({key, name, ...restField}, index) => (
                                     <Space
                                         key={key}
-                                        style={{display: 'flex', marginBottom: 0}}
+                                        style={{display: 'flex'}}
                                         align="baseline"
                                     >
                                         <Form.Item
                                             {...restField}
                                             name={[name, 'securityType']}
-                                            label={key === fields[0].key ? 'Call Option Type' : ''}
+                                            label={key === fields[0].key ? 'Option Type' : ''}
                                             rules={[{required: true, message: 'Missing Security Type'}]}
                                         >
                                             <Select
@@ -128,46 +128,43 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
                                         </Form.Item>
                                         <Form.Item
                                             {...restField}
-                                            name={[name, 'fraction']}
-                                            label={key === fields[0].key ? 'Fraction' : ''}
-                                            rules={[
-                                                {required: true, message: 'Missing Fraction'},
-                                                {
-                                                    validator: (_, value) => {
-                                                        try {
-                                                            parseNumberFromFractionText(value);
-                                                            return Promise.resolve();
-                                                        } catch (error) {
-                                                            return Promise.reject(new Error('Invalid fraction or number'));
-                                                        }
-                                                    }
-                                                }
-                                            ]}
-                                        >
-                                            <Input
-                                                placeholder="-1/2"
-                                                style={{width: '100%'}}/>
-                                        </Form.Item>
-                                        <Form.Item
-                                            {...restField}
                                             name={[name, 'strike']}
-                                            label={key === fields[0].key ? 'Strike Price' : ''}
-                                            rules={[{required: true, message: 'Missing Strike Price'},
+                                            label={key === fields[0].key ? 'Option Strike Price' : ''}
+                                            rules={[{required: true, message: 'This is a required field.'},
                                                 {
                                                     validator: (_, value) => {
                                                         return new Promise((resolve, reject) => { // Updated to return a promise
                                                             const optionsInput = fields.map(
-                                                                (field) => options[field.name] || {}
-                                                            );
-                                                            if (!Number.isFinite(value)) {
-                                                                reject(new Error("Strike price must be a number"));
-                                                            }
-                                                            if (index > 0) {
-                                                                for (let j = 0; j < index; j++) {
-                                                                    if (value <= optionsInput[j].strike) {
-                                                                        reject(new Error("Strike prices must be in ascending order"));
+                                                                (field,i) => {
+                                                                    if (i === index) {
+                                                                        // When the input doesn't meet other validator,
+                                                                        // the fields doesn't take the input value
+                                                                        return {...options[field.name], strike: value };
                                                                     }
+                                                                    return    options[field.name] || {}
                                                                 }
+                                                            );
+
+                                                            // Handled by {required: true, message: 'This is a required field.'}
+                                                            if (value === null || value === undefined){
+                                                                resolve();
+                                                            }
+
+                                                            // check ascending order
+                                                            for (let j = 0; j < optionsInput.length; j++) {
+                                                                if (index < j && value >= optionsInput[j].strike) {
+                                                                    reject(new Error("Strike prices must be in ascending order"));
+                                                                } else if (index > j && value <= optionsInput[j].strike) {
+                                                                    reject(new Error("Strike prices must be in ascending order"));
+                                                                }
+                                                            }
+
+                                                            // Try to validate the input data
+                                                            try {
+                                                                optionArrayToOptionPortfolio(optionsInput.map((item) => ({...item, quantity: parseNumberFromFractionText(item.quantity)}))
+                                                                );
+                                                            } catch (e) {
+                                                                reject(new Error(e.message));
                                                             }
                                                             resolve();
                                                         });
@@ -181,6 +178,52 @@ export default function GenericExpirationPayoffDiagramPvGpvLpv() {
                                                 prefix={'$'}
                                                 style={{width: '100%'}}/>
                                         </Form.Item>
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, 'quantity']}
+                                            label={key === fields[0].key ? 'Number of Options Held' : ''}
+                                            rules={[
+                                                {required: true, message: 'This is a required field.'},
+                                                {
+                                                    validator: (_, value) => {
+                                                        if (value === null || value === undefined || value === '') {
+                                                            return Promise.resolve();
+                                                        }
+
+                                                        try {
+                                                            parseNumberFromFractionText(value);
+                                                        } catch (error) {
+                                                            return Promise.reject(new Error('Invalid fraction or number'));
+                                                        }
+
+                                                        // Try to validate the input data
+                                                        try {
+                                                            const optionsInput = fields.map(
+                                                                (field,i) => {
+                                                                    if (i === index) {
+                                                                        // When the input doesn't meet other validator,
+                                                                        // the fields doesn't take the input value
+                                                                        return {...options[field.name], quantity: value };
+                                                                    }
+                                                                    return    options[field.name] || {}
+                                                                }
+                                                            );
+                                                            optionArrayToOptionPortfolio(optionsInput.map((item) => ({...item, quantity: parseNumberFromFractionText(item.quantity)}))
+                                                            );
+                                                        } catch (e) {
+                                                            return Promise.reject(new Error(e.message));
+                                                        }
+
+                                                        return Promise.resolve();
+                                                    }
+                                                }
+                                            ]}
+                                        >
+                                            <Input
+                                                placeholder="-1/2"
+                                                style={{width: '100%'}}/>
+                                        </Form.Item>
+
                                         <div className={'ant-form-item-row'}>
                                             {key !== fields[0].key ? null :
                                                 <div

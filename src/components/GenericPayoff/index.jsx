@@ -22,23 +22,23 @@ const optionsInitialValues = [
     {
         securityType: SecurityType.CallOption,
         strike: 0,
-        fraction: 1
+        quantity: 1
     }, {
         securityType: SecurityType.CallOption,
         strike: 10,
-        fraction: -1
+        quantity: -1
     }, {
         securityType: SecurityType.CallOption,
         strike: 16,
-        fraction: 1 / 4
+        quantity: 1 / 4
     }, {
         securityType: SecurityType.CallOption,
         strike: 36,
-        fraction: -1 / 20
+        quantity: -1 / 20
     }, {
         securityType: SecurityType.BinaryCallOption,
         strike: 130,
-        fraction: 1.2
+        quantity: 1.2
     }
 ]
 
@@ -58,7 +58,7 @@ const parseNumberFromFractionText = (value) => {
         if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
             return numerator / denominator;
         } else {
-            throw new Error('Invalid fraction');
+            throw new Error('Invalid quantity');
         }
     } else if (!isNaN(parseFloat(value))) {
         return parseFloat(value);
@@ -74,7 +74,7 @@ export default function GenericPayoff() {
 
     const onFinish = (values) => {
         const {tv, H, r, vol, lfp, inv, options} = values
-        const lpOptions = options.map((item, index) => ({...item, fraction: parseNumberFromFractionText(item.fraction)}))
+        const lpOptions = options.map((item, index) => ({...item, quantity: parseNumberFromFractionText(item.quantity)}))
         setVariables({...values})
         setResult(postTransactionValuation(lpOptions, tv, H, r / 100., vol / 100., lfp / 100., inv))
         setVisible(true)
@@ -304,7 +304,7 @@ export default function GenericPayoff() {
                                             </Form.Item>
                                             <Form.Item
                                                 {...restField}
-                                                name={[name, 'fraction']}
+                                                name={[name, 'quantity']}
                                                 label={key === fields[0].key ? 'Fraction' : ''}
                                                 rules={[
                                                     {required: true, message: 'Missing Fraction'},

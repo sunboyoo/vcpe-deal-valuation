@@ -121,8 +121,8 @@ function getYStart(position, segmentPrev) {
 
 export function optionArrayToOptionPortfolio(optionArray){
     const portfolio = new OptionPortfolio();
-    optionArray.forEach(({securityType, strike, fraction}) => {
-        portfolio.addPosition(securityType, strike, fraction);
+    optionArray.forEach(({securityType, strike, quantity}) => {
+        portfolio.addPosition(securityType, strike, quantity);
     })
     return portfolio;
 }
@@ -133,7 +133,7 @@ export function optionPortfolioToOptionArray(optionPortfolio){
         arr.push({
             securityType: position.option.type,
             strike: position.option.strike,
-            fraction: position.quantity,
+            quantity: position.quantity,
         });
     })
 

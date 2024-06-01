@@ -1,5 +1,6 @@
 import {OptionPosition} from "./option-position";
 import {BinaryCallOption, CallOption, OPTION_TYPES, trimNumber,} from "./option";
+import {optionPortfolioToSegmentedLine} from "../converter/option-line-converter";
 
 /**
  * Class representing a portfolio of options.
@@ -17,27 +18,63 @@ export class OptionPortfolio {
      * @throws {Error} Throws an error if the strike price is not unique.
      */
     addPosition(type, strike, quantity){
+        // (0) Basic validation
         // The strike needs to be unique and needs to be in ascending order
         if (this.positions.some(position => position.option.strike === strike)) {
-            throw new Error(`Strike prices in OptionPortfolio should be unique. ${strike} was provided.`);
+            throw new Error(`Strike prices in OptionPortfolio must be unique. ${strike} was provided.`);
         }
 
         const option = type === OPTION_TYPES.CALL_OPTION ? new CallOption(strike) : new BinaryCallOption(strike) ;
 
-        // Validate the slope value
-        const copy = this.positions.map((position) => position)
-        copy.push(new OptionPosition(option, quantity));
-        copy.sort((a, b) => a.option.strike - b.option.strike)
+        // Prepare for additional validation
+        const positionArray = this.positions.map((position) => position)
+        positionArray.push(new OptionPosition(option, quantity));
+
+        // (1) Validate the slope value of the line
+        // For all the Call Options, excluding Binary Call Options, q1 + q2 + ... >= 0
+        positionArray.sort((a, b) => a.option.strike - b.option.strike)
         let slope = 0;
-        copy.forEach((position, index) => {
+        positionArray.forEach((position, index) => {
             if (position.option instanceof CallOption) {
                 slope += position.quantity;
                 if (slope < 0) {
-                    throw new Error(`The slope should be zero or a positive number. ${position.quantity} makes the slope to be ${slope}`);
+                    throw new Error(`The slope of the line must be zero or positive. The input fraction value ${position.quantity} results in a slope of ${slope}`);
                 }
             }
         })
 
+        // (2) Validate the drop value of PCP
+        // For Binary Call Options, Y_start = Y_end_pre + q >= 0
+        const testPortfolio = new OptionPortfolio();
+        positionArray.forEach((position) => {
+            testPortfolio.addPositionWithoutValidation(position.option.type, position.option.strike, position.quantity);
+        })
+        const line = optionPortfolioToSegmentedLine(testPortfolio)
+        positionArray.forEach((position, i) => {
+            if (position.option instanceof BinaryCallOption) {
+                const quantity = position.quantity;
+                const yEndPre = line.segments[i - 1].yEnd;
+                if (yEndPre + quantity < 0){
+                    throw new Error(`The payoff after the drop must be zero or positive. The quantity ${quantity} results in a negative payoff after the drop.`)
+                }
+            }
+        })
+
+        this.positions.push(new OptionPosition(option, quantity));
+
+        // Ascending Order
+        // It is more efficient to sort the positions after adding a new one,
+        // rather than enforcing the order upon each addition.
+        this.positions.sort((a, b) => a.option.strike - b.option.strike);
+    }
+
+    addPositionWithoutValidation(type, strike, quantity){
+        // The strike needs to be unique and needs to be in ascending order
+        if (this.positions.some(position => position.option.strike === strike)) {
+            throw new Error(`Strike prices in OptionPortfolio must be unique. ${strike} was provided.`);
+        }
+
+        const option = type === OPTION_TYPES.CALL_OPTION ? new CallOption(strike) : new BinaryCallOption(strike) ;
         this.positions.push(new OptionPosition(option, quantity));
 
         // Ascending Order
