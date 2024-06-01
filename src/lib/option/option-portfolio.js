@@ -19,12 +19,24 @@ export class OptionPortfolio {
     addPosition(type, strike, quantity){
         // The strike needs to be unique and needs to be in ascending order
         if (this.positions.some(position => position.option.strike === strike)) {
-            console.log('OptionPortfolio', this)
-            console.log(`type: ${type}, strike: ${strike}, quantity: ${quantity}`);
             throw new Error(`Strike prices in OptionPortfolio should be unique. ${strike} was provided.`);
         }
 
         const option = type === OPTION_TYPES.CALL_OPTION ? new CallOption(strike) : new BinaryCallOption(strike) ;
+
+        // Validate the slope value
+        const copy = this.positions.map((position) => position)
+        copy.push(new OptionPosition(option, quantity));
+        copy.sort((a, b) => a.option.strike - b.option.strike)
+        let slope = 0;
+        copy.forEach((position, index) => {
+            if (position.option instanceof CallOption) {
+                slope += position.quantity;
+                if (slope < 0) {
+                    throw new Error(`The slope should be zero or a positive number. ${position.quantity} makes the slope to be ${slope}`);
+                }
+            }
+        })
 
         this.positions.push(new OptionPosition(option, quantity));
 

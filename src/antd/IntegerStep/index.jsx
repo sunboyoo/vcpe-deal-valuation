@@ -16,28 +16,31 @@ export const IntegerStep = ({min=0, max,value, onChange, ...options}) => {
     };
 
     return (
-        <Row>
-            <Col span={16}>
-                <Slider
-                    min={min}
-                    max={max}
-                    onChange={handleChange}
-                    value={typeof inputValue === 'number' ? inputValue : min}
-                />
-            </Col>
-            <Col span={8}>
-                <InputNumber
-                    {...options}
-                    min={min}
-                    style={{
-                        margin: '0 16px',
-                        width: '100%',
-                    }}
-                    value={inputValue}
-                    onChange={handleChange}
-                />
-            </Col>
-        </Row>
+        <>
+            <Row>
+                    <Slider
+                        min={min}
+                        max={max}
+                        onChange={handleChange}
+                        value={typeof inputValue === 'number' ? inputValue : min}
+                        style={{ width: '100%' }}
+                    />
+            </Row>
+            <Row>
+                {/*<Col span={24}>*/}
+                    <InputNumber
+                        {...options}
+                        min={min}
+                        style={{
+                            margin: '0 16px',
+                            width: '100%',
+                        }}
+                        value={inputValue}
+                        onChange={handleChange}
+                    />
+                {/*</Col>*/}
+            </Row>
+        </>
     );
 };
 

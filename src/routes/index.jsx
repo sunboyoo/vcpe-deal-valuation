@@ -13,6 +13,7 @@ import GenericPayoff from "../components/GenericPayoff";
 import Welcome from "../pages/Welcome";
 import GenericExpirationPayoffDiagram from "../components/GenericExpirationPayoffDiagram";
 import GenericExpirationPayoffDiagramPvGpvLpv from "../components/GenericExpirationPayoffPvGpvLpv";
+import OptionPortfolioDiagram from "../components/OptionPortfolioDiagram";
 
 
 // 懒加载, 延时测试效果
@@ -109,9 +110,13 @@ const routes = [
                 path: 'generic',
                 element: <Outlet/>,
                 children: [
+
                     {
                         path: 'generic-payoff-diagram',
                         element: <GenericExpirationPayoffDiagram/>
+                    },{
+                        path: 'option-portfolio-diagram',
+                        element: <OptionPortfolioDiagram/>,
                     },{
                         path: 'generic-payoff-diagram-pvgpvlpv',
                         element: <GenericExpirationPayoffDiagramPvGpvLpv/>

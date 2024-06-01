@@ -62,6 +62,9 @@ export const route = {
                         path: 'generic-payoff-diagram',
                         name: 'Generic Payoff Diagram',
                     },{
+                        path: 'option-portfolio-diagram',
+                        name: 'Option Portfolio Diagram',
+                    },{
                         path: 'generic-payoff-diagram-pvgpvlpv',
                         name: 'Generic Payoff Diagram PV GPV LPV',
                     },
