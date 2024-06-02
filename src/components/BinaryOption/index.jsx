@@ -1,6 +1,13 @@
 import {Button, Card, Form, InputNumber, Space, Statistic} from "antd";
 import {Call_Bin_Eur, Call_Bin_Eur_RE} from "../../lib/option";
 import React, {useState} from "react";
+import {
+    CalculatorFilled,
+    CalculatorOutlined, CaretDownOutlined,
+    CaretRightOutlined,
+    RightOutlined,
+    RightSquareFilled
+} from "@ant-design/icons";
 
 const initialValues = {
     S: 40.00,
@@ -142,7 +149,8 @@ export default function BinaryOption(){
                         //     span: 16,
                         // }}
                     >
-                        <Button type="default" htmlType="submit" size={"middle"} style={{width: "100%"}}>
+                        <Button type="primary" htmlType="submit" size={"large"} style={{width: "100%"}}
+                                icon={visible ? <CaretDownOutlined />:<CaretRightOutlined />}>
                             CALCULATE
                         </Button>
                     </Form.Item>
@@ -157,6 +165,7 @@ export default function BinaryOption(){
                     precision={3}
                     prefix="$"
                 />
+                <div style={{height: 20}}/>
                 <Statistic
                     title="Random Expiration Binary Option Value"
                     value={Call_Bin_Eur_RE(variables.S, variables.X, variables.T, variables.r/100.0, variables.sigma/100.0)}
@@ -165,15 +174,8 @@ export default function BinaryOption(){
                 />
             </Card>
             }
-            <Space><p/></Space>
         </Space>
-    <Space direction="vertical">
-        {visible &&
-            <Card bordered={false} title={"APPRECIATION"} >
-                <p>Our appreciation goes to Professor Klaas P. Baks of Emory University's Goizueta Business School, as this tool was developed based on his Deal Valuation worksheet and inspired by his course "Venture Capital and Private Equity." Dr. Baks is an esteemed professor in the Practice of Finance and the Executive Director and Co-Founder of the Emory Center for Alternative Investments, specializing in alternative investments, entrepreneurial finance, and investment management. He is an award-winning educator with numerous publications, recognized for his engaging and dynamic speaking style.</p>
-            </Card>
-        }
-    </Space>
+
 </>
     );
 }

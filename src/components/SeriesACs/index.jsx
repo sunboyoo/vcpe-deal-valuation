@@ -1,11 +1,15 @@
-import {Button, Card, Divider, Form, InputNumber, Space, Table, Tag} from "antd";
+import {Button, Card, Col, Divider, Form, InputNumber, Row, Space, Statistic, Table, Tag} from "antd";
 import React, {useState} from "react";
 import {seriesA_CS} from "../../lib/series-a-cs";
-import {DashOutlined} from "@ant-design/icons";
+import {CaretDownOutlined, CaretRightOutlined, DashOutlined, LeftOutlined} from "@ant-design/icons";
 import { PvGpvLpv} from "../../lib/partial-valuation/pv-gpv-lpv";
 import {LimitedPartnership} from "../../lib/partial-valuation/limited-partnership"
 
 import {ExpirationPayoffDiagramPvGpvLpv} from "../../chartjs/ExpirationPayoffDiagramPvGpvLpv";
+import {ProHelpContentPanel} from "@ant-design/pro-layout";
+import InvestmentDecisionResult from "../InvestmentDecisionResult";
+import TransactionValuationResult from "../TransactionValuationResult";
+import ValuationResult from "../ValuationResult";
 
 // so = pre-money shares outstanding		11
 // sp = new common shares purchased		5
@@ -340,43 +344,50 @@ export default function SeriesACs(){
                         //     span: 16,
                         // }}
                     >
-                        <Button type="default" htmlType="submit" size={"middle"} style={{width: "100%"}}>
+                        <Button type="primary" htmlType="submit" size={"large"} style={{width: "100%"}}
+                                icon={visible ? <CaretDownOutlined />:<CaretRightOutlined />}>
                             CALCULATE
                         </Button>
                     </Form.Item>
                 </Form>
             </Card>
+        </Space>
+            <Divider style={{borderColor: 'transparent' }} />
+            <Space direction={'vertical'}>
+            {visible && <ValuationResult
+                pv={result.PV}
+                lpv={result.LPV}
+                gpv={result.GPCV}
+                lpc={result.LPC}
+            />}
+            {visible && <TransactionValuationResult
+                postTxV={result.transactionValuation.postTransactionValuation}
+                preTxV={result.transactionValuation.preTransactionValuation}
+                postTxPv={result.transactionValuation.postTransactionPV}
+                postTxGPCV={result.transactionValuation.postTransactionGPCV}
+                postTxLPV={result.transactionValuation.postTransactionLPV}
 
-            {visible &&
-            <Card bordered={false} title={"Valuation"}>
-                <Table columns={columns} dataSource={data0} size="small" pagination={false}/>
-            </Card>
-            }
-            {visible &&
-            <Card bordered={false} title={"Post-Transaction Valuation"}>
-                <Table columns={columns} dataSource={data1} size="small" pagination={false}/>
-                <Divider/>
-                <Table columns={columns} dataSource={data2} size="small" pagination={false}/>
-            </Card>}
+            />}
+            {visible && <InvestmentDecisionResult
+                lpv={result.LPV}
+                lpc={result.LPC}
+                firmValue={variables.tv}
+                postTxFirmValue={result.transactionValuation.postTransactionValuation}
+            />}
 
             <Space><p/></Space>
-        </Space>
 
-    <Space direction="vertical">
+
         {visible && <Card>
-            <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv} result={result}/>
+            <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv} result={result} showIndividualDiagrams={true}/>
         </Card>}
         {visible &&
-            <Card bordered={false} title={"Expiration Payoff Diagram"} >
-                <p>Please note that the following expiration payoff diagrams assume that there are no dividends. If there are dividends, they should be taken into consideration in order to get an accurate representation of the potential payoff at expiration.</p>
-                <p>The diagrams may occasionally have display issues when viewed vertically on mobile devices. If you experience this problem, please rotate your phone to a horizontal orientation and refresh the webpage.</p>
+            <Card bordered={false} title={"Expiration Payoff Diagram"} style={{}} >
+                <p>The expiration payoff diagrams provided do not account for dividends. To accurately represent the potential payoff at expiration, any dividends should be considered.</p>
+                <p>The diagrams may not display correctly on smartphones. For optimal viewing, it is recommended to use a desktop, laptop, or iPad.</p>
             </Card>
         }
-        {visible &&
-            <Card bordered={false} title={"APPRECIATION"} >
-                <p>Our appreciation goes to Professor Klaas P. Baks of Emory University's Goizueta Business School, as this tool was developed based on his Deal Valuation worksheet and inspired by his course "Venture Capital and Private Equity." Dr. Baks is an esteemed professor in the Practice of Finance and the Executive Director and Co-Founder of the Emory Center for Alternative Investments, specializing in alternative investments, entrepreneurial finance, and investment management. He is an award-winning educator with numerous publications, recognized for his engaging and dynamic speaking style.</p>
-            </Card>
-        }
+
     </Space>
 </>
     );

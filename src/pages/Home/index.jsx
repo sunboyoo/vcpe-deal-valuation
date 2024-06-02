@@ -117,6 +117,15 @@ const App = () => {
                                         },
                                     ]}
                                 />
+                                <a href="https://github.com/sunboyoo/vcpe-deal-valuation" target="_blank">
+                                    <img
+                                        src="https://img.shields.io/github/stars/sunboyoo/vcpe-deal-valuation?style=social"
+                                        alt="Star on GitHub"/>
+                                </a> <br/><br/>
+                                <a href="https://github.com/sunboyoo/vcpe-deal-valuation/issues/new" target="_blank">
+                                    <img src="https://img.shields.io/badge/Report%20an%20Issue-Click%20Here-brightgreen"
+                                         alt="Report an Issue"/>
+                                </a>
                             </div>
                         </PageContainer>
 

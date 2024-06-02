@@ -2,6 +2,7 @@ import React from "react";
 import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
 import {segmentedLineToOptionPortfolio} from "../../lib/converter/option-line-converter";
+import {Divider} from "antd";
 
 export function ExpirationPayoffDiagramPvGpvLpv({
                                                     pvGpvLpv,
@@ -24,9 +25,9 @@ export function ExpirationPayoffDiagramPvGpvLpv({
     const subtitleTextLpc = "LP Cost = " + lpc
 
     if (result) {
-        subtitleTextPv = "Partial Valuation = " + segmentedLineToOptionPortfolio(pv).text() + " = " + result.PV.toFixed(4)
-        subtitleTextGpv = "GP Carry Valuation = " + segmentedLineToOptionPortfolio(gpv).text() + " = " + result.GPCV.toFixed(4)
-        subtitleTextLpv = "LP Valuation = " + segmentedLineToOptionPortfolio(lpv).text() + " = " + result.LPV.toFixed(4)
+        subtitleTextPv = "PV = " + segmentedLineToOptionPortfolio(pv).text() + " = " + result.PV.toFixed(4)
+        subtitleTextGpv = "GPV = " + segmentedLineToOptionPortfolio(gpv).text() + " = " + result.GPCV.toFixed(4)
+        subtitleTextLpv = "LPV = " + segmentedLineToOptionPortfolio(lpv).text() + " = " + result.LPV.toFixed(4)
     } else {
         subtitleTextPv = "Partial Valuation = " + segmentedLineToOptionPortfolio(pv).text()
         subtitleTextGpv = "GP Carry Valuation = " + segmentedLineToOptionPortfolio(gpv).text()
@@ -34,7 +35,7 @@ export function ExpirationPayoffDiagramPvGpvLpv({
     }
 
     const datasetPv = {
-        label: 'Partial Valuation',
+        label: 'PV',
         data: yPv,
         borderColor: ChartJSUtils.CHART_COLORS.green,
         backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.CHART_COLORS.green, 0.9),
@@ -44,7 +45,7 @@ export function ExpirationPayoffDiagramPvGpvLpv({
         yAxisID: "y",
     }
     const datasetGpv = {
-        label: 'GP Carry Valuation',
+        label: 'GPV',
         data: yGpv,
         borderColor: ChartJSUtils.CHART_COLORS.red,
         backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.CHART_COLORS.red, 0.9),
@@ -55,7 +56,7 @@ export function ExpirationPayoffDiagramPvGpvLpv({
     }
 
     const datasetLpv = {
-        label: 'LP Valuation',
+        label: 'LPV',
         data: yLpv,
         borderColor: ChartJSUtils.CHART_COLORS.orange,
         backgroundColor: ChartJSUtils.transparentize(ChartJSUtils.CHART_COLORS.orange, 0.9),
@@ -79,9 +80,6 @@ export function ExpirationPayoffDiagramPvGpvLpv({
 
     const yMax = Math.max(...yPv)
 
-    console.log('PV', pv.text(), pv)
-    console.log('GPV', gpv.text(), gpv)
-    console.log('LPV', lpv.text(), lpv)
     return (
         <>
             {showCombinedDiagram &&
@@ -97,6 +95,7 @@ export function ExpirationPayoffDiagramPvGpvLpv({
 
             {showPv && showIndividualDiagrams &&
                 <>
+                    <Divider/>
                     <div style={{height: '10px'}}/>
                     <ExpirationPayoffDiagram3
                         datasets={showLpc ? [datasetPv, datasetLpc] : [datasetPv]}
@@ -107,8 +106,24 @@ export function ExpirationPayoffDiagramPvGpvLpv({
                 </>
             }
 
+
+            {showLpv && showIndividualDiagrams &&
+                <>
+                    <Divider/>
+                    <div style={{height: '10px'}}/>
+                    <ExpirationPayoffDiagram3
+                        datasets={[datasetLpv, datasetLpc]}
+                        labels={xLpv}
+                        subtitleTexts={[subtitleTextLpv, subtitleTextLpc]}
+                        yMax={yMax}/>
+                    <div style={{height: '10px'}}/>
+                </>
+            }
+
             {showGpv && showIndividualDiagrams &&
                 <>
+                    <Divider/>
+
                     <div style={{height: '10px'}}/>
                     <ExpirationPayoffDiagram3
                         datasets={[datasetGpv, datasetLpc]}
@@ -118,20 +133,6 @@ export function ExpirationPayoffDiagramPvGpvLpv({
                     <div style={{height: '10px'}}/>
                 </>
             }
-
-            {showLpv && showIndividualDiagrams &&
-                <>
-                    <div style={{height: '10px'}}/>
-
-                    <ExpirationPayoffDiagram3
-                        datasets={[datasetLpv, datasetLpc]}
-                        labels={xLpv}
-                        subtitleTexts={[subtitleTextLpv, subtitleTextLpc]}
-                        yMax={yMax}/>
-                    <div style={{height: '10px'}}/>
-
-                </>
-            }
-            </>
+        </>
     )
 }

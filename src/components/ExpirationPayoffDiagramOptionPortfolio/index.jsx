@@ -77,6 +77,7 @@ export default function App() {
 
     return (
         <>
+            <Space direction={'vertical'} style={{minWidth: '80%'}}>
             <h1 style={{color: '#595959'}}>Diagram of Option Portfolio</h1>
             <p style={{color: '#595959'}}>Input the option portfolio to generate its payoff diagram</p>
             {options && options.length > 0 &&
@@ -233,6 +234,7 @@ export default function App() {
                     </Form.List>
                 </Form>
             </Card>
+            </Space>
         </>
     );
 }

@@ -126,6 +126,7 @@ export default function App() {
     const pvGpvLpv = PvGpvLpv.ofPayoffOptions(new LimitedPartnership(undefined, ci / 100., lfp / 100.), inv, options)
     return (
         <>
+            <Space direction={'vertical'}>
             <h1 style={{color: '#595959'}}>Diagram of PV, GPV, and LPV</h1>
             <p style={{color: '#595959'}}>Input the PV option portfolio, LP's investment, GP's carried interest, and lifetime fee percentage to generate the payoff diagrams of PV, GPV and LPV</p>
             {options && options.length > 0 &&
@@ -372,6 +373,7 @@ export default function App() {
                     </Form.List>
                 </Form>
             </Card>
+            </Space>
         </>
     );
 }

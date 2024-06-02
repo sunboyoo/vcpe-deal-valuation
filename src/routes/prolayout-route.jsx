@@ -53,33 +53,31 @@ export const route = {
                     }
                 ],
             }, {
+                path: 'series-b-and-beyond',
+                name: 'Series B and Beyond',
+                icon: <DotChartOutlined/>,
+                access: 'canAdmin',
+            },{
                 path: 'generic',
                 name: 'Generic Payoff',
                 icon: <DotChartOutlined/>,
                 access: 'canAdmin',
                 routes: [
                     {
+                    path: 'generic-payoff',
+                    name: 'Generic Payoff - Valuation',
+                },{
+                        path: 'generic-payoff-transaction-valuation',
+                        name: 'Generic Payoff - Transaction Valuation',
+                    },
+                    {
                         path: 'payoff-diagram-option-portfolio',
-                        name: 'Payoff Diagram of Option Portfolio',
+                        name: 'Generic Payoff Diagram - Option Portfolio',
                     },{
                         path: 'payoff-diagram-pvgpvlpv',
-                        name: 'Payoff Diagram of PV, GPV, and LPV',
+                        name: 'Generic Payoff Diagram - PV, LPV, and GPV',
                     },
-                    {
-                        path: 'generic-payoff',
-                        name: 'Generic Payoff Valuation',
-                    },
-                ],
-            }, {
-                path: 'multi-series',
-                name: 'Multi Series',
-                icon: <DotChartOutlined/>,
-                access: 'canAdmin',
-                routes: [
-                    {
-                        path: 'multi-series',
-                        name: 'Multi Series',
-                    },
+
                 ],
             },
         ],

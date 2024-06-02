@@ -1,7 +1,13 @@
-import {Button, Card, Divider, Form, Input, InputNumber, Select, Space, Table, Tag} from "antd";
+import {Button, Card, Col, Form, Input, InputNumber, Row, Select, Space, Statistic, Table, Tag} from "antd";
 import React, {useState} from "react";
-import {DashOutlined, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
-import {postTransactionValuation} from "../../lib/generic-payoff";
+import {
+    CaretDownOutlined,
+    CaretRightOutlined,
+    DashOutlined,
+    MinusCircleOutlined,
+    PlusOutlined
+} from "@ant-design/icons";
+import {payoff, transactionValuation} from "../../lib/generic-payoff";
 import GenericPayoffInstruction from "./desc";
 import {optionArrayToOptionPortfolio} from "../../lib/converter/option-line-converter";
 import {OPTION_TYPES} from "../../lib/option/option";
@@ -31,15 +37,15 @@ const optionsInitialValues = [
     }, {
         securityType: OPTION_TYPES.CALL_OPTION,
         strike: 16,
-        quantity: 1 / 4
+        quantity: '1/4'
     }, {
         securityType: OPTION_TYPES.CALL_OPTION,
         strike: 36,
-        quantity: -1 / 20
+        quantity: `-1/20`
     }, {
-        securityType: OPTION_TYPES.BINARY_CALL_OPTION,
-        strike: 130,
-        quantity: 1.2
+        securityType: OPTION_TYPES.CALL_OPTION,
+        strike: 60,
+        quantity: `-1/12`
     }
 ]
 
@@ -74,93 +80,27 @@ export default function GenericPayoff() {
     const [visible, setVisible] = useState(false)
 
     const onFinish = (values) => {
-        const {tv, H, r, vol, lfp, inv, options} = values
-        const lpOptions = options.map((item) => ({
+        const {tv, H, r, vol, options} = values
+        const genericOptions = options.map((item) => ({
             ...item,
             quantity: parseNumberFromFractionText(item.quantity)
         }))
         setVariables({...values})
-        setResult(postTransactionValuation(lpOptions, tv, H, r / 100., vol / 100., lfp / 100., inv))
+        setResult(payoff(genericOptions, tv, H, r / 100., vol / 100.))
         setVisible(true)
-        console.log('Form.onFinish():', values);
-        console.log(postTransactionValuation(lpOptions, tv, H, r / 100., vol / 100., lfp / 100., inv))
     };
     const onFinishFailed = (errorInfo) => {
         setVisible(false)
-        console.log('Form.onFinishFailed():', errorInfo);
     };
 
     const onValuesChange = () => {
         setVisible(false)
-        console.log("Form.onValuesChange()")
     }
 
     const regexPositiveNumber = /^(?!0+(\.0+)?$)(0+\.\d*[1-9]\d*|[1-9]\d*(\.\d+)?)$/
     const regexZeroOrPositiveNumber = /^(\d+(\.\d*)?|\.\d+)$/;
 
     const thisIsARequiredField = "This is a required field."
-
-
-    const columns = [
-        {
-            title: '',
-            dataIndex: 'name',
-            render: (_, value) => {
-                return (
-                    <span>
-                    {value.child ? <><DashOutlined/><DashOutlined/></> : <></>}
-                        {
-                            value.tags &&
-                            value.tags.map((tag) =>
-                                <Tag color="blue" key={tag}>
-                                    {tag.toUpperCase()}
-                                </Tag>)
-                        }
-                        <span>{value.name}</span>
-                </span>)
-            }
-        },
-        {
-            title: '',
-            dataIndex: 'value',
-            align: "right"
-        }
-    ];
-
-    const data0 = result ? [
-        {
-            key: '1',
-            name: 'LPV',
-            value: result.LPV.toFixed(3),
-            child: false
-        },
-    ] : [];
-
-    const data1 = result ? [
-        {
-            key: '1',
-            name: 'Post-Tx V',
-            value: result.transactionValuation.postTransactionValuation.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: false
-        }, {
-            key: '2',
-            name: 'LPV',
-            value: result.transactionValuation.postTransactionLPV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: true
-        }
-    ] : [];
-
-
-    const data2 = result ? [{
-        key: '5',
-        name: 'LPV',
-        value: result.transactionValuation.postTransactionLPV.toFixed(3),
-        tags: ['Post-Transaction Valuation'],
-        child: true
-    },
-    ] : [];
 
     return (
         <>
@@ -185,21 +125,7 @@ export default function GenericPayoff() {
 
                     >
                         <h1>Inputs</h1>
-                        <Form.Item
-                            label="Investment in This Round"
-                            name="inv"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: thisIsARequiredField,
-                                }, {
-                                    pattern: regexPositiveNumber,
-                                    message: "This is a positive number."
-                                }
-                            ]}
-                        >
-                            <InputNumber size={"middle"} style={{width: "100%"}} addonBefore="$"/>
-                        </Form.Item>
+
                         <Form.Item
                             label="Total Valuation"
                             name="tv"
@@ -261,24 +187,9 @@ export default function GenericPayoff() {
                         >
                             <InputNumber size={"middle"} style={{width: "100%"}} addonAfter="Years"/>
                         </Form.Item>
-                        <Form.Item
-                            label="Lifetime Fee Percentage"
-                            name="lfp"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: thisIsARequiredField,
-                                }, {
-                                    pattern: regexZeroOrPositiveNumber,
-                                    message: "This is a zero or positive number.",
-                                }
-                            ]}
-                        >
-                            <InputNumber size={"middle"} style={{width: "100%"}} addonAfter="%"/>
-                        </Form.Item>
+                        <div style={{height: '20px'}}/>
 
-                        <h1>Payoff Schedule - Option Portfolio</h1>
-                        <h3 style={{color: '#595959'}}>Input LP Payoff Schedule When Calculate Post-Transaction Valuation</h3>
+                        <h1>Generic Payoff Schedule - Option Portfolio</h1>
                         <h3 style={{color: '#3498db'}}>{optionArrayToOptionPortfolio(variables.options.map((item) => ({
                             ...item,
                             quantity: parseNumberFromFractionText(item.quantity)
@@ -413,50 +324,33 @@ export default function GenericPayoff() {
                             )}
                         </Form.List>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit">
-                                Calculate
+                            <Button type="primary" htmlType="submit" size={"large"} style={{width: "100%"}}
+                                    icon={visible ? <CaretDownOutlined />:<CaretRightOutlined />}>
+                                CALCULATE
                             </Button>
                         </Form.Item>
                     </Form>
                 </Card>
-                {/*<Card>*/}
-                {/*    <PayoffSchedule onFinish={(options) => {*/}
-                {/*        console.log('received values', options)*/}
-                {/*    }}/>*/}
-                {/*</Card>*/}
-
-                {visible &&
-                    <Card bordered={false} title={"Valuation"}>
-                        <Table columns={columns} dataSource={data0} size="small" pagination={false}/>
-                    </Card>
-                } {visible &&
-                <Card bordered={false} title={"Post-Transaction Valuation"}>
-                    <Table columns={columns} dataSource={data1} size="small" pagination={false}/>
-                    <Divider/>
-                    <Table columns={columns} dataSource={data2} size="small" pagination={false}/>
-                </Card>}
-            </Space>
-            <div style={{height: '100px'}}></div>
-
-            <Space>
-                <GenericPayoffInstruction/>
-            </Space>
-
-            <div style={{height: '100px'}}></div>
-
-            <Space direction="vertical">
-                {visible &&
-                    <Card bordered={false} title={"APPRECIATION"}>
-                        <p>Our appreciation goes to Professor Klaas P. Baks of Emory University's Goizueta Business
-                            School, as this tool was developed based on his Deal Valuation worksheet and inspired by his
-                            course "Venture Capital and Private Equity." Dr. Baks is an esteemed professor in the
-                            Practice of Finance and the Executive Director and Co-Founder of the Emory Center for
-                            Alternative Investments, specializing in alternative investments, entrepreneurial finance,
-                            and investment management. He is an award-winning educator with numerous publications,
-                            recognized for his engaging and dynamic speaking style.</p>
-                    </Card>
+                {visible && <Card>
+                    <h1>Valuation</h1>
+                    <div style={{height: '20px'}}/>
+                    <Row style={{display: "flex", justifyContent: 'center'}}>
+                        <Col span={6}>
+                            <Statistic
+                                title="Generic Valuation"
+                                value={result}
+                                precision={3}
+                                valueStyle={{}}
+                            />
+                        </Col>
+                    </Row>
+                </Card>
                 }
+                <Card>
+                    <GenericPayoffInstruction/>
+                </Card>
             </Space>
+
         </>
     );
 }

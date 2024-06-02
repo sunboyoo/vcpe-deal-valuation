@@ -3,6 +3,7 @@ import React from "react";
 import {Button, Card, Form, InputNumber, Space, Statistic} from "antd";
 import {Call_Eur, Call_Eur_RE, Put_Eur} from "../../lib/option";
 import {useState} from "react";
+import BlackScholesFormula from "../BlackScholesFormula";
 
 const initialValues = {
     S: 100.00,
@@ -42,7 +43,14 @@ export default function EuropeanCallPutOption(){
             <Card title="European Call & Put Option" >
                 <Form
                     name="basic"
-                    layout={"vertical"}
+                    layout={"horizontal"}
+                    labelCol={{
+                        span: 16,
+                    }}
+                    wrapperCol={{
+                        span: 24,
+                    }}
+                    labelAlign={"left"}
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                     onValuesChange={onValuesChange}
@@ -135,7 +143,7 @@ export default function EuropeanCallPutOption(){
                         //     span: 16,
                         // }}
                     >
-                        <Button type="default" htmlType="submit" size={"middle"} style={{width: "100%"}}>
+                        <Button type="primary" htmlType="submit" size={"middle"} style={{width: "100%"}}>
                             CALCULATE
                         </Button>
                     </Form.Item>
@@ -143,36 +151,41 @@ export default function EuropeanCallPutOption(){
             </Card>
 
             {visible &&
-            <Card bordered={false}>
-                <Statistic
-                    title="European Call Option Value"
-                    value={Call_Eur(variables.S, variables.X, variables.T, variables.r/100.0, variables.sigma/100.0)}
-                    precision={3}
-                    prefix="$"
-                />
-                <Statistic
-                    title="European Put Option Value"
-                    value={Put_Eur(variables.S, variables.X, variables.T, variables.r/100.0, variables.sigma/100.0)}
-                    precision={3}
-                    prefix="$"
-                />
-                <Statistic
-                    title="Random Expiration European Call Option Value"
-                    value={Call_Eur_RE(variables.S, variables.X, variables.T, variables.r/100.0, variables.sigma/100.0)}
-                    precision={3}
-                    prefix="$"
-                />
-            </Card>
+                <Card bordered={false}>
+                    <Statistic
+                        title="European Call Option Value"
+                        value={Call_Eur(variables.S, variables.X, variables.T, variables.r / 100.0, variables.sigma / 100.0)}
+                        precision={3}
+                        prefix="$"
+                    />
+                    <div style={{height: 20}}/>
+                    <Statistic
+                        title="European Put Option Value"
+                        value={Put_Eur(variables.S, variables.X, variables.T, variables.r / 100.0, variables.sigma / 100.0)}
+                        precision={3}
+                        prefix="$"
+                    />
+                    <div style={{height: 20}}/>
+
+                    <Statistic
+                        title="Random Expiration European Call Option Value"
+                        value={Call_Eur_RE(variables.S, variables.X, variables.T, variables.r / 100.0, variables.sigma / 100.0)}
+                        precision={3}
+                        prefix="$"
+                    />
+                </Card>
+
             }
-            <Space><p/></Space>
+
+            {visible &&
+                <Card>
+                    <BlackScholesFormula/>
+                </Card>
+            }
+
+
         </Space>
-    <Space direction="vertical">
-        {visible &&
-            <Card bordered={false} title={"APPRECIATION"} >
-                <p>Our appreciation goes to Professor Klaas P. Baks of Emory University's Goizueta Business School, as this tool was developed based on his Deal Valuation worksheet and inspired by his course "Venture Capital and Private Equity." Dr. Baks is an esteemed professor in the Practice of Finance and the Executive Director and Co-Founder of the Emory Center for Alternative Investments, specializing in alternative investments, entrepreneurial finance, and investment management. He is an award-winning educator with numerous publications, recognized for his engaging and dynamic speaking style.</p>
-            </Card>
-        }
-    </Space>
-</>
+
+        </>
     );
 }

@@ -33,7 +33,7 @@ export function payoff(options, s, H, r, vol){
 // Find the transaction value to make LPV === LPC with the payoff() function.
 // Post Transaction Valuation is defined for the investors break even
 // Pre/Post Transaction Method <=> Pre/Post Money Method
-export function postTransactionValuation(lpOptions, s, H, r, vol, lfp, inv){
+export function transactionValuation(lpOptions, s, H, r, vol, lfp, inv){
     const LPC = inv * (1 + lfp)
     const LPV = payoff(lpOptions, s, H, r, vol)
 
@@ -139,6 +139,6 @@ export function testTransactionValuation(){
         }
     ]
 
-    return postTransactionValuation(options, tv, H, r, sd, lfp, invest)
+    return transactionValuation(options, tv, H, r, sd, lfp, invest)
 }
 

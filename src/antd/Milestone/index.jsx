@@ -136,19 +136,18 @@ const App = ({conversionSteps, csStacks, onChange}) => {
                 items={items}
             />
             <p/>
-            <div style={{width: '100%', display: 'flex', justifyContent: 'space-around'}}>
+            <div style={{width: '100%', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap'}}>
                 {csStacks.map((csStack, index) => (
                     <div key={index} style={{
-                        flex: 1,
+                        // flex: 1,
                         // padding: '0px',
                         boxShadow: current === index ? '0px 0px 10px rgba(0, 0, 0, 0.5)' : 'none',
                         width: '300px', // Set your desired width
-                        height: '400px', // Set your desired height
+                        height: '300px', // Set your desired height
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}>
-                        {/*<EquityStack data={[...equityStack]}/>*/}
                         <CommonStockDoughnut csStack={[...csStack]}/>
                     </div>
                 ))

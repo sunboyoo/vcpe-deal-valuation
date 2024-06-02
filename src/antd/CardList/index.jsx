@@ -293,7 +293,7 @@ export default function ({initialValue, onChange}) {
                     stepsFormRender={(dom, submitter) => {
                         return type === 'drawer' ? (
                             <Drawer
-                                title="Update An Item"
+                                title="Edit An Item"
                                 // width={800}
                                 open={open}
                                 afterOpenChange={setOpen}
@@ -305,7 +305,7 @@ export default function ({initialValue, onChange}) {
                             </Drawer>
                         ) : (
                             <Modal
-                                title="Update An Item"
+                                title="Edit An Item"
                                 // width={800}
                                 open={open}
                                 afterOpenChange={setOpen}
@@ -413,8 +413,8 @@ export default function ({initialValue, onChange}) {
                     gutter: 16,
                     xs: 1,
                     sm: 2,
-                    md: 4,
-                    lg: 5,
+                    md: 3,
+                    lg: 3,
                     xl: 6,
                     xxl: 6,
                 }}
@@ -427,7 +427,7 @@ export default function ({initialValue, onChange}) {
                                     size={'small'}
                                     hoverable
                                     actions={[
-                                        <Tooltip key="update" title="Update">
+                                        <Tooltip key="update" title="Edit">
                                             <EditOutlined
                                                 onClick={() => {
                                                     setItemToUpdate(item);
@@ -451,7 +451,16 @@ export default function ({initialValue, onChange}) {
                                         <>
                                             <Descriptions size={'small'}>
                                                 <Descriptions.Item span={3} >
-                                                    <Tag bordered={false} color="#2db7f5">{"Investment Sequence "+ item.id}</Tag>
+                                                    <div style={{margin: 0, padding: 0, backgroundColor: '#1f77b4',color: 'white', borderRadius: '5px'}}>
+                                                        <p style={{margin: '0 5px', padding: 0}}>Investment</p>
+                                                        <p style={{margin: '0 5px', padding: 0}}>Sequence</p>
+                                                        <p style={{margin: '0 5px', padding: 0}}>{item.id}</p>
+                                                    </div>
+                                                    {/*<Tag bordered={false} color="#2db7f5">*/}
+                                                    {/*    <p>Investment</p>*/}
+                                                    {/*    <p>Sequence</p>*/}
+                                                    {/*    <p>{item.id}</p>*/}
+                                                    {/*</Tag>*/}
                                                 </Descriptions.Item>
                                                 <Descriptions.Item span={3}>
                                                     <h1>{item.seriesName}</h1>

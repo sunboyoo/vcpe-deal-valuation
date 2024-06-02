@@ -1,4 +1,4 @@
-import {Card} from "antd";
+import {Card, Space} from "antd";
 import React from "react";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
 import {addSeries, analyze} from "../../lib/series";
@@ -62,7 +62,7 @@ const initialSeriesValue = [{
 },
 ]
 
-const initialInvests = [0,5,10,15,30,15]
+const initialInvests = [0, 5, 10, 15, 30, 15]
 
 export default function ExpirationPlayoffDiagramMultiSeries() {
     const [seriesValue, setSeriesValue] = useState(initialSeriesValue);
@@ -114,92 +114,98 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
 
     return (
         <>
-            <Card>
-                <h1>The Equity Securities held by Founders and Series Investors</h1>
-                <CardList
-                    initialValue={seriesValue}
-                    onChange={(newValue) => {
-                        setSeriesValue([...newValue]);
-                    }}
-                ></CardList>
-            </Card>
-            <SeriesListDescription/>
-
-            {seriesValue && seriesValue.length > 0 && equityStacks && equityStacks.length > 0 && (
-                <>
-                    <div style={{margin: '100px'}}/>
-
-                    <Card>
-                        <h2>Convertible Preferred (CP) Conversion Sankey Diagram</h2>
-                        <Sankey equityStacks={equityStacks}/>
-                    </Card>
-                    <SankeyDiagramInstructions/>
-
-                    <div style={{margin: '100px'}}/>
-
-                    <Card>
-                        <Milestone
-                            conversionSteps={conversionSteps}
-                            csStacks={csStacks}
-                        />
-                    </Card>
-                    <MilestoneInstruction/>
-                </>
-            )
-            }
-
-            {seriesValue && seriesValue.length > 0 && (
-                <>
-                <div style={{margin: '100px'}}/>
-
+            <Space direction={'vertical'}>
                 <Card>
-                    <h2>Expiration Payoff Diagram for All Series</h2>
-                    <ExpirationPayoffDiagram3
-                        datasets={datasets}
-                        labels={labels}
-                        subtitleTexts={subtitleTexts}
-                        yMax={yMax}
-                    />
+                    <h1>The Equity Securities held by Founders and Series Investors</h1>
+                    <CardList
+                        initialValue={seriesValue}
+                        onChange={(newValue) => {
+                            setSeriesValue([...newValue]);
+                        }}
+                    ></CardList>
                 </Card>
-                </>
-            )}
+                <Card>
+                    <SeriesListDescription/>
+                </Card>
 
-            {
-                pvGpvLpvArray.map((pvGpvLpv, i) => (
-                    i === 0 ?
-                        <div key={i}>
-                            <div style={{height: '100px'}}/>
-                            <Card>
-                                <h1>{processedSeriesArray[i].seriesName}</h1>
-                                <ExpirationPayoffDiagramPvGpvLpv
-                                    pvGpvLpv={pvGpvLpv}
-                                    showCombinedDiagram={false}
-                                    showIndividualDiagrams={true}
-                                    showPv={true}
-                                    showGpv={false}
-                                    showLpv={false}
-                                    showLpc={false}
-                                />
-                            </Card>
-                        </div> :
-                        <div key={i}>
-                            <div style={{height: '100px'}}/>
-                            <Card>
-                                <h1>{processedSeriesArray[i].seriesName}</h1>
-                                <ExpirationPayoffDiagramPvGpvLpvWithInput
-                                    xs = {x1}
-                                    ys = {y1}
-                                    slopes = {k1}
-                                    invDefault={initialInvests[i]}
-                                ></ExpirationPayoffDiagramPvGpvLpvWithInput>
-                                {/*<ExpirationPayoffDiagramPvGpvLpv*/}
-                                {/*    pvGpvLpv={pvGpvLpv}*/}
-                                {/*    showIndividualDiagrams={true}*/}
-                                {/*/>*/}
-                            </Card>
-                        </div>
-                ))
-            }
+                {seriesValue && seriesValue.length > 0 && equityStacks && equityStacks.length > 0 && (
+                    <>
+                        <div style={{margin: '100px'}}/>
+
+                        <Card>
+                            <h2>Convertible Preferred (CP) Conversion Sankey Diagram</h2>
+                            <Sankey equityStacks={equityStacks}/>
+                        </Card>
+                        <Card>
+                            <SankeyDiagramInstructions/>
+                        </Card>
+
+                        <div style={{margin: '10px'}}/>
+
+                        <Card>
+                            <Milestone
+                                conversionSteps={conversionSteps}
+                                csStacks={csStacks}
+                            />
+                        </Card>
+                        <Card>
+                            <MilestoneInstruction/>
+                        </Card>
+
+                    </>
+                )
+                }
+
+                {seriesValue && seriesValue.length > 0 && (
+                    <>
+                        <div style={{margin: '10px'}}/>
+
+                        <Card>
+                            <h2>Expiration Payoff Diagram for All Series</h2>
+                            <ExpirationPayoffDiagram3
+                                datasets={datasets}
+                                labels={labels}
+                                subtitleTexts={subtitleTexts}
+                                yMax={yMax}
+                            />
+                        </Card>
+                    </>
+                )}
+
+                {seriesValue && seriesValue.length > 0 &&
+                    pvGpvLpvArray.map((pvGpvLpv, i) => (
+                        i === 0 ?
+                            <div key={i}>
+                                <div style={{height: '10px'}}/>
+                                <Card>
+                                    <h1>{processedSeriesArray[i].seriesName}</h1>
+                                    <ExpirationPayoffDiagramPvGpvLpv
+                                        pvGpvLpv={pvGpvLpv}
+                                        showCombinedDiagram={false}
+                                        showIndividualDiagrams={true}
+                                        showPv={true}
+                                        showGpv={false}
+                                        showLpv={false}
+                                        showLpc={false}
+                                    />
+                                </Card>
+                            </div> :
+                            <div key={i}>
+                                <div style={{height: '10px'}}/>
+                                <Card>
+                                    <h1>{processedSeriesArray[i].seriesName}</h1>
+                                    <ExpirationPayoffDiagramPvGpvLpvWithInput
+                                        xs={x1}
+                                        ys={y1}
+                                        slopes={k1}
+                                        invDefault={Number.isFinite(initialInvests[i]) || 1}
+                                    />
+                                </Card>
+                            </div>
+
+                    ))
+                }
+            </Space>
         </>
     )
 }

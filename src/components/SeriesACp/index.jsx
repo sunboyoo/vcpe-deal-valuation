@@ -1,11 +1,14 @@
-import {Button, Card, Divider, Form, InputNumber, Space, Table, Tag} from "antd";
+import {Button, Card, Divider, Form, InputNumber, Space, } from "antd";
 import React, {useState} from "react";
-import {DashOutlined} from "@ant-design/icons";
 import {seriesA_CP} from "../../lib/series-a-cp";
 import { PvGpvLpv} from "../../lib/partial-valuation/pv-gpv-lpv";
 import {LimitedPartnership} from "../../lib/partial-valuation/limited-partnership"
 
 import {ExpirationPayoffDiagramPvGpvLpv} from "../../chartjs/ExpirationPayoffDiagramPvGpvLpv";
+import InvestmentDecisionResult from "../InvestmentDecisionResult";
+import ValuationResult from "../ValuationResult";
+import TransactionValuationResult from "../TransactionValuationResult";
+import {CaretDownOutlined, CaretRightOutlined} from "@ant-design/icons";
 
 // so = pre-money shares outstanding		11
 // sp = new common shares purchased		5
@@ -60,100 +63,6 @@ export default function SeriesACp(){
 
     const thisIsARequiredField = "This is a required field."
 
-
-    const columns = [
-        {
-            title: '',
-            dataIndex: 'name',
-            render: (_, value) => {
-                return (
-                    <span>
-                    {value.child? <><DashOutlined/><DashOutlined/></> : <></>}
-                        {
-                            value.tags &&
-                            value.tags.map((tag) =>
-                                <Tag color="blue" key={tag}>
-                                    {tag.toUpperCase()}
-                                </Tag>)
-                        }
-                        <span>{value.name}</span>
-                </span>)}
-        },
-        {
-            title: '',
-            dataIndex: 'value',
-            align: "right"
-        }
-    ];
-
-    const data0 = result ? [
-        {
-            key: '1',
-            name: 'PV',
-            value: result.PV.toFixed(3),
-            child: false
-        }, {
-            key: '2',
-            name: 'GPV',
-            value: result.GPCV.toFixed(3),
-            child: true
-        }, {
-            key: '3',
-            name: 'LPV',
-            value: result.LPV.toFixed(3),
-            child: true
-        },{
-            key: '4',
-            name: 'LPC',
-            value: result.LPC.toFixed(3),
-            child: false
-        },
-    ] : [];
-
-    const data1 = result ? [
-        {
-            key: '1',
-            name: 'Post-Tx V',
-            value: result.transactionValuation.postTransactionValuation.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: false
-        }, {
-            key: '2',
-            name: 'Pre-Tx V',
-            value: result.transactionValuation.preTransactionValuation.toFixed(3),
-            tags: ['Pre-Transaction Valuation'],
-            child: true
-        }, {
-            key: '3',
-            name: 'PV',
-            value: result.transactionValuation.postTransactionPV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: true
-        },
-    ] : [];
-
-
-    const data2 = result ? [
-        {
-            key: '3',
-            name: 'PV',
-            value: result.transactionValuation.postTransactionPV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: false
-        }, {
-            key: '4',
-            name: 'GPV',
-            value: result.transactionValuation.postTransactionGPCV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: true
-        }, {
-            key: '5',
-            name: 'LPV',
-            value: result.transactionValuation.postTransactionLPV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: true
-        },
-    ] : [];
 
     // compute PV, GPV, and LPV
     const {so, sp, cr, inv, fvPref, liqPref, simDiv, comDiv, tv, vol, r, H, ci, lfp, debt} = variables
@@ -419,41 +328,50 @@ export default function SeriesACp(){
                         //     span: 16,
                         // }}
                     >
-                        <Button type="default" htmlType="submit" size={"middle"} style={{width: "100%"}}>
+                        <Button type="primary" htmlType="submit" size={"large"} style={{width: "100%"}}
+                                icon={visible ? <CaretDownOutlined />:<CaretRightOutlined />}>
                             CALCULATE
                         </Button>
                     </Form.Item>
                 </Form>
             </Card>
-            {visible &&
-            <Card bordered={false} title={"Valuation"}>
-                <Table columns={columns} dataSource={data0} size="small" pagination={false}/>
-            </Card>
-            }
-            {visible &&
-            <Card bordered={false} title={"Post-Transaction Valuation"}>
-                <Table columns={columns} dataSource={data1} size="small" pagination={false}/>
-                <Divider/>
-                <Table columns={columns} dataSource={data2} size="small" pagination={false}/>
-            </Card>}
-            <Space><p/></Space>
         </Space>
+            <Divider style={{borderColor: 'transparent'}}/>
+            <Space direction={'vertical'}>
+            {visible && <ValuationResult
+                pv={result.PV}
+                lpv={result.LPV}
+                gpv={result.GPCV}
+                lpc={result.LPC}
+            />}
+            {visible && <TransactionValuationResult
+                postTxV={result.transactionValuation.postTransactionValuation}
+                preTxV={result.transactionValuation.preTransactionValuation}
+                postTxPv={result.transactionValuation.postTransactionPV}
+                postTxGPCV={result.transactionValuation.postTransactionGPCV}
+                postTxLPV={result.transactionValuation.postTransactionLPV}
 
-        <Space direction="vertical">
+            />}
+            {visible && <InvestmentDecisionResult
+                lpv={result.LPV}
+                lpc={result.LPC}
+                firmValue={variables.tv}
+                postTxFirmValue={result.transactionValuation.postTransactionValuation}
+            />}
+            <Space><p/></Space>
+
             {visible && <Card>
-                <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv} result={result}/>
+                <ExpirationPayoffDiagramPvGpvLpv pvGpvLpv={pvGpvLpv} result={result} showIndividualDiagrams={true}/>
             </Card>}
             {visible &&
-                <Card bordered={false} title={"Expiration Payoff Diagram"} >
-                    <p>Please note that the following expiration payoff diagrams assume that there are no dividends. If there are dividends, they should be taken into consideration in order to get an accurate representation of the potential payoff at expiration.</p>
-                    <p>The diagrams may occasionally have display issues when viewed vertically on mobile devices. If you experience this problem, please rotate your phone to a horizontal orientation and refresh the webpage.</p>
+                <Card bordered={false} title={"Expiration Payoff Diagram"} style={{}}>
+                    <p>The expiration payoff diagrams provided do not account for dividends. To accurately represent
+                        the potential payoff at expiration, any dividends should be considered.</p>
+                    <p>The diagrams may not display correctly on smartphones. For optimal viewing, it is recommended
+                        to use a desktop, laptop, or iPad.</p>
                 </Card>
             }
-            {visible &&
-                <Card bordered={false} title={"APPRECIATION"} >
-                    <p>Our appreciation goes to Professor Klaas P. Baks of Emory University's Goizueta Business School, as this tool was developed based on his Deal Valuation worksheet and inspired by his course "Venture Capital and Private Equity." Dr. Baks is an esteemed professor in the Practice of Finance and the Executive Director and Co-Founder of the Emory Center for Alternative Investments, specializing in alternative investments, entrepreneurial finance, and investment management. He is an award-winning educator with numerous publications, recognized for his engaging and dynamic speaking style.</p>
-                </Card>
-            }
+
         </Space>
         </>
     );

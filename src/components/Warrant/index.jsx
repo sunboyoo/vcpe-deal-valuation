@@ -1,6 +1,8 @@
 import {Button, Card, Form, InputNumber, Space, Statistic} from "antd";
 import {Warrant as warrant} from "../../lib/warrant";
 import React, {useState} from "react";
+import BlackScholesFormula from "../BlackScholesFormula";
+import {CaretDownOutlined, CaretRightOutlined} from "@ant-design/icons";
 
 const initialValues = {
     S: 100.00,
@@ -192,7 +194,8 @@ export default function Warrant(){
                         //     span: 16,
                         // }}
                     >
-                        <Button type="default" htmlType="submit" size={"middle"} style={{width: "100%"}}>
+                        <Button type="primary" htmlType="submit" size={"large"} style={{width: "100%"}}
+                                icon={visible ? <CaretDownOutlined />:<CaretRightOutlined />}>
                             CALCULATE
                         </Button>
                     </Form.Item>
@@ -210,15 +213,7 @@ export default function Warrant(){
                 />
             </Card>
             }
-            <Space><p/></Space>
         </Space>
-    <Space direction="vertical">
-        {visible &&
-            <Card bordered={false} title={"APPRECIATION"} >
-                <p>Our appreciation goes to Professor Klaas P. Baks of Emory University's Goizueta Business School, as this tool was developed based on his Deal Valuation worksheet and inspired by his course "Venture Capital and Private Equity." Dr. Baks is an esteemed professor in the Practice of Finance and the Executive Director and Co-Founder of the Emory Center for Alternative Investments, specializing in alternative investments, entrepreneurial finance, and investment management. He is an award-winning educator with numerous publications, recognized for his engaging and dynamic speaking style.</p>
-            </Card>
-        }
-    </Space>
 </>
     );
 }

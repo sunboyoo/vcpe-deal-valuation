@@ -2,7 +2,8 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Doughnut } from 'react-chartjs-2';
 import React from "react";
-import {SECURITY_TYPE_COLORS, SECURITY_TYPES} from "../../lib/constants";
+import {SECURITY_TYPES} from "../../lib/constants";
+import * as ChartJSUtils from "../ExpirationPayoffDiagram/chartjs-utils";
 
 //  the best practice is to specify plugins for individual chart components rather than
 //  globally registering them with ChartJS.register().
@@ -24,10 +25,10 @@ export default function App({csStack}){
         ],
     };
 
-    csStack.forEach((cs) => {
-        data.labels.push(cs.seriesName + ': ' + (cs.type === SECURITY_TYPES.CP_CS ? 'CP->CS' : cs.type));
+    csStack.forEach((cs, index) => {
+        data.labels.push(cs.seriesName + '\n' + (cs.type === SECURITY_TYPES.CP_CS ? 'CP->CS' : cs.type));
         data.datasets[0].data.push(cs.value);
-        data.datasets[0].backgroundColor.push(SECURITY_TYPE_COLORS[cs.type]['backgroundColor']);
+        data.datasets[0].backgroundColor.push(ChartJSUtils.transparentize(ChartJSUtils.namedColor(index), 0.4));
     })
 
     const options = {
@@ -36,23 +37,34 @@ export default function App({csStack}){
 
         plugins: {
             legend: {
-                position: 'bottom',
+                display: false, // Turn off the legend
+                // position: 'center',
+                // align: 'start',
+                // labels: {
+                //     boxWidth: 50,
+                //     // boxHeight: 20,
+                //     // padding: 20,
+                //     // usePointStyle: true,
+                //     // pointStyle: 'circle',
+                // }
             },
             title: {
                 display: true,
                 text: 'Common Stock Ownership Distribution'
             },
             datalabels: {
-                formatter: (value, context) => {
+                formatter: (value, context, i) => {
                     let sum = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
                     let percentage = (value * 100 / sum).toFixed(2) + '%';
-                    return percentage;
+                    let label = context.chart.data.labels[context.dataIndex];
+                    return `${label}\n${percentage}`;
                 },
                 color: '#fff',
+                font: {
+                    size: 8,
+                }
             }
         },
-        width: 600, // Set your desired width
-        height: 600, // Set your desired height
     }
 
     return (

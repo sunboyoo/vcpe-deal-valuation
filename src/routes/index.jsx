@@ -9,10 +9,11 @@ import SeriesACs from "../components/SeriesACs";
 import SeriesACp from "../components/SeriesACp";
 import SeriesARpCs from "../components/SeriesARpCs";
 import SeriesAPcp from "../components/SeriesAPcp";
-import GenericPayoff from "../components/GenericPayoff";
+import GenericPayoffTransactionValuation from "../components/GenericPayoffTransactionValuation";
 import Welcome from "../pages/Welcome";
 import ExpirationPayoffDiagramOptionPortfolio from "../components/ExpirationPayoffDiagramOptionPortfolio";
 import GenericExpirationPayoffDiagramPvGpvLpv from "../components/GenericExpirationPayoffPvGpvLpv";
+import GenericPayoff from "../components/GenericPayoff";
 
 // 懒加载, 延时测试效果
 // const EuropeanCallPutOption = lazy(() =>
@@ -29,7 +30,7 @@ import GenericExpirationPayoffDiagramPvGpvLpv from "../components/GenericExpirat
 // const SeriesARpCs = lazy(() => import("../components/SeriesARpCs"))
 // const SeriesACp = lazy(() => import("../components/SeriesACp"))
 // const SeriesAPcp = lazy(() => import("../components/SeriesAPcp"))
-// const GenericPayoff = lazy(() => import("../components/GenericPayoff"))
+// const GenericPayoffTransactionValuation = lazy(() => import("../components/GenericPayoffTransactionValuation"))
 
 // 该router下路由路径的base url. 应该有一个前置斜杠，但不能有后置斜杠
 // basename: string
@@ -93,22 +94,19 @@ const routes = [
                     },
                 ],
             },{
-                path: 'multi-series',
-                element: <Outlet/>,
-                children: [
-                    {
-                        path: 'multi-series',
-                        element: <ExpirationPlayoffDiagramMultiSeries/>
-                    },{
-                        path: '*',
-                        element: <Navigate to="/multi-series" />,  // Wildcard route element
-                    },
-                ]
+                path: 'series-b-and-beyond',
+                element: <ExpirationPlayoffDiagramMultiSeries/>,
             },{
                 path: 'generic',
                 element: <Outlet/>,
                 children: [
-
+                    {
+                        path: 'generic-payoff',
+                        element: <GenericPayoff/>
+                    },{
+                        path: 'generic-payoff-transaction-valuation',
+                        element: <GenericPayoffTransactionValuation/>
+                    },
                     {
                         path: 'payoff-diagram-option-portfolio',
                         element: <ExpirationPayoffDiagramOptionPortfolio/>
@@ -117,10 +115,7 @@ const routes = [
                         path: 'payoff-diagram-pvgpvlpv',
                         element: <GenericExpirationPayoffDiagramPvGpvLpv/>
                     },
-                    {
-                        path: 'generic-payoff',
-                        element: <GenericPayoff/>
-                    },
+
                 ]
             },{
                 path: '*',
