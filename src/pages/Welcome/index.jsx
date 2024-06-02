@@ -1,6 +1,6 @@
 import React from 'react';
 import {Card} from "antd";
-import {BuildFilled, GithubFilled, LinkedinFilled, MailFilled, PhoneFilled} from "@ant-design/icons";
+import {LinkedinFilled, MailFilled, PhoneFilled} from "@ant-design/icons";
 
 const Welcome = () => {
     return (
@@ -82,11 +82,12 @@ const Welcome = () => {
                     <LinkedinFilled style={{marginRight: 5}}/><a href="https://www.linkedin.com/in/kevinliucm"
                                                                  target="_blank"
                                                                  rel="noopener noreferrer">https://www.linkedin.com/in/kevinliucm</a><br/>
-                    <a href="https://github.com/sunboyoo/vcpe-deal-valuation" target="_blank">
+                    <a href="https://github.com/sunboyoo/vcpe-deal-valuation" target="_blank" rel="noreferrer">
                         <img src="https://img.shields.io/github/stars/sunboyoo/vcpe-deal-valuation?style=social"
                              alt="Star on GitHub"/>
                     </a> <br/>
-                    <a href="https://github.com/sunboyoo/vcpe-deal-valuation/issues/new" target="_blank">
+                    <br/>
+                    <a href="https://github.com/sunboyoo/vcpe-deal-valuation/issues/new" target="_blank" rel="noreferrer">
                         <img src="https://img.shields.io/badge/Report%20an%20Issue-Click%20Here-brightgreen"
                              alt="Report an Issue"/>
                     </a>
