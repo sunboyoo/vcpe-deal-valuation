@@ -51,75 +51,79 @@ const routes = [
         element: <Home/>,
         children: [
             {
-              path: 'welcome',
-              element: <Welcome/>
+                path: '/',
+                element: <Navigate to="/welcome" replace/>,
+            },
+            {
+                path: 'welcome',
+                element: <Welcome/>,
             },
             {
                 path: 'option-warrant',
-                element:  <Outlet/>,
+                element: <Outlet/>,
                 children: [
                     {
                         path: 'european-call-put-option',
                         element: <EuropeanCallPutOption/>,
-                    },{
+                    }, {
                         path: 'binary-option',
                         element: <BinaryOption/>,
-                    },{
+                    }, {
                         path: 'warrant',
                         element: <Warrant/>
-                    },{
+                    }, {
                         path: '*',
-                        element: <Navigate to="/option-warrant" />,  // Wildcard route element
+                        element: <Navigate to="/option-warrant"/>,  // Wildcard route element
                     },
                 ]
-            },{
+            }, {
                 path: 'series-a',
-                element:  <Outlet/>,
+                element: <Outlet/>,
                 children: [
                     {
                         path: 'series-a-cs',
                         element: <SeriesACs/>
-                    },{
+                    }, {
                         path: 'series-a-rp-cs',
                         element: <SeriesARpCs/>,
-                    },{
+                    }, {
                         path: 'series-a-cp',
                         element: <SeriesACp/>
-                    },{
+                    }, {
                         path: 'series-a-pcp',
                         element: <SeriesAPcp/>,
-                    },{
+                    }, {
                         path: '*',
-                        element: <Navigate to="/series-a" />,  // Wildcard route element
+                        element: <Navigate to="/series-a"/>,  // Wildcard route element
                     },
                 ],
-            },{
+            }, {
                 path: 'series-b-and-beyond',
                 element: <ExpirationPlayoffDiagramMultiSeries/>,
-            },{
+            }, {
                 path: 'generic',
                 element: <Outlet/>,
                 children: [
                     {
                         path: 'generic-payoff',
                         element: <GenericPayoff/>
-                    },{
+                    }, {
                         path: 'generic-payoff-transaction-valuation',
                         element: <GenericPayoffTransactionValuation/>
                     },
                     {
                         path: 'payoff-diagram-option-portfolio',
                         element: <ExpirationPayoffDiagramOptionPortfolio/>
-                    },{
+                    }, {
 
                         path: 'payoff-diagram-pvgpvlpv',
                         element: <GenericExpirationPayoffDiagramPvGpvLpv/>
                     },
 
                 ]
-            },{
+            }, {
                 path: '*',
-                element: <Navigate to="/welcome" />,  // Wildcard route element
+                element: <Navigate to="/welcome"/>,  // Wildcard route element
             },
         ],
     },

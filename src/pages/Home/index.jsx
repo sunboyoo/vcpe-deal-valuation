@@ -1,21 +1,13 @@
-import React, { useState} from 'react';
-import {
-    DefaultFooter,
-    PageContainer,
-    ProConfigProvider,
-    ProLayout,
-    SettingDrawer,
-} from '@ant-design/pro-components';
-import {
-    ConfigProvider,
-} from 'antd';
+import React, {useState} from 'react';
+import {DefaultFooter, PageContainer, ProConfigProvider, ProLayout, SettingDrawer,} from '@ant-design/pro-components';
+import {ConfigProvider,} from 'antd';
 import {Outlet, useLocation, useNavigate} from "react-router-dom";
 import {basename} from "../../routes";
 import {route} from "../../routes/prolayout-route";
-import {reactRouterNavigateOnClickMenu, breadcrumbRender} from "../../routes/react-router-ant-prolayout"
+import {breadcrumbRender, reactRouterNavigateOnClickMenu} from "../../routes/react-router-ant-prolayout"
 
 const proLayoutDefaultSettings = {
-    title: 'Emory Center For Alternative Investments',
+    title: 'Emory CAI',
     "fixSiderbar": true,
     "layout": "top",
     "splitMenus": false,
@@ -42,7 +34,7 @@ const App = () => {
     console.log('useLocation()', location);
 
     if (typeof document === 'undefined') {
-        return <div />;
+        return <div/>;
     }
     return (
         <div
@@ -50,7 +42,7 @@ const App = () => {
             style={{
                 height: '100vh',
                 overflow: 'auto',
-                }}
+            }}
         >
             <ProConfigProvider hashed={false}>
                 <ConfigProvider
@@ -83,7 +75,8 @@ const App = () => {
                                     }}
                                 >
                                     <div>© {new Date().getFullYear()} Emory Center for Alternative Investments</div>
-                                    <div><a href="https://www.linkedin.com/in/kevinlcm" target="_blank" rel="noopener noreferrer">by Kevin Liu</a></div>
+                                    <div><a href="https://www.linkedin.com/in/kevinlcm" target="_blank"
+                                            rel="noopener noreferrer">by Kevin Liu</a></div>
                                 </div>
                             );
                         }}
@@ -117,12 +110,14 @@ const App = () => {
                                         },
                                     ]}
                                 />
-                                <a href="https://github.com/sunboyoo/vcpe-deal-valuation" target="_blank">
+                                <a href="https://github.com/sunboyoo/vcpe-deal-valuation" target="_blank"
+                                   rel="noreferrer">
                                     <img
                                         src="https://img.shields.io/github/stars/sunboyoo/vcpe-deal-valuation?style=social"
                                         alt="Star on GitHub"/>
                                 </a> <br/><br/>
-                                <a href="https://github.com/sunboyoo/vcpe-deal-valuation/issues/new" target="_blank">
+                                <a href="https://github.com/sunboyoo/vcpe-deal-valuation/issues/new" target="_blank"
+                                   rel="noreferrer">
                                     <img src="https://img.shields.io/badge/Report%20an%20Issue-Click%20Here-brightgreen"
                                          alt="Report an Issue"/>
                                 </a>

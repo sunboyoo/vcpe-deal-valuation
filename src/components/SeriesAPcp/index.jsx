@@ -1,6 +1,6 @@
-import {Button, Card, Divider, Form, InputNumber, Space, Table, Tag} from "antd";
+import {Button, Card, Divider, Form, InputNumber, Space,} from "antd";
 import React, {useState} from "react";
-import {CaretDownOutlined, CaretRightOutlined, DashOutlined} from "@ant-design/icons";
+import {CaretDownOutlined, CaretRightOutlined, } from "@ant-design/icons";
 import {seriesA_PCP} from "../../lib/series-a-pcp";
 import {PvGpvLpv} from "../../lib/partial-valuation/pv-gpv-lpv";
 import {LimitedPartnership} from "../../lib/partial-valuation/limited-partnership"
@@ -66,101 +66,6 @@ export default function SeriesAPcp() {
 
     const thisIsARequiredField = "This is a required field."
 
-
-    const columns = [
-        {
-            title: '',
-            dataIndex: 'name',
-            render: (_, value) => {
-                return (
-                    <span>
-                    {value.child ? <><DashOutlined/><DashOutlined/></> : <></>}
-                        {
-                            value.tags &&
-                            value.tags.map((tag) =>
-                                <Tag color="blue" key={tag}>
-                                    {tag.toUpperCase()}
-                                </Tag>)
-                        }
-                        <span>{value.name}</span>
-                </span>)
-            }
-        },
-        {
-            title: '',
-            dataIndex: 'value',
-            align: "right"
-        }
-    ];
-
-    const data0 = result ? [
-        {
-            key: '1',
-            name: 'PV',
-            value: result.PV.toFixed(3),
-            child: false
-        }, {
-            key: '2',
-            name: 'GPV',
-            value: result.GPCV.toFixed(3),
-            child: true
-        }, {
-            key: '3',
-            name: 'LPV',
-            value: result.LPV.toFixed(3),
-            child: true
-        }, {
-            key: '4',
-            name: 'LPC',
-            value: result.LPC.toFixed(3),
-            child: false
-        },
-    ] : [];
-
-    const data1 = result ? [
-        {
-            key: '1',
-            name: 'Post-Tx V',
-            value: result.transactionValuation.postTransactionValuation.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: false
-        }, {
-            key: '2',
-            name: 'Pre-Tx V',
-            value: result.transactionValuation.preTransactionValuation.toFixed(3),
-            tags: ['Pre-Transaction Valuation'],
-            child: true
-        }, {
-            key: '3',
-            name: 'PV',
-            value: result.transactionValuation.postTransactionPV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: true
-        },
-    ] : [];
-
-
-    const data2 = result ? [
-        {
-            key: '3',
-            name: 'PV',
-            value: result.transactionValuation.postTransactionPV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: false
-        }, {
-            key: '4',
-            name: 'GPV',
-            value: result.transactionValuation.postTransactionGPCV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: true
-        }, {
-            key: '5',
-            name: 'LPV',
-            value: result.transactionValuation.postTransactionLPV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: true
-        },
-    ] : [];
     // compute PV, GPV, and LPV
     const {so, sp, cr, inv, fvPref, liqPref, simDiv, comDiv, tv, vol, r, H, ci, lfp, debt, threshold} = variables
     const fraction = (sp * cr) / (so + sp * cr)

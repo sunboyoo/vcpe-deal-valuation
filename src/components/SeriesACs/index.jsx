@@ -1,4 +1,4 @@
-import {Button, Card, Col, Divider, Form, InputNumber, Row, Space, Statistic, Table, Tag} from "antd";
+import {Button, Card, Divider, Form, InputNumber,  Space, } from "antd";
 import React, {useState} from "react";
 import {seriesA_CS} from "../../lib/series-a-cs";
 import {CaretDownOutlined, CaretRightOutlined, DashOutlined, LeftOutlined} from "@ant-design/icons";
@@ -6,7 +6,6 @@ import { PvGpvLpv} from "../../lib/partial-valuation/pv-gpv-lpv";
 import {LimitedPartnership} from "../../lib/partial-valuation/limited-partnership"
 
 import {ExpirationPayoffDiagramPvGpvLpv} from "../../chartjs/ExpirationPayoffDiagramPvGpvLpv";
-import {ProHelpContentPanel} from "@ant-design/pro-layout";
 import InvestmentDecisionResult from "../InvestmentDecisionResult";
 import TransactionValuationResult from "../TransactionValuationResult";
 import ValuationResult from "../ValuationResult";
@@ -59,101 +58,6 @@ export default function SeriesACs(){
     const regexZeroOrPositiveNumber = /^(\d+(\.\d*)?|\.\d+)$/;
 
     const thisIsARequiredField = "This is a required field."
-
-
-    const columns = [
-        {
-            title: '',
-            dataIndex: 'name',
-            render: (_, value) => {
-                return (
-                    <span>
-                    {value.child? <><DashOutlined/><DashOutlined/></> : <></>}
-                        {
-                            value.tags &&
-                            value.tags.map((tag) =>
-                                <Tag color="blue" key={tag}>
-                                    {tag.toUpperCase()}
-                                </Tag>)
-                        }
-                        <span>{value.name}</span>
-                </span>)}
-        },
-        {
-            title: '',
-            dataIndex: 'value',
-            align: "right"
-        }
-    ];
-
-    const data0 = result ? [
-        {
-            key: '1',
-            name: 'PV',
-            value: result.PV.toFixed(3),
-            child: false
-        }, {
-            key: '2',
-            name: 'GPV',
-            value: result.GPCV.toFixed(3),
-            child: true
-        }, {
-            key: '3',
-            name: 'LPV',
-            value: result.LPV.toFixed(3),
-            child: true
-        },{
-            key: '4',
-            name: 'LPC',
-            value: result.LPC.toFixed(3),
-            child: false
-        },
-    ] : [];
-
-    const data1 = result ? [
-        {
-            key: '1',
-            name: 'Post-Tx V',
-            value: result.transactionValuation.postTransactionValuation.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: false
-        }, {
-            key: '2',
-            name: 'Pre-Tx V',
-            value: result.transactionValuation.preTransactionValuation.toFixed(3),
-            tags: ['Pre-Transaction Valuation'],
-            child: true
-        }, {
-            key: '3',
-            name: 'PV',
-            value: result.transactionValuation.postTransactionPV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: true
-        },
-    ] : [];
-
-
-    const data2 = result ? [
-        {
-            key: '3',
-            name: 'PV',
-            value: result.transactionValuation.postTransactionPV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: false
-        }, {
-            key: '4',
-            name: 'GPV',
-            value: result.transactionValuation.postTransactionGPCV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: true
-        }, {
-            key: '5',
-            name: 'LPV',
-            value: result.transactionValuation.postTransactionLPV.toFixed(3),
-            tags: ['Post-Transaction Valuation'],
-            child: true
-        },
-    ] : [];
 
     // compute PV, GPV, and LPV
     const {so, sp, inv, ci, lfp} = variables

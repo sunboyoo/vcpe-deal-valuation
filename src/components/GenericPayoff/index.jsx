@@ -1,13 +1,12 @@
-import {Button, Card, Col, Form, Input, InputNumber, Row, Select, Space, Statistic, Table, Tag} from "antd";
+import {Button, Card, Col, Form, Input, InputNumber, Row, Select, Space, Statistic, } from "antd";
 import React, {useState} from "react";
 import {
     CaretDownOutlined,
     CaretRightOutlined,
-    DashOutlined,
     MinusCircleOutlined,
     PlusOutlined
 } from "@ant-design/icons";
-import {payoff, transactionValuation} from "../../lib/generic-payoff";
+import {payoff, } from "../../lib/generic-payoff";
 import GenericPayoffInstruction from "./desc";
 import {optionArrayToOptionPortfolio} from "../../lib/converter/option-line-converter";
 import {OPTION_TYPES} from "../../lib/option/option";

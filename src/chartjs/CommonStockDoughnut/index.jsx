@@ -1,9 +1,9 @@
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, } from 'chart.js';
+import {ArcElement, Chart as ChartJS, Legend, Tooltip,} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { Doughnut } from 'react-chartjs-2';
+import {Doughnut} from 'react-chartjs-2';
 import React from "react";
 import {SECURITY_TYPES} from "../../lib/constants";
-import * as ChartJSUtils from "../ExpirationPayoffDiagram/chartjs-utils";
+import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
 
 //  the best practice is to specify plugins for individual chart components rather than
 //  globally registering them with ChartJS.register().
@@ -11,7 +11,7 @@ import * as ChartJSUtils from "../ExpirationPayoffDiagram/chartjs-utils";
 // This is globally registering
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function App({csStack}){
+export default function App({csStack}) {
 
     const data = {
         labels: [],
@@ -68,12 +68,12 @@ export default function App({csStack}){
     }
 
     return (
-        <div style={{ width: '300px', height: '300px', textAlign:'center' }}> {/* Set your desired width and height */}
+        <div style={{width: '300px', height: '300px', textAlign: 'center'}}> {/* Set your desired width and height */}
             <Doughnut
-            data={data}
-            options={options}
-            // specify plugins for individual chart components rather than globally registering them with ChartJS.register().
-            plugins={[ChartDataLabels]}
+                data={data}
+                options={options}
+                // specify plugins for individual chart components rather than globally registering them with ChartJS.register().
+                plugins={[ChartDataLabels]}
             />
         </div>
     )

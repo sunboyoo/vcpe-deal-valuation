@@ -4,7 +4,7 @@ import {LinkedinFilled, MailFilled, PhoneFilled} from "@ant-design/icons";
 
 const Welcome = () => {
     return (
-        <Card >
+        <Card>
             <div style={{padding: '20px', fontFamily: 'Arial, sans-serif', textAlign: 'left'}}>
                 <h1 style={{textAlign: 'center'}}>Welcome to the Online Valuation Tool for Venture Capital and Private
                     Equity Deals</h1>
@@ -86,8 +86,8 @@ const Welcome = () => {
                         <img src="https://img.shields.io/github/stars/sunboyoo/vcpe-deal-valuation?style=social"
                              alt="Star on GitHub"/>
                     </a> <br/>
-                    <br/>
-                    <a href="https://github.com/sunboyoo/vcpe-deal-valuation/issues/new" target="_blank" rel="noreferrer">
+                    <a href="https://github.com/sunboyoo/vcpe-deal-valuation/issues/new" target="_blank"
+                       rel="noreferrer">
                         <img src="https://img.shields.io/badge/Report%20an%20Issue-Click%20Here-brightgreen"
                              alt="Report an Issue"/>
                     </a>
@@ -95,7 +95,8 @@ const Welcome = () => {
                 <br/>
                 <p style={{textAlign: 'center'}}>
                     <strong>Professor Klaas P. Baks, PhD</strong><br/>
-                    <MailFilled style={{marginRight: 5}}/>Email: <a href="mailto:emoryprof@listserv.cc.emory.edu">emoryprof@listserv.cc.emory.edu</a><br/>
+                    <MailFilled style={{marginRight: 5}}/>Email: <a
+                    href="mailto:emoryprof@listserv.cc.emory.edu">emoryprof@listserv.cc.emory.edu</a><br/>
                     Office: GBS 506, Goizueta Business School, Emory University<br/>
                     Office Hours: <a href="https://calendly.com/baks/office-hours" target="_blank"
                                      rel="noopener noreferrer">Schedule an Appointment</a>

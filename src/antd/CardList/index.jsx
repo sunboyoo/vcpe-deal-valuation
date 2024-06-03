@@ -1,23 +1,10 @@
-import React from "react";
-import {
-    Card,
-    Descriptions,
-    Drawer,
-    Empty,
-    List,
-    Modal,
-    Result,
-    Tag,
-    Tooltip,
-    message, Button,
-} from 'antd';
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { ProFormText, ProFormDigit, StepsForm } from '@ant-design/pro-components';
-
-import { useState } from 'react';
+import React, {useRef, useState} from "react";
+import {Card, Descriptions, Drawer, Empty, List, message, Modal, Result, Tag, Tooltip,} from 'antd';
+import {DeleteOutlined, EditOutlined, PlusOutlined} from '@ant-design/icons';
+import {ProFormDigit, ProFormText, StepsForm} from '@ant-design/pro-components';
 import {SECURITY_TYPE_TAGS} from "../../lib/constants";
 
-export default function ({initialValue, onChange}) {
+export default function CardList({initialValue, onChange}) {
     const [messageApi] = message.useMessage();
 
     const [createModalDrawerStepsFormOpen, setCreateModalDrawerStepsFormOpen] = useState(false);
@@ -29,9 +16,11 @@ export default function ({initialValue, onChange}) {
 
     const list = seriesInput || [];
     const createNewItem = {};
+    const createFormRef = useRef();
+    const updateFormRef = useRef();
 
 
-    function DeleteModalDrawerStepsForm({ open, setOpen, type = 'modal', item }) {
+    function DeleteModalDrawerStepsForm({open, setOpen, type = 'modal', item}) {
         return (
             <>
                 <StepsForm
@@ -42,7 +31,7 @@ export default function ({initialValue, onChange}) {
                             return false;
                         }
                         // await deleteById(item.id);**************************************************
-                        const newValue = seriesInput.filter(e => e.id !== item.id).map(((e,i) => ({...e, id:i})))
+                        const newValue = seriesInput.filter(e => e.id !== item.id).map(((e, i) => ({...e, id: i})))
                         console.log('newValue', newValue)
                         setSeriesInput(newValue);
                         if (onChange) {
@@ -85,15 +74,17 @@ export default function ({initialValue, onChange}) {
                             if (!item || item.id === undefined) {
                                 messageApi.error('The deletion was unsuccessful. Please try again');
                                 return false;
+                            } else {
+                                return true;
                             }
 
-                            try {
-                                // await deleteById(item.id);**************************************************
-                                return true;
-                            } catch (error) {
-                                messageApi.error('The deletion was unsuccessful. Please try again');
-                                return false;
-                            }
+                            // try {
+                            //     // await deleteById(item.id);**************************************************
+                            //     return true;
+                            // } catch (error) {
+                            //     messageApi.error('The deletion was unsuccessful. Please try again');
+                            //     return false;
+                            // }
                         }}
                     >
                         <Result
@@ -104,7 +95,7 @@ export default function ({initialValue, onChange}) {
 
                         <Card size={'small'}>
                             <Card.Meta
-                                avatar={<Tag bordered={false} color="#2db7f5">{"Investment Sequence "+ item.id}</Tag>}
+                                avatar={<Tag bordered={false} color="#2db7f5">{"Investment Sequence " + item.id}</Tag>}
                                 description={
                                     <>
                                         <Descriptions size={'small'}>
@@ -128,8 +119,8 @@ export default function ({initialValue, onChange}) {
                                 }
                             />
                         </Card>
-                        <div style={{ textAlign: 'center' }}>
-                            <br />
+                        <div style={{textAlign: 'center'}}>
+                            <br/>
                             <h5>
                                 To delete this item, click the Next button below. To cancel, close this window.
                             </h5>
@@ -148,19 +139,36 @@ export default function ({initialValue, onChange}) {
         );
     }
 
-    function CreateModalDrawerStepsForm({ open, setOpen, type = 'modal' }) {
+    function CreateModalDrawerStepsForm({open, setOpen, type = 'modal'}) {
         return (
             <>
                 <StepsForm
+                    formRef={createFormRef}
                     readonly
                     onFinish={async (values) => {
-                        console.log('StepsForm.onFinish(values), values:', values);
-                        const newValue = [...seriesInput, values]
-                        setSeriesInput(newValue)
-                        if (onChange) {
-                            onChange(newValue);
+                        // console.log('StepsForm.onFinish(values), values:', values);
+                        // const newValue = [...seriesInput, values]
+                        // setSeriesInput(newValue)
+                        // if (onChange) {
+                        //     onChange(newValue);
+                        // }
+                        // setOpen(false);
+
+                        if (
+                            (values.cpConvertibleCs === 0 && values.cpOptionalValue === 0) ||
+                            (values.cpConvertibleCs > 0 && values.cpOptionalValue > 0)
+                        ) {
+                            console.log('StepsForm.onFinish(values), values:', values);
+                            const newValue = [...seriesInput, values];
+                            setSeriesInput(newValue);
+                            if (onChange) {
+                                onChange(newValue);
+                            }
+                            setOpen(false);
+                        } else {
+                            messageApi.error('Both cpConvertibleCs and cpOptionalValue should be zero or positive.');
+                            return false;
                         }
-                        setOpen(false);
                     }}
                     stepsFormRender={(dom, submitter) => {
                         return type === 'drawer' ? (
@@ -192,21 +200,17 @@ export default function ({initialValue, onChange}) {
                     <StepsForm.StepForm
                         name="create"
                         title="Create"
+
+                        onValuesChange={() => {
+                            createFormRef.current?.validateFields(['cpConvertibleCs', 'cpOptionalValue']);
+                        }}
                         onFinish={async (values) => {
-                            const item = {
-                                id: seriesInput.length,
-                                seriesName: values.seriesName,
-                                cs: values.cs, // CS Shares
-                                cpConvertibleCs: values.cpConvertibleCs, // CP Shares
-                                cpOptionalValue: values.cpOptionalValue, // CP Value
-                                rpRv: values.rpRv, // RP Redemption Value
-                            };
-                            try {
-                                // await create(item);***********************************************
-                                // console.log(item)
+                            if (
+                                (values.cpConvertibleCs === 0 && values.cpOptionalValue === 0) ||
+                                (values.cpConvertibleCs > 0 && values.cpOptionalValue > 0)
+                            ) {
                                 return true;
-                            } catch (error) {
-                                messageApi.error(' Failed. Please try again', 5);
+                            } else {
                                 return false;
                             }
                         }}
@@ -218,7 +222,7 @@ export default function ({initialValue, onChange}) {
                             placeholder={undefined}
                             disabled
                             initialValue={seriesInput.length}
-                            rules={[{ required: true }]}
+                            rules={[{required: true}]}
                             width="xl"
                         />
                         <ProFormText
@@ -226,16 +230,17 @@ export default function ({initialValue, onChange}) {
                             label="Series Name"
                             tooltip=""
                             placeholder="Founders / Series A ..."
-                            rules={[{ required: true }]}
+                            rules={[{required: true}]}
                             width="xl"
                         />
                         <ProFormDigit
                             name="cs"
-                            label={<span>{ SECURITY_TYPE_TAGS.CS} The shares of Common</span>}
+                            label={<span>{SECURITY_TYPE_TAGS.CS} The shares of Common</span>}
                             width="sm"
                             placeholder="0"
                             min={0}
-                            rules={[{ required: true }]}
+                            initialValue={0}
+                            rules={[{required: true}]}
                         />
                         <ProFormDigit
                             name="rpRv"
@@ -244,7 +249,8 @@ export default function ({initialValue, onChange}) {
                             width="sm"
                             placeholder="0"
                             min={0}
-                            rules={[{ required: true }]}
+                            initialValue={0}
+                            rules={[{required: true}]}
                         />
                         <ProFormDigit
                             name="cpConvertibleCs"
@@ -252,16 +258,50 @@ export default function ({initialValue, onChange}) {
                             width="sm"
                             placeholder="0"
                             min={0}
-                            rules={[{ required: true }]}
+                            initialValue={0}
+                            rules={[
+                                {
+                                    validator: async (_, value) => {
+                                        const form = createFormRef.current?.getFieldsValue();
+                                        const cpOptionalValue = form?.cpOptionalValue;
+                                        if (
+                                            (value === 0 && cpOptionalValue === 0) ||
+                                            (value > 0 && cpOptionalValue > 0)
+                                        ) {
+                                            return Promise.resolve();
+                                        } else {
+                                            return Promise.reject('Both CP->CS and CP->Redeem should have non-zero (or zero) values at the same time.');
+                                        }
+                                    },
+                                },
+                            ]}
                         />
                         <ProFormDigit
                             name="cpOptionalValue"
                             label={<span>{SECURITY_TYPE_TAGS.CP_RV} The redeemable value of Convertible Preferred. Determined by multiplying the Face Value (equal to the initial investment amount) by the liquidation preference</span>}
-                            fieldProps={{prefix: '$'}}
                             width="sm"
                             placeholder="0"
                             min={0}
-                            rules={[{ required: true }]}
+                            initialValue={0}
+                            rules={[
+                                {
+                                    validator: async (_, value) => {
+                                        const form = createFormRef.current?.getFieldsValue();
+                                        const cpConvertibleCs = form?.cpConvertibleCs;
+                                        if (
+                                            (cpConvertibleCs === 0 && value === 0) ||
+                                            (cpConvertibleCs > 0 && value > 0)
+                                        ) {
+                                            return Promise.resolve();
+                                        } else {
+                                            return Promise.reject('Both CP->CS and CP->Redeem should have non-zero (or zero) values at the same time.');
+                                        }
+                                    },
+                                },
+                            ]}
+                            fieldProps={{
+                                prefix: '$',
+                            }}
                         />
                     </StepsForm.StepForm>
 
@@ -277,10 +317,11 @@ export default function ({initialValue, onChange}) {
         );
     }
 
-    function UpdateModalDrawerStepsForm({ open, setOpen, type = 'modal', item }) {
+    function UpdateModalDrawerStepsForm({open, setOpen, type = 'modal', item}) {
         return (
             <>
                 <StepsForm
+                    formRef={updateFormRef}
                     onFinish={async (values) => {
                         console.log('StepsForm.onFinish(values), values:', values);
                         const newValue = seriesInput.map(item => item.id === values.id ? {...values} : item)
@@ -321,15 +362,19 @@ export default function ({initialValue, onChange}) {
                     <StepsForm.StepForm
                         name="update"
                         title="Update"
+                        onValuesChange={() => {
+                            updateFormRef.current?.validateFields(['cpConvertibleCs', 'cpOptionalValue']);
+                        }}
                         onFinish={async (values) => {
-                            try {
-                                // await updateNonNullProperties(updatedItem);***********************
-                                // console.log('values', values)
-                                return true;
-                            } catch (error) {
-                                messageApi.error(' The update failed. Please try again ');
-                                return false;
-                            }
+                            return true;
+                            // try {
+                            //     // await updateNonNullProperties(updatedItem);***********************
+                            //     // console.log('values', values)
+                            //     return true;
+                            // } catch (error) {
+                            //     messageApi.error(' The update failed. Please try again ');
+                            //     return false;
+                            // }
                         }}
                     >
                         <ProFormText
@@ -339,7 +384,7 @@ export default function ({initialValue, onChange}) {
                             placeholder={undefined}
                             disabled
                             initialValue={item.id}
-                            rules={[{ required: true }]}
+                            rules={[{required: true}]}
                             width="xl"
                         />
                         <ProFormText
@@ -348,17 +393,17 @@ export default function ({initialValue, onChange}) {
                             tooltip=""
                             placeholder="Founders / Series A ..."
                             initialValue={item.seriesName}
-                            rules={[{ required: true }]}
+                            rules={[{required: true}]}
                             width="xl"
                         />
                         <ProFormDigit
                             name="cs"
-                            label={<span>{ SECURITY_TYPE_TAGS.CS} The shares of Common</span>}
+                            label={<span>{SECURITY_TYPE_TAGS.CS} The shares of Common</span>}
                             width="sm"
                             placeholder="0"
                             initialValue={item.cs}
                             min={0}
-                            rules={[{ required: true }]}
+                            rules={[{required: true}]}
                         />
                         <ProFormDigit
                             name="rpRv"
@@ -368,7 +413,7 @@ export default function ({initialValue, onChange}) {
                             fieldProps={{prefix: '$'}}
                             initialValue={item.rpRv}
                             min={0}
-                            rules={[{ required: true }]}
+                            rules={[{required: true}]}
                         />
                         <ProFormDigit
                             name="cpConvertibleCs"
@@ -377,7 +422,22 @@ export default function ({initialValue, onChange}) {
                             placeholder="0"
                             initialValue={item.cpConvertibleCs}
                             min={0}
-                            rules={[{ required: true }]}
+                            rules={[
+                                {
+                                    validator: async (_, value) => {
+                                        const form = updateFormRef.current?.getFieldsValue();
+                                        const cpOptionalValue = form?.cpOptionalValue;
+                                        if (
+                                            (value === 0 && cpOptionalValue === 0) ||
+                                            (value > 0 && cpOptionalValue > 0)
+                                        ) {
+                                            return Promise.resolve();
+                                        } else {
+                                            return Promise.reject('Both CP->CS and CP->Redeem should have non-zero (or zero) values at the same time.');
+                                        }
+                                    },
+                                },
+                            ]}
                         />
                         <ProFormDigit
                             name="cpOptionalValue"
@@ -387,7 +447,22 @@ export default function ({initialValue, onChange}) {
                             fieldProps={{prefix: '$'}}
                             initialValue={item.cpOptionalValue}
                             min={0}
-                            rules={[{ required: true }]}
+                            rules={[
+                                {
+                                    validator: async (_, value) => {
+                                        const form = updateFormRef.current?.getFieldsValue();
+                                        const cpConvertibleCs = form?.cpConvertibleCs;
+                                        if (
+                                            (cpConvertibleCs === 0 && value === 0) ||
+                                            (cpConvertibleCs > 0 && value > 0)
+                                        ) {
+                                            return Promise.resolve();
+                                        } else {
+                                            return Promise.reject('Both CP->CS and CP->Redeem should have non-zero (or zero) values at the same time.');
+                                        }
+                                    },
+                                },
+                            ]}
                         />
 
                     </StepsForm.StepForm>
@@ -422,7 +497,7 @@ export default function ({initialValue, onChange}) {
                 renderItem={(item, _) => {
                     if (item !== createNewItem) {
                         return (
-                            <List.Item key={item.id} >
+                            <List.Item key={item.id}>
                                 <Card
                                     size={'small'}
                                     hoverable
@@ -446,41 +521,47 @@ export default function ({initialValue, onChange}) {
                                     ]}
                                 >
                                     <Card.Meta
-                                    // avatar={<Tag bordered={false} color="#2db7f5">{"Investment Sequence "+ item.id}</Tag>}
-                                    description={
-                                        <>
-                                            <Descriptions size={'small'}>
-                                                <Descriptions.Item span={3} >
-                                                    <div style={{margin: 0, padding: 0, backgroundColor: '#1f77b4',color: 'white', borderRadius: '5px'}}>
-                                                        <p style={{margin: '0 5px', padding: 0}}>Investment</p>
-                                                        <p style={{margin: '0 5px', padding: 0}}>Sequence</p>
-                                                        <p style={{margin: '0 5px', padding: 0}}>{item.id}</p>
-                                                    </div>
-                                                    {/*<Tag bordered={false} color="#2db7f5">*/}
-                                                    {/*    <p>Investment</p>*/}
-                                                    {/*    <p>Sequence</p>*/}
-                                                    {/*    <p>{item.id}</p>*/}
-                                                    {/*</Tag>*/}
-                                                </Descriptions.Item>
-                                                <Descriptions.Item span={3}>
-                                                    <h1>{item.seriesName}</h1>
-                                                </Descriptions.Item>
-                                                <Descriptions.Item label={SECURITY_TYPE_TAGS.CS} span={3}>
-                                                    {item.cs}
-                                                </Descriptions.Item>
-                                                <Descriptions.Item label={SECURITY_TYPE_TAGS.RP} span={3}>
-                                                    {'$ ' + item.rpRv}
-                                                </Descriptions.Item>
-                                                <Descriptions.Item label={SECURITY_TYPE_TAGS.CP_CS} span={3}>
-                                                    {item.cpConvertibleCs}
-                                                </Descriptions.Item>
-                                                <Descriptions.Item label={SECURITY_TYPE_TAGS.CP_RV} span={3}>
-                                                    {'$ ' + item.cpOptionalValue}
-                                                </Descriptions.Item>
-                                            </Descriptions>
-                                        </>
-                                    }
-                                />
+                                        // avatar={<Tag bordered={false} color="#2db7f5">{"Investment Sequence "+ item.id}</Tag>}
+                                        description={
+                                            <>
+                                                <Descriptions size={'small'}>
+                                                    <Descriptions.Item span={3}>
+                                                        <div style={{
+                                                            margin: 0,
+                                                            padding: 0,
+                                                            backgroundColor: '#1f77b4',
+                                                            color: 'white',
+                                                            borderRadius: '5px'
+                                                        }}>
+                                                            <p style={{margin: '0 5px', padding: 0}}>Investment</p>
+                                                            <p style={{margin: '0 5px', padding: 0}}>Sequence</p>
+                                                            <p style={{margin: '0 5px', padding: 0}}>{item.id}</p>
+                                                        </div>
+                                                        {/*<Tag bordered={false} color="#2db7f5">*/}
+                                                        {/*    <p>Investment</p>*/}
+                                                        {/*    <p>Sequence</p>*/}
+                                                        {/*    <p>{item.id}</p>*/}
+                                                        {/*</Tag>*/}
+                                                    </Descriptions.Item>
+                                                    <Descriptions.Item span={3}>
+                                                        <h1>{item.seriesName}</h1>
+                                                    </Descriptions.Item>
+                                                    <Descriptions.Item label={SECURITY_TYPE_TAGS.CS} span={3}>
+                                                        {item.cs}
+                                                    </Descriptions.Item>
+                                                    <Descriptions.Item label={SECURITY_TYPE_TAGS.RP} span={3}>
+                                                        {'$ ' + item.rpRv}
+                                                    </Descriptions.Item>
+                                                    <Descriptions.Item label={SECURITY_TYPE_TAGS.CP_CS} span={3}>
+                                                        {item.cpConvertibleCs}
+                                                    </Descriptions.Item>
+                                                    <Descriptions.Item label={SECURITY_TYPE_TAGS.CP_RV} span={3}>
+                                                        {'$ ' + item.cpOptionalValue}
+                                                    </Descriptions.Item>
+                                                </Descriptions>
+                                            </>
+                                        }
+                                    />
                                 </Card>
                             </List.Item>
                         );
@@ -495,15 +576,16 @@ export default function ({initialValue, onChange}) {
                                         <h3 key={'create'} style={{color: '#3498db'}}>
                                             <PlusOutlined/> <br/>Add a new series
                                         </h3>,
-                                        ]}
-                                    >
-                                <Card.Meta
+                                    ]}
+                                >
+                                    <Card.Meta
                                         title={false}
                                         description={
                                             <h4 style={{color: 'black'}}>
                                                 {seriesInput.length <= 0 ?
-                                                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={'Empty'} /> :
-                                                <p>{'Total ' + seriesInput.length + ' items'}</p>}
+                                                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                                           description={'Empty'}/> :
+                                                    <p>{'Total ' + seriesInput.length + ' items'}</p>}
                                             </h4>
 
                                         }

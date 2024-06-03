@@ -1,5 +1,5 @@
 import {Card, Space} from "antd";
-import React from "react";
+import React, {useState} from "react";
 import ExpirationPayoffDiagram3 from "../ExpirationPayoffDiagram3";
 import {addSeries, analyze} from "../../lib/series";
 import {PvGpvLpv} from "../../lib/partial-valuation/pv-gpv-lpv";
@@ -8,7 +8,6 @@ import {LimitedPartnership} from "../../lib/partial-valuation/limited-partnershi
 import {ExpirationPayoffDiagramPvGpvLpv} from "../ExpirationPayoffDiagramPvGpvLpv";
 import * as ChartJSUtils from "../ExpirationPayoffDiagram3/chartjs-utils";
 import Milestone from "../../antd/Milestone";
-import {useState} from "react";
 import CardList from "../../antd/CardList";
 import Sankey from "../../echarts/Sankey";
 import SankeyDiagramInstructions from "./sankey-desc";
@@ -198,7 +197,7 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                                         xs={x1}
                                         ys={y1}
                                         slopes={k1}
-                                        invDefault={Number.isFinite(initialInvests[i]) || 1}
+                                        invDefault={Number.isFinite(initialInvests[i]) ? initialInvests[i] : 1}
                                     />
                                 </Card>
                             </div>
