@@ -74,9 +74,12 @@ const App = () => {
                                         paddingBlockStart: 12,
                                     }}
                                 >
+                                    <div>{`Developed by `}<a href="https://www.linkedin.com/in/kevinlcm" target="_blank"
+                                            rel="noopener noreferrer">Kevin Liu,</a>{" under the guidance of Professor "}
+                                    <a href="http://klaasbaks.com/" target="_blank"
+                                            rel="noopener noreferrer">Klass Baks</a></div><br/>
                                     <div>© {new Date().getFullYear()} Emory Center for Alternative Investments</div>
-                                    <div><a href="https://www.linkedin.com/in/kevinlcm" target="_blank"
-                                            rel="noopener noreferrer">by Kevin Liu</a></div>
+
                                 </div>
                             );
                         }}
@@ -124,19 +127,19 @@ const App = () => {
                             </div>
                         </PageContainer>
 
-                        <SettingDrawer
-                            pathname={location.pathname}
-                            enableDarkTheme
-                            getContainer={(e) => {
-                                if (typeof window === 'undefined') return e;
-                                return document.getElementById('test-pro-layout');
-                            }}
-                            settings={settings}
-                            onSettingChange={(changeSetting) => {
-                                setSetting(changeSetting);
-                            }}
-                            disableUrlParams={false}
-                        />
+                        {/*<SettingDrawer*/}
+                        {/*    pathname={location.pathname}*/}
+                        {/*    enableDarkTheme*/}
+                        {/*    getContainer={(e) => {*/}
+                        {/*        if (typeof window === 'undefined') return e;*/}
+                        {/*        return document.getElementById('test-pro-layout');*/}
+                        {/*    }}*/}
+                        {/*    settings={settings}*/}
+                        {/*    onSettingChange={(changeSetting) => {*/}
+                        {/*        setSetting(changeSetting);*/}
+                        {/*    }}*/}
+                        {/*    disableUrlParams={false}*/}
+                        {/*/>*/}
                     </ProLayout>
                 </ConfigProvider>
             </ProConfigProvider>
