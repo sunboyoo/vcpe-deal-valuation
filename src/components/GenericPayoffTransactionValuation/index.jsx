@@ -73,6 +73,7 @@ export default function GenericPayoffTransactionValuation() {
     const [variables, setVariables] = useState({...initialValues})
     const [result, setResult] = useState(undefined)
     const [visible, setVisible] = useState(false)
+    const [optionsInputError, setOptionsInputError] = useState(null);
 
     const onFinish = (values) => {
         try {
@@ -87,6 +88,8 @@ export default function GenericPayoffTransactionValuation() {
             setVariables({...values})
             setResult(transactionValuation(lpOptions, tv, H, r / 100., vol / 100., lfp / 100., inv))
             setVisible(true)
+            setOptionsInputError(null)
+
             console.log('Form.onFinish():', values);
             console.log(transactionValuation(lpOptions, tv, H, r / 100., vol / 100., lfp / 100., inv))
         } catch (error) {
@@ -95,11 +98,15 @@ export default function GenericPayoffTransactionValuation() {
     };
     const onFinishFailed = (errorInfo) => {
         setVisible(false)
+        setOptionsInputError(errorInfo.message)
+
         console.log('Form.onFinishFailed():', errorInfo);
     };
 
     const onValuesChange = () => {
         setVisible(false)
+        setOptionsInputError(null)
+
         console.log("Form.onValuesChange()")
     }
 
@@ -359,6 +366,8 @@ export default function GenericPayoffTransactionValuation() {
                                                 Add a new line
                                             </Button>
                                         </Form.Item>
+                                        <p style={{color: '#fa8c16'}}>{optionsInputError}</p>
+
                                     </>
                                 )}
                             </Form.List>

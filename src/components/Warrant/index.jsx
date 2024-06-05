@@ -1,7 +1,6 @@
 import {Button, Card, Form, InputNumber, Space, Statistic} from "antd";
 import {Warrant as warrant} from "../../lib/warrant";
 import React, {useState} from "react";
-import BlackScholesFormula from "../BlackScholesFormula";
 import {CaretDownOutlined, CaretRightOutlined} from "@ant-design/icons";
 
 const initialValues = {

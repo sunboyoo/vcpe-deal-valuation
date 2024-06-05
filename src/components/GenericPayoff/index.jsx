@@ -77,6 +77,7 @@ export default function GenericPayoff() {
     const [variables, setVariables] = useState({...initialValues})
     const [result, setResult] = useState(undefined)
     const [visible, setVisible] = useState(false)
+    const [optionsInputError, setOptionsInputError] = useState(null);
 
     const onFinish = (values) => {
         const {tv, H, r, vol, options} = values
@@ -84,16 +85,27 @@ export default function GenericPayoff() {
             ...item,
             quantity: parseNumberFromFractionText(item.quantity)
         }))
-        setVariables({...values})
-        setResult(payoff(genericOptions, tv, H, r / 100., vol / 100.))
-        setVisible(true)
+        try {
+            optionArrayToOptionPortfolio(genericOptions)
+            setVariables({...values, options: genericOptions})
+            setResult(payoff(genericOptions, tv, H, r / 100., vol / 100.))
+            setVisible(true)
+            setOptionsInputError(null)
+
+        } catch (e) {
+            onFinishFailed(e)
+        }
+
     };
     const onFinishFailed = (errorInfo) => {
+        setOptionsInputError(errorInfo.message)
+
         setVisible(false)
     };
 
-    const onValuesChange = () => {
+    const onValuesChange = (valuesChanged, values) => {
         setVisible(false)
+        setOptionsInputError(null)
     }
 
     const regexPositiveNumber = /^(?!0+(\.0+)?$)(0+\.\d*[1-9]\d*|[1-9]\d*(\.\d+)?)$/
@@ -189,10 +201,13 @@ export default function GenericPayoff() {
                         <div style={{height: '20px'}}/>
 
                         <h1>Generic Payoff Schedule - Option Portfolio</h1>
-                        <h3 style={{color: '#3498db'}}>{optionArrayToOptionPortfolio(variables.options.map((item) => ({
-                            ...item,
-                            quantity: parseNumberFromFractionText(item.quantity)
-                        }))).text()}</h3>
+                        {visible &&
+                            <h3 style={{color: '#3498db'}}>{optionArrayToOptionPortfolio(variables.options.map((item) => ({
+                                ...item,
+                                quantity: parseNumberFromFractionText(item.quantity)
+                            }))).text()}</h3>
+                        }
+
 
                         <Form.List name="options">
                             {(fields, {add, remove}) => (
@@ -319,6 +334,7 @@ export default function GenericPayoff() {
                                             Add a new line
                                         </Button>
                                     </Form.Item>
+                                    <p style={{color: '#fa8c16'}}>{optionsInputError}</p>
                                 </>
                             )}
                         </Form.List>
