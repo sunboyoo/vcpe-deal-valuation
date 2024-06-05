@@ -77,7 +77,7 @@ const App = () => {
                                     <div>{`Developed by `}<a href="https://www.linkedin.com/in/kevinlcm" target="_blank"
                                             rel="noopener noreferrer">Kevin Liu,</a>{" under the guidance of Professor "}
                                     <a href="http://klaasbaks.com/" target="_blank"
-                                            rel="noopener noreferrer">Klass Baks</a></div><br/>
+                                            rel="noopener noreferrer">Klaas P. Baks PhD</a></div><br/>
                                     <div>© {new Date().getFullYear()} Emory Center for Alternative Investments</div>
 
                                 </div>
@@ -106,8 +106,8 @@ const App = () => {
                                             blankTarget: true,
                                         },
                                         {
-                                            key: 'Klass Baks',
-                                            title: 'under the guidance of Professor Klass Baks',
+                                            key: 'Klaas P. Baks',
+                                            title: 'under the guidance of Professor Klaas P. Baks PhD ',
                                             href: 'http://klaasbaks.com/',
                                             blankTarget: true,
                                         },
