@@ -4,11 +4,6 @@ import {LinkedinFilled, MailFilled, PhoneFilled} from "@ant-design/icons";
 
 const Welcome = () => {
 
-    if (Math.random() > 0.5) {
-        throw new Error('haha')
-    }
-
-
     return (
         <Card>
             <div style={{padding: '20px', fontFamily: 'Arial, sans-serif', textAlign: 'left'}}>

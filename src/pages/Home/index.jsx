@@ -6,6 +6,9 @@ import {basename} from "../../routes";
 import {route} from "../../routes/prolayout-route";
 import {breadcrumbRender, reactRouterNavigateOnClickMenu} from "../../routes/react-router-ant-prolayout"
 
+const DEVELOPMENT = 'DEVELOPMENT';
+const PRODUCTION = 'PRODUCTION';
+
 const proLayoutDefaultSettings = {
     title: 'Emory CAI',
     "fixSiderbar": true,
@@ -16,6 +19,7 @@ const proLayoutDefaultSettings = {
     "colorPrimary": "#1677FF",
     "fixedHeader": true,
 }
+
 
 
 const App = () => {
@@ -32,6 +36,8 @@ const App = () => {
     const navigate = useNavigate();
 
     console.log('useLocation()', location);
+
+    const environment = PRODUCTION;
 
     if (typeof document === 'undefined') {
         return <div/>;
@@ -126,20 +132,21 @@ const App = () => {
                                 </a>
                             </div>
                         </PageContainer>
-
-                        {/*<SettingDrawer*/}
-                        {/*    pathname={location.pathname}*/}
-                        {/*    enableDarkTheme*/}
-                        {/*    getContainer={(e) => {*/}
-                        {/*        if (typeof window === 'undefined') return e;*/}
-                        {/*        return document.getElementById('test-pro-layout');*/}
-                        {/*    }}*/}
-                        {/*    settings={settings}*/}
-                        {/*    onSettingChange={(changeSetting) => {*/}
-                        {/*        setSetting(changeSetting);*/}
-                        {/*    }}*/}
-                        {/*    disableUrlParams={false}*/}
-                        {/*/>*/}
+                        {
+                            environment === DEVELOPMENT && <SettingDrawer
+                                pathname={location.pathname}
+                                enableDarkTheme
+                                getContainer={(e) => {
+                                    if (typeof window === 'undefined') return e;
+                                    return document.getElementById('test-pro-layout');
+                                }}
+                                settings={settings}
+                                onSettingChange={(changeSetting) => {
+                                    setSetting(changeSetting);
+                                }}
+                                disableUrlParams={false}
+                            />
+                        }
                     </ProLayout>
                 </ConfigProvider>
             </ProConfigProvider>
