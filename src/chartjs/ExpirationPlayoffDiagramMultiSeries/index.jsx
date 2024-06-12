@@ -109,8 +109,6 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
         })
     }
 
-    const [x1, y1, k1] = lines[1].plotPoints()
-
     return (
         <>
             <Space direction={'vertical'}>
@@ -194,9 +192,9 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
                                 <Card>
                                     <h1>{processedSeriesArray[i].seriesName}</h1>
                                     <ExpirationPayoffDiagramPvGpvLpvWithInput
-                                        xs={x1}
-                                        ys={y1}
-                                        slopes={k1}
+                                        xs={lines[i].plotPoints()[0]}
+                                        ys={lines[i].plotPoints()[1]}
+                                        slopes={lines[i].plotPoints()[2]}
                                         invDefault={Number.isFinite(initialInvests[i]) ? initialInvests[i] : 1}
                                     />
                                 </Card>

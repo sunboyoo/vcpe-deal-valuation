@@ -4,6 +4,16 @@ import {DeleteOutlined, EditOutlined, PlusOutlined} from '@ant-design/icons';
 import {ProFormDigit, ProFormText, StepsForm} from '@ant-design/pro-components';
 import {SECURITY_TYPE_TAGS} from "../../lib/constants";
 
+function numberToLetter(num) {
+    let result = '';
+    while (num > 0) {
+        let remainder = (num - 1) % 26;
+        result = String.fromCharCode(65 + remainder) + result;
+        num = Math.floor((num - 1) / 26);
+    }
+    return result;
+}
+
 export default function CardList({initialValue, onChange}) {
     const [messageApi] = message.useMessage();
 
@@ -230,6 +240,7 @@ export default function CardList({initialValue, onChange}) {
                             label="Series Name"
                             tooltip=""
                             placeholder="Founders / Series A ..."
+                            initialValue={seriesInput.length === 0 ? 'Founders' : 'Series ' + numberToLetter(seriesInput.length)}
                             rules={[{required: true}]}
                             width="xl"
                         />

@@ -14,6 +14,32 @@ import Welcome from "../pages/Welcome";
 import ExpirationPayoffDiagramOptionPortfolio from "../components/ExpirationPayoffDiagramOptionPortfolio";
 import GenericExpirationPayoffDiagramPvGpvLpv from "../components/GenericExpirationPayoffPvGpvLpv";
 import GenericPayoff from "../components/GenericPayoff";
+import {ErrorBoundary} from "react-error-boundary";
+import {Button, Result} from "antd";
+
+function GenericErrorBoundary(props) {
+    return <ErrorBoundary
+        {...props}
+        fallback={<Result
+            status="500"
+            title="Error"
+            subTitle="Sorry, something went wrong."
+            extra={[<Button
+                type="primary"
+                onClick={() => {
+                    window.location.reload();
+                }}
+            >Reload the Page</Button>,
+                <div style={{height: '30px'}}/>,
+                <a href="https://github.com/sunboyoo/vcpe-deal-valuation/issues/new" target="_blank"
+                   rel="noreferrer">
+                    <img src="https://img.shields.io/badge/Report%20an%20Issue-Click%20Here-brightgreen"
+                         alt="Report an Issue"/>
+                </a>
+            ]}
+        />}
+    ></ErrorBoundary>;
+}
 
 // 懒加载, 延时测试效果
 // const EuropeanCallPutOption = lazy(() =>
@@ -56,7 +82,8 @@ const routes = [
             },
             {
                 path: 'welcome',
-                element: <Welcome/>,
+                element: <GenericErrorBoundary><Welcome/></GenericErrorBoundary>,
+                // element: <Welcome/>,
             },
             {
                 path: 'option-warrant',
@@ -64,13 +91,13 @@ const routes = [
                 children: [
                     {
                         path: 'european-call-put-option',
-                        element: <EuropeanCallPutOption/>,
+                        element: <GenericErrorBoundary><EuropeanCallPutOption/></GenericErrorBoundary>,
                     }, {
                         path: 'binary-option',
-                        element: <BinaryOption/>,
+                        element: <GenericErrorBoundary><BinaryOption/></GenericErrorBoundary>,
                     }, {
                         path: 'warrant',
-                        element: <Warrant/>
+                        element: <GenericErrorBoundary><Warrant/></GenericErrorBoundary>,
                     }, {
                         path: '*',
                         element: <Navigate to="/option-warrant"/>,  // Wildcard route element
@@ -82,16 +109,16 @@ const routes = [
                 children: [
                     {
                         path: 'series-a-cs',
-                        element: <SeriesACs/>
+                        element: <GenericErrorBoundary><SeriesACs/></GenericErrorBoundary>,
                     }, {
                         path: 'series-a-rp-cs',
-                        element: <SeriesARpCs/>,
+                        element: <GenericErrorBoundary><SeriesARpCs/></GenericErrorBoundary>,
                     }, {
                         path: 'series-a-cp',
-                        element: <SeriesACp/>
+                        element: <GenericErrorBoundary><SeriesACp/></GenericErrorBoundary>,
                     }, {
                         path: 'series-a-pcp',
-                        element: <SeriesAPcp/>,
+                        element: <GenericErrorBoundary><SeriesAPcp/></GenericErrorBoundary>,
                     }, {
                         path: '*',
                         element: <Navigate to="/series-a"/>,  // Wildcard route element
@@ -99,25 +126,25 @@ const routes = [
                 ],
             }, {
                 path: 'series-b-and-beyond',
-                element: <ExpirationPlayoffDiagramMultiSeries/>,
+                element: <GenericErrorBoundary><ExpirationPlayoffDiagramMultiSeries/></GenericErrorBoundary>,
             }, {
                 path: 'generic',
                 element: <Outlet/>,
                 children: [
                     {
                         path: 'generic-payoff',
-                        element: <GenericPayoff/>
+                        element: <GenericErrorBoundary><GenericPayoff/></GenericErrorBoundary>,
                     }, {
                         path: 'generic-payoff-transaction-valuation',
-                        element: <GenericPayoffTransactionValuation/>
+                        element: <GenericErrorBoundary><GenericPayoffTransactionValuation/></GenericErrorBoundary>,
                     },
                     {
                         path: 'payoff-diagram-option-portfolio',
-                        element: <ExpirationPayoffDiagramOptionPortfolio/>
+                        element: <GenericErrorBoundary><ExpirationPayoffDiagramOptionPortfolio/></GenericErrorBoundary>,
                     }, {
 
                         path: 'payoff-diagram-pvgpvlpv',
-                        element: <GenericExpirationPayoffDiagramPvGpvLpv/>
+                        element: <GenericErrorBoundary><GenericExpirationPayoffDiagramPvGpvLpv/></GenericErrorBoundary>,
                     },
 
                 ]
