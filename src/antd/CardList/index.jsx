@@ -490,6 +490,20 @@ export default function CardList({initialValue, onChange}) {
         );
     }
 
+
+    function getRvpsArray(seriesArray){
+        let rvpsArr = seriesArray.map((series) => series.cpOptionalValue / series.cpConvertibleCs)
+        // Remove null and NaN values
+        rvpsArr = rvpsArr.filter((item) => (Number.isFinite(item)))
+        // Remove duplicates
+        rvpsArr = rvpsArr.filter((item, index) => rvpsArr.indexOf(item) === index)
+        // Sort
+        rvpsArr.sort((a, b) => a - b)
+        return rvpsArr;
+    }
+
+    const rvpsArray = getRvpsArray(seriesInput);
+
     return (
         <>
             <List
@@ -569,6 +583,16 @@ export default function CardList({initialValue, onChange}) {
                                                     <Descriptions.Item label={SECURITY_TYPE_TAGS.CP_RV} span={3}>
                                                         {'$ ' + item.cpOptionalValue}
                                                     </Descriptions.Item>
+                                                    {
+                                                        item.cpConvertibleCs > 0 ? <Descriptions.Item label={<Tag color={'black'}>RVPS</Tag>} span={3}>
+                                                            {item.cpOptionalValue / item.cpConvertibleCs}
+                                                        </Descriptions.Item> : <div style={{height: '64px'}}></div>
+                                                    }
+                                                    {
+                                                        item.cpConvertibleCs > 0 && <Descriptions.Item label={<Tag color={'black'}>CP Conversion Order</Tag>} span={3}>
+                                                            { 1 + rvpsArray.indexOf(item.cpOptionalValue / item.cpConvertibleCs)}
+                                                        </Descriptions.Item>
+                                                    }
                                                 </Descriptions>
                                             </>
                                         }

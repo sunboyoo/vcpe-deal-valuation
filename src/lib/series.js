@@ -15,6 +15,7 @@ const example = [
     }
 ]
 
+
 /*
 * RedeemableValue - theoretical value the shareholder has the option to redeem
 * RedemptionValue - theoretical value if the shareholder redeems
@@ -46,7 +47,7 @@ function setRvps(seriesArray){
     })
 }
 
-function getRvpsArray(seriesArray){
+export function getRvpsArray(seriesArray){
     let rvpsArr = seriesArray.map((series) => series.rvps)
     // Remove null and NaN values
     rvpsArr = rvpsArr.filter((item) => (Number.isFinite(item)))
@@ -56,6 +57,19 @@ function getRvpsArray(seriesArray){
     rvpsArr.sort((a, b) => a - b)
     return rvpsArr;
 }
+
+
+function getRvpsSeriesArray(seriesArray){
+    let rvpsArr = seriesArray.map((series) =>({...series}))
+    // Remove null and NaN values
+    rvpsArr = rvpsArr.filter((item) => (Number.isFinite(item.rvps)))
+    // Do Not Remove duplicates
+    // rvpsArr = rvpsArr.filter((item, index) => rvpsArr.indexOf(item) === index)
+    // Sort
+    rvpsArr.sort((a, b) => a.rvps - b.rvps)
+    return rvpsArr;
+}
+
 /*
 * Assign Conversion Order based on RVPS
 * Adds a 'cpConversionOrder' property to each series.
@@ -72,32 +86,6 @@ function assignCpConversionOrder(seriesArray){
             series.cpConversionOrder = null;
         }
     })
-    //
-    // // Create a temporary array for sorting and determining order
-    // const sortable = seriesArray
-    //     .map((series, index) => ({index, rvps: series.rvps}))
-    //     .filter(item => item.rvps > 0)
-    //
-    // // Sort by RVPS, and then by index in descending order if RVPS are equal
-    // sortable.sort((a, b) => {
-    //     // If Series A and Series B have the same RVPS, Series B converts earlier than Series A
-    //     if (a.rvps === b.rvps) {
-    //         return b.index - a.index; // Secondary sort by index in descending order
-    //     }
-    //     return a.rvps - b.rvps; // Primary sort by RVPS in ascending order
-    // });
-    //
-    // // Assign conversion order starting from 1
-    // sortable.forEach((item, order) => {
-    //     seriesArray[item.index].cpConversionOrder = order + 1;
-    // })
-    //
-    // // Assign null conversion order to series with no CP to indicate they don't convert
-    // seriesArray.forEach((series) => {
-    //     if (!seriesHasCP(series)){
-    //         series.cpConversionOrder = null;
-    //     }
-    // })
 }
 
 /**
@@ -540,11 +528,13 @@ export function analyze(seriesArray){
     const csStacks = getCsStacks(equityStacks);
     const conversionSteps = getConversionSteps(seriesArray)
 
+    const rvpsSeriesArray = getRvpsSeriesArray(seriesArray);
+
     console.log("lines", lines)
     console.log("equityStacks",  equityStacks)
     console.log("csStacks",  csStacks)
     console.log("conversionSteps", conversionSteps)
-    return {lines, equityStacks, csStacks, conversionSteps, processedSeriesArray: seriesArray}
+    return {lines, equityStacks, csStacks, conversionSteps, rvpsSeriesArray, processedSeriesArray: seriesArray}
 }
 
 
@@ -575,6 +565,7 @@ export function test(){
     const csStacks = getCsStacks(equityStacks);
     const conversionSteps = getConversionSteps(seriesArray)
     console.log(conversionSteps)
+
 
     return {equityStacks, csStacks, conversionSteps}
 }
