@@ -72,7 +72,7 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
         addSeries(seriesArray, id, seriesName, cs, cpConvertibleCs, cpOptionalValue, rpRv);
     });
 
-    const {lines, equityStacks, csStacks, conversionSteps, rvpsSeriesArray, processedSeriesArray} = analyze(seriesArray);
+    const {lines, equityStacks, csStacks, conversionSteps,  processedSeriesArray} = analyze(seriesArray);
 
     const xs = [];
     const ys = [];

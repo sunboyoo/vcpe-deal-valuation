@@ -528,13 +528,11 @@ export function analyze(seriesArray){
     const csStacks = getCsStacks(equityStacks);
     const conversionSteps = getConversionSteps(seriesArray)
 
-    const rvpsSeriesArray = getRvpsSeriesArray(seriesArray);
-
     console.log("lines", lines)
     console.log("equityStacks",  equityStacks)
     console.log("csStacks",  csStacks)
     console.log("conversionSteps", conversionSteps)
-    return {lines, equityStacks, csStacks, conversionSteps, rvpsSeriesArray, processedSeriesArray: seriesArray}
+    return {lines, equityStacks, csStacks, conversionSteps, processedSeriesArray: seriesArray}
 }
 
 
