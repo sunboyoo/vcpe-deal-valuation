@@ -107,7 +107,7 @@ const App = () => {
                                     links={[
                                         {
                                             key: 'Kevin Liu',
-                                            title: 'Developed by Kevin Liu,',
+                                            title: 'Developed by Kevin Liu, MBA Class of 2024,',
                                             href: 'https://www.linkedin.com/in/kevinlcm',
                                             blankTarget: true,
                                         },

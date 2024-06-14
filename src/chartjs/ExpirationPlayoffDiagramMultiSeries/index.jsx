@@ -114,6 +114,7 @@ export default function ExpirationPlayoffDiagramMultiSeries() {
             <Space direction={'vertical'}>
                 <Card>
                     <h1>The Equity Securities held by Founders and Series Investors</h1>
+                    <p>Welcome to the Series B and Beyond Investment Playground, where you can add, edit, or delete series investments.</p>
                     <CardList
                         initialValue={seriesValue}
                         onChange={(newValue) => {
