@@ -6,8 +6,12 @@ function isZeroOrPositiveNumber(n) {
     return Number.isFinite(n) && (n >= 0);
 }
 
-export class SingleSeries {
-    constructor(name, cs, rpRv, cpConvertibleCs, cpOptionalValue) {
+export class Series {
+    constructor(id, name, cs, rpRv, cpConvertibleCs, cpOptionalValue) {
+        if (!isZeroOrPositiveInteger(id)){
+            throw new Error(`id ${id} must be a zero or positive integer.`);
+        }
+
         if (!((typeof name === 'string') && (name.length > 0))) {
             throw new Error('name must be a string');
         }
@@ -50,16 +54,16 @@ export class SeriesBAndBeyond {
         this.seriesArray = [];
     }
 
-    addOneSeries(name, cs, cpConvertibleCs, cpOptionalValue, rpRv) {
+    addSeries(name, cs, cpConvertibleCs, cpOptionalValue, rpRv) {
         // Check if the series name already exists in the seriesArray
         if (this.seriesArray.some(series => series.name === name)) {
             throw new Error(`A series with this name already exists. ${name}`);
         }
         // If the name is unique, proceed to create and add the new series
-        this.seriesArray.push(new SingleSeries(name, cs, rpRv, cpConvertibleCs, cpOptionalValue));
+        this.seriesArray.push(new Series(name, cs, rpRv, cpConvertibleCs, cpOptionalValue));
     }
 
-    removeOneSeriesById(id) {
+    removeSeriesById(id) {
         // Filter the seriesArray to remove the series with the matching id.
         const index = this.seriesArray.findIndex(series => series.id === id);
         if (index !== -1) { // Check if the series is found
@@ -69,7 +73,7 @@ export class SeriesBAndBeyond {
         }
     }
 
-    removeOneSeriesByName(name) {
+    removeSeriesByName(name) {
         // Find the index of the series with the given name
         const index = this.seriesArray.findIndex(series => series.name === name);
         if (index !== -1) { // Check if the series is found
@@ -79,7 +83,7 @@ export class SeriesBAndBeyond {
         }
     }
 
-    editOneSeries(newSingleSeries) {
+    editSeries(newSingleSeries) {
         const index = this.seriesArray.findIndex(series => series.name === newSingleSeries.name);
         if (index !== -1) {
             // Update the series details with new data from newSingleSeries
